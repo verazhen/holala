@@ -1,0 +1,160 @@
+/* ELEMENT STYLES -------------------- */
+
+body {
+  background: #fff;
+  font-family: arial;
+  text-transform: uppercase;
+}
+
+.container{
+  margin:0;
+  padding:0;
+  max-width:100%;
+}
+.kanban{
+  background: #e8e7e7;
+  max-width:80vw;
+  /*height: 100vh;*/
+  margin: 0;
+  padding:0;
+}
+
+.chat-room{
+  background: #465775;
+  max-width:20vw;
+  height: 100vh;
+  margin: 0;
+  padding:0;
+}
+
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+.header {
+  max-width:100%;
+  color: #FFF;
+  padding: 5px 10px;
+  background-color: #8063FA;
+  border-bottom: solid 2px #D4CAFF;
+}
+
+
+.list-header {
+  color: #FFF;
+  padding: 5px 10px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  background-color: #8063FA;
+  border-bottom: solid 2px #D4CAFF;
+}
+
+.list-header h1 {
+  flex-grow: 1;
+  font-size: 1.5em;
+  letter-spacing: 2px;
+  font-weight: normal;
+}
+
+
+/* COMPONENT STYLES -------------------- */
+
+.list-kanban{
+  margin: 70px auto;
+}
+
+.list-board {
+  width: 300px;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+  box-shadow: 0 2px 0 rgb(133, 104, 250);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  font-size: 1.2em;
+  border-bottom: solid 2px #EEEEEE;
+  letter-spacing: 2px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item:last-of-type {
+  border-bottom-color: #D4CAFF;
+}
+
+.item-name:hover {
+  visibility: visible;
+}
+
+.item-name{
+  color: #2F2366;
+  flex-grow: 1;
+  line-height: 3.5em;
+  padding-left: 10px;
+}
+
+
+
+/* ORIGINAL STYLES -------------------- */
+
+.app {
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #000;
+  box-sizing: border-box;
+}
+
+input {
+  width: 100%;
+  height: 30px;
+}
+
+.add {
+  margin-top: 20px;
+  background-color: #8063FA;
+  color: #fff;
+  border: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 15px;
+}
+
+.list {
+  padding-top: 20px;
+}
+
+.sync-kanban {
+  border: 0;
+  background-color: #fff;
+  color: #8063FA;
+  padding: 10px;
+}
+
+.edit {
+  border: 0;
+  background-color: #8063FA;
+  color: #fff;
+  padding: 10px;
+}
+
+.remove {
+  border: 0;
+  background-color: rgb(212, 101, 101);
+  color: #fff;
+  padding: 10px;
+}
