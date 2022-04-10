@@ -5,11 +5,11 @@ import Add from "./AddTask";
 import Card from "./Card";
 
 //get data
-async function fetchData(setData) {
-  const res = await fetch(API_GET_DATA);
-  const { data } = await res.json();
-  setData(data);
-}
+// async function fetchData(setData) {
+//   const res = await fetch("http://localhost:5000/api/1.0/task");
+//   const { data } = await res.json();
+//   setData(data);
+// }
 
 //post data
 async function fetchSetData(data) {
@@ -22,36 +22,37 @@ async function fetchSetData(data) {
   });
 }
 
-const List = ({listName}) => {
-  const [data, setData] = useState([]);
+
+const List = ({ listName,tasks }) => {
+  const [cards, setCards] = useState(tasks);
   const submittingStatus = useRef(false);
 
   //post data
-  useEffect(() => {
-    //預防data在網頁 第一次render時被清掉
-    if (!submittingStatus.current) {
-      return;
-    }
-    fetchSetData(data).then((data) => (submittingStatus.current = false));
-  }, [data]);
+//   useEffect(() => {
+//     //預防data在網頁 第一次render時被清掉
+//     if (!submittingStatus.current) {
+//       return;
+//     }
+//     fetchSetData(cards).then((cards) => (submittingStatus.current = false));
+//   }, [cards]);
 
   //第一次render, get data
-  useEffect(() => {
-    fetchData(setData);
-  }, []);
+  //     useEffect(() => {
+  //       fetchData(setCards);
+  //     }, []);
 
   return (
-
-    <div className = "list-board">
+    <div className="list-board">
       <div className="list-header">
         <h3>{listName}</h3>
       </div>
-      <Add add={setData} submittingStatus={submittingStatus} />
+{/*       <Add add={setCards} submittingStatus={submittingStatus} /> */}
       <Card
-        listData={data}
-        editData={setData}
-        deleteData={setData}
-        submittingStatus={submittingStatus}/>
+        listData={cards}
+//         editData={setCards}
+//         deleteData={setCards}
+//         submittingStatus={submittingStatus}
+      />
     </div>
   );
 };

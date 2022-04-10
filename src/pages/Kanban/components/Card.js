@@ -1,17 +1,15 @@
 import Item from "./Item";
 
-const Card = ({ listData, editData,deleteData, submittingStatus }) => {
+const Card = ({ listData, editData, deleteData, submittingStatus }) => {
   return (
     <div className="list">
       {listData.map((item) => {
-        const { /* note, date, time,  */id } = item;
+        const { taskName,id } = item;
         return (
           <Item
             key={id}
             id={id}
-//             note={note}
-//             date={date}
-//             time={time}
+            taskName={taskName}
             editData={editData}
             deleteData={deleteData}
             submittingStatus={submittingStatus}

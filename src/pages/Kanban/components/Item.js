@@ -2,9 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 const Item = ({
   id,
-  note,
-  date,
-  time,
+  taskName,
   editData,
   deleteData,
   submittingStatus,
@@ -24,7 +22,7 @@ const Item = ({
     <Container>
         <Row className="item">
           <Col xs={8}>
-            <p className="item-name">Task Name</p>
+            <p className="item-name">{taskName}</p>
           </Col>
           <Col>
           <Button onClick={handleShow} className="edit">

@@ -7,14 +7,16 @@ import List from "./components/List";
 import Header from "./components/Header";
 import "./index.css";
 
-const data = [
-  {
-    listName: "List",
-  },
-];
+//get data
+async function fetchData(setData) {
+  const res = await fetch("http://localhost:5000/api/1.0/task");
+  const { data } = await res.json();
+  setData(data);
+}
+
 
 const Kanban = () => {
-  const [lists, setLists] = useState(data);
+  const [lists, setLists] = useState([]);
   function addItem() {
     setLists(function (prevData) {
       return [
@@ -25,24 +27,29 @@ const Kanban = () => {
       ];
     });
   }
+
+  //第一次render, get data
+  useEffect(() => {
+    fetchData(setLists);
+  }, []);
+
   return (
     <Container>
-    <Row>
-      <Col className="chat-room">
-      </Col>
-      <Col className="kanban">
-        <Header />
-        <Row className="list-kanban">
-          {lists.map((list) => (
+      <Row>
+        <Col className="chat-room"></Col>
+        <Col className="kanban">
+          <Header />
+          <Row className="list-kanban">
+            {lists.map(({listName,tasks}) => (
+              <Col>
+                <List listName={listName} tasks={tasks} />
+              </Col>
+            ))}
             <Col>
-              <List listName={list.listName} />
+              <Button onClick={addItem}>Add List</Button>
             </Col>
-          ))}
-          <Col>
-            <Button onClick={addItem}>Add List</Button>
-          </Col>
-        </Row>
-      </Col>
+          </Row>
+        </Col>
       </Row>
     </Container>
   );
