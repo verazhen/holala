@@ -4,8 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import List from "./components/List";
+import Chat from "./components/Chat";
 import Header from "./components/Header";
 import "./index.css";
+
 
 //get data
 async function fetchData(setData) {
@@ -15,18 +17,19 @@ async function fetchData(setData) {
 }
 
 async function fetchSetData(data) {
-//   console.log("fetch list");
-    await fetch("http://localhost:5000/api/1.0/task", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ data }),
-    });
+  //   console.log("fetch list");
+  await fetch("http://localhost:5000/api/1.0/task", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ data }),
+  });
 }
 
 const Kanban = () => {
   const [lists, setLists] = useState([]);
+
   const submittingStatus = useRef(false);
   const newList = {
     listName: "List",
@@ -47,18 +50,18 @@ const Kanban = () => {
   //   post data
   useEffect(() => {
     //預防data在網頁 第一次render時被清掉
-          if (!submittingStatus.current) {
-            return;
-          }
-    fetchSetData(
-      lists
-    ).then((lists) => (submittingStatus.current = false)) ;
+    if (!submittingStatus.current) {
+      return;
+    }
+    fetchSetData(lists).then((lists) => (submittingStatus.current = false));
   }, [lists]);
 
   return (
     <Container>
       <Row>
-        <Col className="chat-room"></Col>
+        <Col className="chat-room">
+          <Chat />
+        </Col>
         <Col className="kanban">
           <Header />
           <Row className="list-kanban">
