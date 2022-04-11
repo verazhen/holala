@@ -14,17 +14,28 @@ async function fetchData(setData) {
   setData(data);
 }
 
+async function fetchSetData(data) {
+//   console.log("fetch list");
+    await fetch("http://localhost:5000/api/1.0/task", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ data }),
+    });
+}
 
 const Kanban = () => {
   const [lists, setLists] = useState([]);
+  const submittingStatus = useRef(false);
+  const newList = {
+    listName: "List",
+    tasks: [],
+  };
   function addItem() {
+    submittingStatus.current = true;
     setLists(function (prevData) {
-      return [
-        ...prevData,
-        {
-          listName: "List",
-        },
-      ];
+      return [...prevData, newList];
     });
   }
 
@@ -33,6 +44,17 @@ const Kanban = () => {
     fetchData(setLists);
   }, []);
 
+  //   post data
+  useEffect(() => {
+    //預防data在網頁 第一次render時被清掉
+          if (!submittingStatus.current) {
+            return;
+          }
+    fetchSetData(
+      lists
+    ).then((lists) => (submittingStatus.current = false)) ;
+  }, [lists]);
+
   return (
     <Container>
       <Row>
@@ -40,9 +62,9 @@ const Kanban = () => {
         <Col className="kanban">
           <Header />
           <Row className="list-kanban">
-            {lists.map(({listName,tasks}) => (
+            {lists.map(({ listId, listName, tasks }) => (
               <Col>
-                <List listName={listName} tasks={tasks} />
+                <List listId={listId} listName={listName} tasks={tasks} />
               </Col>
             ))}
             <Col>
