@@ -8,17 +8,15 @@ import Chat from "./components/Chat";
 import Header from "./components/Header";
 import "./index.css";
 
-
 //get data
-async function fetchData(setData) {
-  const res = await fetch("http://localhost:5000/api/1.0/task");
+async function fetchData(setData, url) {
+  const res = await fetch(url);
   const { data } = await res.json();
   setData(data);
 }
 
-async function fetchSetData(data) {
-  //   console.log("fetch list");
-  await fetch("http://localhost:5000/api/1.0/task", {
+async function fetchSetData(data, url) {
+  await fetch(url, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
@@ -29,8 +27,9 @@ async function fetchSetData(data) {
 
 const Kanban = () => {
   const [lists, setLists] = useState([]);
-
+  const [messages, setMessages] = useState([]);
   const submittingStatus = useRef(false);
+  const chatStatus = useRef(false);
   const newList = {
     listName: "List",
     tasks: [],
@@ -42,9 +41,26 @@ const Kanban = () => {
     });
   }
 
+  function isMyMessage() {
+    setMessages((prevData) => {
+      const data = prevData.map(({ uid, sender, kanbanId, message }) => {
+        if (uid == 1) {
+          return { uid, sender, kanbanId, message, me: "me" };
+        } else {
+          return { uid, sender, kanbanId, message, me: "notMe" };
+        }
+      });
+      return data;
+    });
+  }
+
   //第一次render, get data
   useEffect(() => {
-    fetchData(setLists);
+    fetchData(setLists, "http://localhost:5000/api/1.0/task");
+    fetchData(setMessages, "http://localhost:5000/api/1.0/chat").then(() =>
+
+      isMyMessage()
+    );
   }, []);
 
   //   post data
@@ -53,14 +69,16 @@ const Kanban = () => {
     if (!submittingStatus.current) {
       return;
     }
-    fetchSetData(lists).then((lists) => (submittingStatus.current = false));
+    fetchSetData(lists, "http://localhost:5000/api/1.0/task").then(
+      (lists) => (submittingStatus.current = false)
+    );
   }, [lists]);
 
   return (
     <Container>
       <Row>
         <Col className="chat-room">
-          <Chat />
+          <Chat messages={messages} setMessages={setMessages} />
         </Col>
         <Col className="kanban">
           <Header />

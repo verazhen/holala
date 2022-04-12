@@ -23,7 +23,26 @@ const addCard = async (req, res) => {
   });
 };
 
+const getChat = async (req, res) => {
+  const data = await Kanban.getChat();
+
+  return res.json({
+    data,
+  });
+};
+
+const updateChat = async (req, res) => {
+  const { data } = req.body;
+  const response = await Kanban.updateChat(data);
+
+  return res.json({
+    response,
+  });
+};
+
 module.exports = {
   getTasks,
   addCard,
+  getChat,
+  updateChat,
 };

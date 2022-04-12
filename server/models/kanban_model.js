@@ -2,7 +2,6 @@ const { mongo } = require("./mongocon");
 const { pool } = require("./mysqlcon");
 
 const getTasks = async () => {
-  //   const data = await mongo.collection("lists").find({}).toArray();
   const [lists] = await pool.query("SELECT * FROM lists WHERE kanbanId = 1");
   let data = [];
   for (let i = 0; i < lists.length; i++) {
@@ -38,8 +37,6 @@ const addList = async ({ data }) => {
 };
 
 const addTask = async ({ listId, tasks }) => {
-  //   const res = await mongo.collection("lists").insertOne(data[]);
-
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
@@ -60,8 +57,20 @@ const addTask = async ({ listId, tasks }) => {
   }
 };
 
+const getChat = async () => {
+  const data = await mongo.collection("chat").find({}).toArray();
+  return data;
+};
+
+const updateChat = async (message) => {
+  const data = await mongo.collection("chat").insertOne(message);
+  return data;
+};
+
 module.exports = {
   getTasks,
   addTask,
   addList,
+  getChat,
+  updateChat,
 };

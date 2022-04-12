@@ -4,6 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@socket.io/redis-adapter": "^7.1.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
@@ -17,6 +18,9 @@
     "react-bootstrap": "^2.2.3",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.0",
+    "redis": "^4.0.6",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.4.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
