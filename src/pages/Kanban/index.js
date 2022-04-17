@@ -15,7 +15,7 @@ async function fetchData(setData, url) {
   console.log("fetchData in index");
   const res = await fetch(url);
   const { data } = await res.json();
-  setData(data);
+  return data;
 }
 
 async function fetchSetData(data, url) {
@@ -117,8 +117,18 @@ const Kanban = () => {
   //第一次render, get data
   useEffect(() => {
     console.log("useEffect []");
-    fetchData(setLists, "http://localhost:5000/api/1.0/task");
-    fetchData(setMessages, "http://localhost:5000/api/1.0/chat").then(() =>
+    fetchData(setLists, "http://localhost:5000/api/1.0/task").then((lists) => {
+      //sort the list data
+      lists.forEach(({ tasks }) => {
+        tasks.sort((a, b) => {
+          return a.taskOrder - b.taskOrder;
+        });
+      });
+      setLists(lists);
+    });
+    fetchData(setMessages, "http://localhost:5000/api/1.0/chat").then(messages=>
+        setMessages(messages)
+    ).then(() =>
       isMyMessage()
     );
     setWs(webSocket("http://localhost:3300"));

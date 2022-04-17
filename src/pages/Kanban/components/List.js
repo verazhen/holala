@@ -7,7 +7,6 @@ import Card from "./Card";
 
 //post data
 async function fetchSetData(listName, tasks, listId) {
-  console.log("fetchSetData in list");
   await fetch(`http://localhost:5000/api/1.0/task?list=${listId}`, {
     method: "POST",
     headers: {
