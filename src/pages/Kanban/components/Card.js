@@ -22,11 +22,12 @@ const Card = ({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {cards.map(({ taskName, taskId, taskOrder }, index) => {
+            {cards.map(({ taskName, taskId, taskOrder, uniqueId }, index) => {
               return (
                 <Item
                   key={taskId}
-                  id={taskId}
+                  taskId={taskId}
+                  uniqueId = {uniqueId}
                   taskName={taskName}
                   taskOrder={taskOrder}
                   index={index}

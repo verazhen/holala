@@ -18,6 +18,12 @@ const addCard = async (req, res) => {
     });
   }
   const response = await Kanban.addTask(data);
+  if (!response) {
+    return res.status(401).json({
+      error: "wrong input",
+    });
+  }
+
   return res.json({
     data: { listId: list, taskId: response.insertId },
   });

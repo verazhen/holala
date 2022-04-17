@@ -111,7 +111,6 @@ module.exports = (server) => {
       console.log("get the offer from broadcaster");
       const broadcastPeer = new webrtc.RTCPeerConnection(config);
       broadcastPeer.ontrack = (e) => handleTrackEvent(e, socket); //有新的stream流入
-      broadcastPeer.onconnectionstatechange = (e) => { console.log("onconnectionstatechange 0=> ",e)};
       const broadcastDesc = new webrtc.RTCSessionDescription(desc);
       await broadcastPeer.setRemoteDescription(broadcastDesc);
       const broadcastAnswer = await broadcastPeer.createAnswer();
@@ -223,7 +222,6 @@ module.exports = (server) => {
       //有新的stream流入，新用戶建立與線上所有用戶的pc，並提供stream（自己除外）
       console.log(`新用戶${offerId} 提供stream給舊用戶${answerId}`, myStream);
       peer[offerId][answerId] = new webrtc.RTCPeerConnection(config);
-      peer[offerId][answerId].onconnectionstatechange = (e) => { console.log("onconnectionstatechange 1=> ",e.currentTarget.connectionState)};
       myStream
         .getTracks()
         .forEach((track) => peer[offerId][answerId].addTrack(track, myStream));
@@ -243,7 +241,6 @@ module.exports = (server) => {
         remoteStream
       );
       peer[answerId][offerId] = new webrtc.RTCPeerConnection(config);
-      peer[answerId][offerId].onconnectionstatechange = (e) => { console.log("onconnectionstatechange 2=> ",e.currentTarget.connectionState)};
       remoteStream
         .getTracks()
         .forEach((track) =>

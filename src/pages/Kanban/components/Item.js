@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import { Draggable } from "react-beautiful-dnd";
 const Item = ({
-  id,
+  taskId,
+  uniqueId,
   taskName,
   taskOrder,
   editData,
@@ -13,16 +14,16 @@ const Item = ({
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const draggableId = id.toString();
+  const draggableId = uniqueId.toString();
   function deleteItem() {
     submittingStatus.current = true;
     deleteData(function (prev) {
-      return prev.filter((item) => item.id !== id);
+      return prev.filter((item) => item.taskId !== taskId);
     });
   }
 
   return (
-    <Draggable key={id} draggableId={draggableId} index={index}>
+    <Draggable key={taskId} draggableId={draggableId} index={index}>
       {(provided) => (
         <div
           ref={provided.innerRef}

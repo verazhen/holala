@@ -14,7 +14,7 @@ const Add = ({ add, submittingStatus }) => {
       return [
         ...prevData,
         {
-          id: v4(),
+          uniqueId: v4(),
           taskName,
         },
       ];

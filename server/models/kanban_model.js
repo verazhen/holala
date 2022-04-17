@@ -41,16 +41,19 @@ const addTask = async ({ listId, tasks }) => {
   try {
     await conn.query("START TRANSACTION");
     const [insert] = tasks.slice(-1);
-    const { taskName } = insert;
+    const { taskName,uniqueId } = insert;
+    const dateTime = Date.now();
+    const timestamp = Math.floor(dateTime / 1000);
     const [res] = await pool.query(
-      "INSERT INTO tasks (listId,taskName) VALUES (?,?)",
-      [listId, taskName]
+      "INSERT INTO tasks (listId,taskName,taskOrder,uniqueId) VALUES (?,?,?,?)",
+      [listId, taskName, timestamp,uniqueId]
     );
 
     await conn.query("COMMIT");
     return res;
   } catch (e) {
     await conn.query("ROLLBACK");
+    console.log(e);
     return false;
   } finally {
     await conn.release();
