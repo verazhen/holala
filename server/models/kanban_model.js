@@ -7,7 +7,7 @@ const getTasks = async () => {
   for (let i = 0; i < lists.length; i++) {
     const { listId, listName } = lists[i];
     const [tasks] = await pool.query(
-      `SELECT taskName FROM tasks WHERE listId = ${listId}`
+      `SELECT * FROM tasks WHERE listId = ${listId}`
     );
     data.push({ listId, listName, tasks });
   }

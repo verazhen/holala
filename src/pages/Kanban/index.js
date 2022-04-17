@@ -12,12 +12,14 @@ import webSocket from "socket.io-client";
 
 //get data
 async function fetchData(setData, url) {
+  console.log("fetchData in index");
   const res = await fetch(url);
   const { data } = await res.json();
   setData(data);
 }
 
 async function fetchSetData(data, url) {
+  console.log("fetchSetData in index");
   await fetch(url, {
     method: "POST",
     headers: {
@@ -50,22 +52,36 @@ const Kanban = () => {
   if (remoteVideos[0]) {
     console.log("RemoteVideo1");
     RemoteVideo1 = (
-      <video playsInline muted ref={remoteVideoRef1} autoPlay id="remote-1" className="remote-video" ></video>
+      <video
+        playsInline
+        muted
+        ref={remoteVideoRef1}
+        autoPlay
+        id="remote-1"
+        className="remote-video"
+      ></video>
     );
   }
-//
+  //
   let RemoteVideo2;
   if (remoteVideos[1]) {
     RemoteVideo2 = (
-      <video playsInline muted ref={remoteVideoRef2} autoPlay id="remote-2" className="remote-video"></video>
+      <video
+        playsInline
+        muted
+        ref={remoteVideoRef2}
+        autoPlay
+        id="remote-2"
+        className="remote-video"
+      ></video>
     );
   }
   let RemoteVideo3;
-//     if (remoteVideos[2]) {
-//       RemoteVideo3 = (
-//         <video muted ref={remoteVideoRef3} autoPlay className="remote-video" videoHeight={480} videoWidth={600} ></video>
-//       );
-//     }
+  //     if (remoteVideos[2]) {
+  //       RemoteVideo3 = (
+  //         <video muted ref={remoteVideoRef3} autoPlay className="remote-video" videoHeight={480} videoWidth={600} ></video>
+  //       );
+  //     }
 
   const config = {
     iceServers: [
@@ -100,6 +116,7 @@ const Kanban = () => {
 
   //第一次render, get data
   useEffect(() => {
+    console.log("useEffect []");
     fetchData(setLists, "http://localhost:5000/api/1.0/task");
     fetchData(setMessages, "http://localhost:5000/api/1.0/chat").then(() =>
       isMyMessage()
@@ -111,16 +128,18 @@ const Kanban = () => {
 
   //   post data
   useEffect(() => {
+    console.log("useEffect lists");
     //預防data在網頁 第一次render時被清掉
     if (!submittingStatus.current) {
       return;
     }
-    fetchSetData(lists, "http://localhost:5000/api/1.0/task").then(
-      (lists) => (submittingStatus.current = false)
-    );
+    fetchSetData(lists, "http://localhost:5000/api/1.0/task").then((lists) => {
+      submittingStatus.current = false;
+    });
   }, [lists]);
 
   useEffect(() => {
+    console.log("useEffect stream");
     if (stream) {
       console.log("打開視訊");
       init(
@@ -138,6 +157,7 @@ const Kanban = () => {
   }, [stream]);
 
   useEffect(() => {
+    console.log("useEffect remoteVideos");
     //       if (remoteVideos.length === 0) {
     //         return;
     //       }
@@ -157,20 +177,20 @@ const Kanban = () => {
 
     if (remoteVideos.length === 1) {
       if (remoteVideoRef1.current) {
-        console.log(remoteVideoRef1.current)
+        console.log(remoteVideoRef1.current);
         remoteVideoRef1.current.srcObject = stream;
       }
     } else if (remoteVideos.length === 2) {
       if (remoteVideoRef2.current) {
-        console.log(remoteVideoRef2.current)
+        console.log(remoteVideoRef2.current);
         remoteVideoRef2.current.srcObject = stream;
       }
-    }else if (remoteVideos.length === 3) {
-       if (remoteVideoRef3.current) {
-         console.log(remoteVideoRef3.current)
-         remoteVideoRef3.current.srcObject = stream;
-       }
-     }
+    } else if (remoteVideos.length === 3) {
+      if (remoteVideoRef3.current) {
+        console.log(remoteVideoRef3.current);
+        remoteVideoRef3.current.srcObject = stream;
+      }
+    }
   }, [remoteVideos]);
 
   return (

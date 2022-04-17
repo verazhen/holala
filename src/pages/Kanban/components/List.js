@@ -1,31 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { API_GET_DATA } from "../../../global/constants";
 import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
+
 import Add from "./AddTask";
 import Card from "./Card";
 
-//get data
-// async function fetchData(setData) {
-//   const res = await fetch("http://localhost:5000/api/1.0/task");
-//   const { data } = await res.json();
-//   setData(data);
-// }
-
 //post data
 async function fetchSetData(listName, tasks, listId) {
-//   console.log("fetch task");
-    await fetch(`http://localhost:5000/api/1.0/task?list=${listId}`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ listId, listName, tasks }),
-    });
+  console.log("fetchSetData in list");
+  await fetch(`http://localhost:5000/api/1.0/task?list=${listId}`, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ listId, listName, tasks }),
+  });
 }
 
 const List = ({ listId, listName, tasks }) => {
   const [cards, setCards] = useState(tasks);
   const submittingStatus = useRef(false);
+//   console.log('counter')
+//   console.log(listId, listName, tasks)
 
   //post data
   useEffect(() => {
@@ -38,24 +34,13 @@ const List = ({ listId, listName, tasks }) => {
     );
   }, [cards]);
 
-  //第一次render, get data
-  //     useEffect(() => {
-  //       fetchData(setCards);
-  //     }, []);
-
   return (
     <div className="list-board">
       <div className="list-header">
         <h3>{listName}</h3>
       </div>
       <Add add={setCards} submittingStatus={submittingStatus} />
-      <Card
-        listData={cards}
-        //         editData={setCards}
-        //         deleteData={setCards}
-        //         submittingStatus={submittingStatus}
-      />
-
+      <Card cards={cards} setCards={setCards} />
     </div>
   );
 };
