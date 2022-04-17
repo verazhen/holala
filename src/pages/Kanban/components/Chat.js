@@ -1,17 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { API_GET_DATA } from "../../../global/constants";
 import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
-import webSocket from "socket.io-client";
 
-const Chat = ({ messages, setMessages }) => {
-  const [ws, setWs] = useState(null);
+const Chat = ({ messages, setMessages, ws, setWs }) => {
+
   const [input, setInput] = useState(null);
   function inputChange(e) {
     setInput(e.target.value);
   }
 
   const listenMessage = () => {
-    ws.emit("kanban", "1");
+    ws.emit("kanban", {kanbanId:1,uid:localStorage.getItem("uid")});
     ws.on("getMessage", ({ uid, sender, message }) => {
       setMessages(function (prevData) {
         let me;
@@ -35,12 +34,6 @@ const Chat = ({ messages, setMessages }) => {
     const message = input;
     ws.emit("getMessage", { uid, sender, message });
   };
-
-  useEffect(() => {
-    setWs(webSocket("http://localhost:3100"));
-    const uid = window.prompt("userid", "1");
-    localStorage.setItem("uid", uid);
-  }, []);
 
   useEffect(() => {
     if (ws) {

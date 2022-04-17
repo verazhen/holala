@@ -21,7 +21,7 @@ const Item = ({
   return (
     <Container>
         <Row className="item">
-          <Col xs={8}>
+          <Col xs={6}>
             <p className="item-name">{taskName}</p>
           </Col>
           <Col>

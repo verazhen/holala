@@ -35,7 +35,7 @@ body {
 
 
 h1 {
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 h2 {
@@ -43,7 +43,11 @@ h2 {
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: 1rem;
+}
+
+p{
+  font-size: 0.8rem;
 }
 
 .header {
@@ -153,18 +157,28 @@ input {
 
 .edit {
   border: 0;
+  font-size: 0.8rem;
   background-color: #8063FA;
   color: #fff;
-  padding: 10px;
+  padding: 5px;
 }
 
 .remove {
+  font-size: 0.8rem;
   border: 0;
   background-color: rgb(212, 101, 101);
   color: #fff;
-  padding: 10px;
+  padding: 5px;
 }
 
 .me {
   text-align: right;
+}
+
+#my-video {
+  width: 300px;
+  position: absolute;
+  left: 400px;
+  bottom: 50px;
+
 }
