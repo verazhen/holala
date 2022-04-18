@@ -40,14 +40,19 @@ const addTask = async ({ listId, tasks }) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const [insert] = tasks.slice(-1);
-    const { taskName,uniqueId } = insert;
-    const dateTime = Date.now();
-    const timestamp = Math.floor(dateTime / 1000);
-    const [res] = await pool.query(
-      "INSERT INTO tasks (listId,taskName,taskOrder,uniqueId) VALUES (?,?,?,?)",
-      [listId, taskName, timestamp,uniqueId]
-    );
+    const values = tasks.map(({ taskName, taskOrder, uniqueId }) => {
+      if (!taskOrder) {
+        const dateTime = Date.now();
+        const timestamp = Math.floor(dateTime / 1000);
+        taskOrder = timestamp;
+      }
+      return  [listId, taskName, taskOrder, uniqueId ];
+    });
+
+        const [res] = await pool.query(
+          "INSERT INTO tasks (listId,taskName,taskOrder,uniqueId) VALUES ? ON DUPLICATE KEY UPDATE taskOrder = VALUES(taskOrder)",
+          [values]
+        );
 
     await conn.query("COMMIT");
     return res;

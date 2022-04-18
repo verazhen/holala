@@ -19,11 +19,12 @@ async function fetchSetData(listName, tasks, listId) {
 const List = ({ listId, listName, tasks }) => {
   const [cards, setCards] = useState(tasks);
   const submittingStatus = useRef(false);
-//   console.log('counter')
-//   console.log(listId, listName, tasks)
+  //   console.log('counter')
+  //   console.log(listId, listName, tasks)
 
   //post data
   useEffect(() => {
+    console.log(listName, cards, listId);
     //     預防data在網頁 第一次render時被清掉
     if (!submittingStatus.current) {
       return;
@@ -39,7 +40,7 @@ const List = ({ listId, listName, tasks }) => {
         <h3>{listName}</h3>
       </div>
       <Add add={setCards} submittingStatus={submittingStatus} />
-      <Card cards={cards} setCards={setCards} />
+      <Card cards={cards} setCards={setCards} submittingStatus={submittingStatus}/>
     </div>
   );
 };

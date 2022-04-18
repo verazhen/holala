@@ -10,6 +10,7 @@ const getTasks = async (req, res) => {
 
 const addCard = async (req, res) => {
   const data = req.body;
+
   const { list } = req.query;
   if (!list) {
     const response = await Kanban.addList(data);

@@ -4,12 +4,22 @@ import { useState } from "react";
 
 const Card = ({
   cards,
-  setCards /* editData, deleteData, submittingStatus, */,
+  setCards,
+  submittingStatus /* editData, deleteData, , */,
 }) => {
   function handleOnDragEnd(result) {
     const items = Array.from(cards);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
+
+    if (result.destination.index != 0) {
+      items[result.destination.index].taskOrder =
+        items[result.destination.index - 1].taskOrder + 1;
+    } else {
+      items[result.destination.index].taskOrder =
+        items[result.destination.index + 1].taskOrder - 1;
+    }
+    submittingStatus.current = true;
     setCards(items);
   }
 
@@ -27,7 +37,7 @@ const Card = ({
                 <Item
                   key={taskId}
                   taskId={taskId}
-                  uniqueId = {uniqueId}
+                  uniqueId={uniqueId}
                   taskName={taskName}
                   taskOrder={taskOrder}
                   index={index}
