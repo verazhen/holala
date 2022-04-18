@@ -42,6 +42,18 @@ module.exports = (server) => {
   io.listen(3300);
 
   io.on("connection", (socket) => {
+    //---------------chatroom socket
+    socket.on("kanban", ({ kanbanId, uid }) => {
+      socket.join(kanbanId);
+      console.log(`user ${socket.id} joins in kanban: ${kanbanId}`);
+      users[socket.id] = uid;
+      console.log("socket user list updated=> ", users);
+      socket.on("getMessage", (message) => {
+        Kanban.updateChat(message).then((res) => console.log(res));
+        io.to(kanbanId).emit("getMessage", message);
+      });
+    });
+
     socket.on("join room", (roomID) => {
       if (users[roomID]) {
         const length = users[roomID].length;

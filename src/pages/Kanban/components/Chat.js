@@ -27,9 +27,9 @@ const Chat = ({ messages, setMessages, ws, setWs }) => {
     const uid = localStorage.getItem("uid");
     let sender;
     if (uid == 1) {
-      sender = "Vera";
+      sender = "ME";
     } else {
-      sender = "Shane";
+      sender = "Vera";
     }
     const message = input;
     ws.emit("getMessage", { uid, sender, message });

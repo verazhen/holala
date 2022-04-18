@@ -169,6 +169,8 @@ const Kanban = () => {
     });
   }, [lists]);
 
+
+
   useEffect(() => {
     console.log("useEffect stream");
     if (stream) {
