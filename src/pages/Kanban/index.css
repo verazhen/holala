@@ -186,3 +186,24 @@ input {
 #task {
   background-color: #fff;
 }
+
+#remote-1 {
+  width: 300px;
+  position: absolute;
+  left: 800px;
+  bottom: 50px;
+
+}
+
+#remote-2 {
+  width: 300px;
+  position: absolute;
+  left: 1200px;
+  bottom: 50px;
+
+}
+
+.video-peer{
+  width: 300px;
+  margin: 50px;
+}
