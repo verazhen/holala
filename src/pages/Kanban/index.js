@@ -239,7 +239,7 @@ const Kanban = () => {
               </Col>
             ))}
             <Col>
-              <Button onClick={addItem}>Add List</Button>
+              <Button onClick={addItem} id="add-list">Add List</Button>
             </Col>
           </Row>
         </Col>

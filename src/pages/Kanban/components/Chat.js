@@ -51,8 +51,8 @@ const Chat = ({ messages, setMessages, ws, setWs }) => {
       </div>
       <Form>
         <input type="text" value={input} onChange={inputChange} />
-        <Button className="edit">Online</Button>
-        <Button className="edit" onClick={sendMessage}>
+        <Button className="edit" id="online">Online</Button>
+        <Button className="edit" id="send" onClick={sendMessage}>
           Send
         </Button>
       </Form>

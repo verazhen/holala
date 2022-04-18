@@ -27,10 +27,10 @@ const Header = ({ stream, setStream, ws, setWs, video, setVideo }) => {
         </Col>
       </Row>
       <Row>
-        <Col xs={1}>
+        <Col xs={2}>
           <h2>Kanban</h2>
         </Col >
-        <Col xs={2}>
+        <Col xs={3}>
           <h2>Meeting Minute</h2>
         </Col>
         <Col xs={2}>

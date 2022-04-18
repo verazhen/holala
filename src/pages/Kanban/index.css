@@ -6,67 +6,68 @@ body {
   text-transform: uppercase;
 }
 
-.container{
-  margin:0;
-  max-width:100%;
+.container {
+  margin: 0;
+  max-width: 100%;
 }
-.kanban{
+.kanban {
   background: #e8e7e7;
-  max-width:80vw;
+  max-width: 80vw;
   /*height: 100vh;*/
   margin: 0;
-  padding:0;
+  padding: 0;
 }
 
-.chat-room{
-  background: #465775;
-  max-width:20vw;
+.chat-room {
+  color: white;
+  background: #555b6e;
+  max-width: 20vw;
   height: 100vh;
   /*margin: 0;*/
-  /*padding:0;*/
+  padding: 10px;
+  padding-left: 15px;
 }
 
-.chat-space{
-  background: #fff;
+.chat-space {
+  padding: 10px;
+  color: white;
   height: 85vh;
   /*margin: 0;*/
   /*padding:0;*/
 }
-
 
 h1 {
   font-size: 2rem;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 h3 {
   font-size: 1rem;
 }
 
-p{
+p {
   font-size: 0.8rem;
 }
 
 .header {
-  max-width:100%;
-  color: #FFF;
-  padding: 5px 10px;
-  background-color: #8063FA;
-  border-bottom: solid 2px #D4CAFF;
+  max-width: 100%;
+  color: #fff;
+  padding: 10px 20px;
+  background-color: #89b0ae;
+  border-bottom: solid 2px #14746f;
 }
 
-
 .list-header {
-  color: #FFF;
+  color: #fff;
   padding: 5px 10px;
   text-align: center;
   display: flex;
   align-items: center;
-  background-color: #8063FA;
-  border-bottom: solid 2px #D4CAFF;
+  background-color: #89b0ae;
+  border-bottom: solid 2px #14746f;
 }
 
 .list-header h1 {
@@ -76,10 +77,9 @@ p{
   font-weight: normal;
 }
 
-
 /* COMPONENT STYLES -------------------- */
 
-.list-kanban{
+.list-kanban {
   margin: 70px auto;
 }
 
@@ -88,7 +88,7 @@ p{
   padding: 0;
   margin: 0;
   background: #fff;
-  box-shadow: 0 2px 0 rgb(133, 104, 250);
+  box-shadow: #89b0ae;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -97,28 +97,26 @@ p{
   width: 100%;
   display: flex;
   font-size: 1.2em;
-  border-bottom: solid 2px #EEEEEE;
+  border-bottom: solid 2px #eeeeee;
   letter-spacing: 2px;
   justify-content: space-between;
   align-items: center;
 }
 
 .item:last-of-type {
-  border-bottom-color: #D4CAFF;
+  border-bottom-color: #89b0ae;
 }
 
 .item-name:hover {
   visibility: visible;
 }
 
-.item-name{
-  color: #2F2366;
+.item-name {
+  color: #555b6e;
   flex-grow: 1;
   line-height: 3.5em;
   padding-left: 10px;
 }
-
-
 
 /* ORIGINAL STYLES -------------------- */
 
@@ -136,7 +134,7 @@ input {
 
 .add {
   margin-top: 20px;
-  background-color: #8063FA;
+  background-color: #89b0ae;
   color: #fff;
   border: 0;
   box-sizing: border-box;
@@ -150,17 +148,35 @@ input {
 
 .sync-kanban {
   border: 0;
-  background-color: #fff;
-  color: #8063FA;
+  background-color: #555b6e;
+  color: white;
   padding: 10px;
+}
+
+.sync-kanban:hover {
+  background-color: #003049;
 }
 
 .edit {
   border: 0;
   font-size: 0.8rem;
-  background-color: #8063FA;
+  background-color: #555b6e;
   color: #fff;
   padding: 5px;
+}
+
+#add-list {
+  border: 0;
+  font-size: 1rem;
+  background-color: #89b0ae;
+  color: #fff;
+  padding: 5px;
+}
+
+#add-list:hover,
+.remove:hover,
+.edit:hover {
+  background-color: #003049;
 }
 
 .remove {
@@ -180,7 +196,6 @@ input {
   position: absolute;
   left: 400px;
   bottom: 50px;
-
 }
 
 #task {
@@ -192,7 +207,6 @@ input {
   position: absolute;
   left: 800px;
   bottom: 50px;
-
 }
 
 #remote-2 {
@@ -200,10 +214,14 @@ input {
   position: absolute;
   left: 1200px;
   bottom: 50px;
-
 }
 
-.video-peer{
+.video-peer {
   width: 300px;
   margin: 50px;
+}
+
+#online,
+#send {
+  margin: 0px 40px;
 }
