@@ -15,12 +15,10 @@ const Container2 = styled.div`
   padding: 20px;
   width: 80vw;
   height: 30vh;
-  border: 1px;
   margin: auto;
-  flex-wrap: wrap;
   position: absolute;
   left: 500px;
-  bottom: 0px;
+  bottom: 100px;
 `;
 
 const StyledVideo = styled.video`
