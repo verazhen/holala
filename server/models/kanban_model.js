@@ -65,14 +65,14 @@ const addTask = async ({ listId, tasks }) => {
   }
 };
 
-const delTask = async ({ listId, tasks },delTaskId) => {
+const delTask = async ({ listId, tasks },delUniqueId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
 
     const [res] = await pool.query(
-      "DELETE FROM tasks WHERE taskId=?;",
-      [delTaskId]
+      "DELETE FROM tasks WHERE uniqueId=?;",
+      [delUniqueId]
     );
 
     await conn.query("COMMIT");

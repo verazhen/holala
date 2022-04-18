@@ -18,7 +18,7 @@ const Item = ({
   const handleShow = () => setShow(true);
   const draggableId = uniqueId.toString();
   function deleteItem() {
-    delStatus.current = taskId;
+    delStatus.current = uniqueId;
     setCards(function (prev) {
       return prev.filter((item) => item.taskId !== taskId);
     });

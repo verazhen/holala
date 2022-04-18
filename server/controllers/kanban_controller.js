@@ -33,19 +33,18 @@ const addCard = async (req, res) => {
 const delCard = async (req, res) => {
   const data = req.body;
 
-  const { list, taskId } = req.query;
+  const { list, uniqueId } = req.query;
 
-  if (!taskId) {
+  if (!uniqueId) {
     return res.status(401).json({
       error: "please send the task id you want to delete",
     });
   }
 
-  console.log(taskId)
   if (!list) {
     console.log("刪除整張list");
   }
-  const response = await Kanban.delTask(data,taskId);
+  const response = await Kanban.delTask(data,uniqueId);
   if (!response) {
     return res.status(401).json({
       error: "wrong input",

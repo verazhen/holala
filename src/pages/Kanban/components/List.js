@@ -16,9 +16,9 @@ async function fetchSetData(listName, tasks, listId) {
   });
 }
 
-async function fetchDelData(listName, tasks, listId, taskId) {
+async function fetchDelData(listName, tasks, listId, uniqueId) {
   await fetch(
-    `http://localhost:5000/api/1.0/task?list=${listId}&taskId=${taskId}`,
+    `http://localhost:5000/api/1.0/task?list=${listId}&uniqueId=${uniqueId}`,
     {
       method: "delete",
       headers: {
