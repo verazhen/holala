@@ -5,7 +5,9 @@ import { useState } from "react";
 const Card = ({
   cards,
   setCards,
-  submittingStatus /* editData, deleteData, , */,
+  submittingStatus,
+  delStatus
+   /* editData, , */
 }) => {
   function handleOnDragEnd(result) {
     const items = Array.from(cards);
@@ -41,8 +43,10 @@ const Card = ({
                   taskName={taskName}
                   taskOrder={taskOrder}
                   index={index}
+                  setCards = {setCards}
+                  submittingStatus={submittingStatus}
+                  delStatus={delStatus}
                   //                       editData={editData}
-                  //                       deleteData={deleteData}
                   //                       submittingStatus={submittingStatus}
                 />
               );

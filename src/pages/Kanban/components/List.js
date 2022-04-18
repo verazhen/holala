@@ -16,21 +16,44 @@ async function fetchSetData(listName, tasks, listId) {
   });
 }
 
+async function fetchDelData(listName, tasks, listId, taskId) {
+  await fetch(
+    `http://localhost:5000/api/1.0/task?list=${listId}&taskId=${taskId}`,
+    {
+      method: "delete",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ listId, listName, tasks }),
+    }
+  );
+}
+
 const List = ({ listId, listName, tasks }) => {
   const [cards, setCards] = useState(tasks);
   const submittingStatus = useRef(false);
-  //   console.log('counter')
-  //   console.log(listId, listName, tasks)
+  const delStatus = useRef(false);
 
   //post data
   useEffect(() => {
-    console.log(listName, cards, listId);
     //     預防data在網頁 第一次render時被清掉
     if (!submittingStatus.current) {
       return;
     }
+
     fetchSetData(listName, cards, listId).then(
       (lists) => (submittingStatus.current = false)
+    );
+  }, [cards]);
+
+  //delete data
+  useEffect(() => {
+    //     預防data在網頁 第一次render時被清掉
+    if (!delStatus.current) {
+      return;
+    }
+    fetchDelData(listName, cards, listId, delStatus.current).then(
+      (lists) => (delStatus.current = false)
     );
   }, [cards]);
 
@@ -40,7 +63,12 @@ const List = ({ listId, listName, tasks }) => {
         <h3>{listName}</h3>
       </div>
       <Add add={setCards} submittingStatus={submittingStatus} />
-      <Card cards={cards} setCards={setCards} submittingStatus={submittingStatus}/>
+      <Card
+        cards={cards}
+        setCards={setCards}
+        submittingStatus={submittingStatus}
+        delStatus={delStatus}
+      />
     </div>
   );
 };

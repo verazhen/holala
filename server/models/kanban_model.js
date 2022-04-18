@@ -46,13 +46,34 @@ const addTask = async ({ listId, tasks }) => {
         const timestamp = Math.floor(dateTime / 1000);
         taskOrder = timestamp;
       }
-      return  [listId, taskName, taskOrder, uniqueId ];
+      return [listId, taskName, taskOrder, uniqueId];
     });
 
-        const [res] = await pool.query(
-          "INSERT INTO tasks (listId,taskName,taskOrder,uniqueId) VALUES ? ON DUPLICATE KEY UPDATE taskOrder = VALUES(taskOrder)",
-          [values]
-        );
+    const [res] = await pool.query(
+      "INSERT INTO tasks (listId,taskName,taskOrder,uniqueId) VALUES ? ON DUPLICATE KEY UPDATE taskOrder = VALUES(taskOrder)",
+      [values]
+    );
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
+const delTask = async ({ listId, tasks },delTaskId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+
+    const [res] = await pool.query(
+      "DELETE FROM tasks WHERE taskId=?;",
+      [delTaskId]
+    );
 
     await conn.query("COMMIT");
     return res;
@@ -81,4 +102,5 @@ module.exports = {
   addList,
   getChat,
   updateChat,
+  delTask
 };
