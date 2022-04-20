@@ -150,7 +150,7 @@ const Kanban = () => {
     fetchData(setMessages, "http://localhost:5000/api/1.0/chat")
       .then((messages) => setMessages(messages))
       .then(() => isMyMessage());
-    setWs(webSocket("http://localhost:3300"));
+    setWs(webSocket("http://localhost:3400"));
     const uid = window.prompt("userid", "1");
     localStorage.setItem("uid", uid);
   }, []);

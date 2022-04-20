@@ -39,7 +39,7 @@ module.exports = (server) => {
   // const subClient = Cache.duplicate();
   //
   // io.adapter(createAdapter(Cache, subClient));
-  io.listen(3300);
+  io.listen(3400);
 
   io.on("connection", (socket) => {
     //---------------chatroom socket
