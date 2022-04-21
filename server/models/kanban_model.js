@@ -43,21 +43,27 @@ const addList = async (id, data) => {
   }
 };
 
-const addTask = async ({ listId, tasks }) => {
+const addTask = async (listId, tasks) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const values = tasks.map(({ taskName, taskOrder, uniqueId }) => {
-      if (!taskOrder) {
-        const dateTime = Date.now();
-        const timestamp = Math.floor(dateTime / 1000);
-        taskOrder = timestamp;
+    console.log(tasks);
+    const values = tasks.map(
+      ({ title, orders, assignee, due_dt, checked, delete_dt }) => {
+        if (!orders) {
+          const dateTime = Date.now();
+          const timestamp = Math.floor(dateTime / 1000);
+          orders = timestamp;
+        }
+        if (!checked) {
+          checked = 0;
+        }
+        return [listId, title, orders, assignee, due_dt, checked, delete_dt];
       }
-      return [listId, taskName, taskOrder, uniqueId];
-    });
+    );
 
     const [res] = await pool.query(
-      "INSERT INTO tasks (listId,taskName,taskOrder,uniqueId) VALUES ? ON DUPLICATE KEY UPDATE taskOrder = VALUES(taskOrder)",
+      "INSERT INTO tasks (list_id,title,orders,assignee,due_dt,checked,delete_dt) VALUES ? ON DUPLICATE KEY UPDATE orders =VALUES(orders)",
       [values]
     );
 

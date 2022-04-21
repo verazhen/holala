@@ -10,25 +10,22 @@ const getTasks = async (req, res) => {
 };
 
 const addCard = async (req, res) => {
-    const {data} = req.body;
+  const { data } = req.body;
   const { id } = req.params;
 
-  const { list } = req.query;
-  if (!list) {
-    const response = await Kanban.addList(id, data);
-    return res.json({
-      data: { listId: response.insertId },
-    });
-  }
-  const response = await Kanban.addTask(data);
-  if (!response) {
-    return res.status(401).json({
-      error: "wrong input",
-    });
-  }
+  const response = await Kanban.addList(id, data);
+  return res.json({
+    data: { listId: response.insertId },
+  });
+};
+
+const addTask = async (req, res) => {
+  const { data } = req.body;
+  const { listId } = req.params;
+  const response = await Kanban.addTask(listId, data);
 
   return res.json({
-    data: { listId: list, taskId: response.insertId },
+    data: { listId, taskId: response.insertId },
   });
 };
 
@@ -77,6 +74,7 @@ const updateChat = async (req, res) => {
 module.exports = {
   getTasks,
   addCard,
+  addTask,
   getChat,
   updateChat,
   delCard,
