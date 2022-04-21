@@ -31,7 +31,7 @@ import DataTable from "examples/Tables/KanbanList";
 // Data
 // import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/report/data/projectsTableData";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData } from "utils/fetch";
 
@@ -69,13 +69,14 @@ function Tables() {
 
   //   post data
   useEffect(() => {
-    //預防data在網頁 第一次render時被清掉
     if (!submittingStatus.current) {
       return;
     }
-    fetchSetData(lists, "http://localhost:5000/api/1.0/task").then((lists) => {
-      submittingStatus.current = false;
-    });
+    fetchSetData(`http://localhost:5000/api/1.0/task/${id}`, lists).then(
+      (lists) => {
+        submittingStatus.current = false;
+      }
+    );
   }, [lists]);
 
   const { columns: pColumns, rows: pRows } = projectsTableData();
