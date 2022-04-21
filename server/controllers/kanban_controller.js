@@ -1,9 +1,8 @@
 const Kanban = require("../models/kanban_model");
 
 const getTasks = async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const data = await Kanban.getTasks(id);
-
 
   return res.json({
     data,
@@ -11,11 +10,12 @@ const getTasks = async (req, res) => {
 };
 
 const addCard = async (req, res) => {
-  const data = req.body;
+    const {data} = req.body;
+  const { id } = req.params;
 
   const { list } = req.query;
   if (!list) {
-    const response = await Kanban.addList(data);
+    const response = await Kanban.addList(id, data);
     return res.json({
       data: { listId: response.insertId },
     });

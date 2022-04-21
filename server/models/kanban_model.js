@@ -3,7 +3,9 @@ const { pool } = require("./mysqlcon");
 
 //TODO: Efficiency
 const getTasks = async (id) => {
-  const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = ?",[id]);
+  const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = ?", [
+    id,
+  ]);
   let data = [];
   for (let i = 0; i < lists.length; i++) {
     const { id, title, orders } = lists[i];
@@ -16,21 +18,25 @@ const getTasks = async (id) => {
   return data;
 };
 
-const addList = async ({ data }) => {
+const addList = async (id, data) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
     const [insert] = data.slice(-1);
-    const { listName } = insert;
+    const { title } = insert;
+    const dateTime = Date.now();
+    const timestamp = Math.floor(dateTime / 1000);
+    const orders = timestamp;
     const [res] = await pool.query(
-      "INSERT INTO lists (kanbanId,listName) VALUES (1,?)",
-      [listName]
+      "INSERT INTO lists (kanban_id,title,orders) VALUES (?,?,?)",
+      [id, title, orders]
     );
 
     await conn.query("COMMIT");
     return res;
   } catch (e) {
     await conn.query("ROLLBACK");
+    console.log(e);
     return false;
   } finally {
     await conn.release();
