@@ -39,17 +39,16 @@ function Tables() {
   useEffect(() => {
     fetchData("http://localhost:5000/api/1.0/task").then((lists) => {
       //sort the lists data
-      const new2 = lists.sort((a, b) => {
+      lists.sort((a, b) => {
         return a.orders - b.orders;
       });
-      console.log(new2);
       //sort the tasks data
       //       lists.forEach(({ tasks }) => {
       //         tasks.sort((a, b) => {
       //           return a.orders - b.orders;
       //         });
       //       });
-      setLists(new2);
+      setLists(lists);
     });
   }, []);
 
