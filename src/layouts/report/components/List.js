@@ -57,7 +57,18 @@ const List = ({ tasks }) => {
   //       (lists) => (delStatus.current = false)
   //     );
   //   }, [cards]);
-
+  function addTask() {
+//     submittingStatus.current = true;
+    const title = "Task Untitled";
+    setCards(function (prevData) {
+      return [
+        ...prevData,
+        {
+          title,
+        },
+      ];
+    });
+  }
   return (
     <div>
       <MDButton
@@ -66,7 +77,7 @@ const List = ({ tasks }) => {
         variant="primary"
         color="secondary"
         fullWidth
-        //         onClick={addItem}
+        onClick={addTask}
         //               color={action.color}
       >
         Add Task
