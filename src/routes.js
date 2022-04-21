@@ -50,6 +50,7 @@ import Index from "layouts/authentication/index";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
+
 const routes = [
   {
     type: "collapse",
@@ -81,15 +82,15 @@ const routes = [
     name: "Kanban",
     key: "kanban",
     icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/kanban",
-    component: <Tables />,
+    route: `/project/:id/kanban`,
+    component: <Tables/>,
   },
   {
     type: "collapse",
     name: "Report",
     key: "report",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/report",
+    route: "/project/:id/report",
     component: <Dashboard />,
   },
   {
@@ -97,7 +98,7 @@ const routes = [
     name: "MeetingMinute",
     key: "meetingMinute",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/meeting-minute",
+    route: "/project/:id/meeting-minute",
     component: <Meeting />,
   },
   {

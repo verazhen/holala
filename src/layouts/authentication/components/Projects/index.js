@@ -11,7 +11,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React examples
-import DataTable from "examples/Tables/DataTable";
+import KanbanMenu from "examples/Tables/KanbanMenu";
 
 // Data
 import data from "layouts/authentication/components/Projects/data";
@@ -93,7 +93,7 @@ function Projects() {
         {renderMenu}
       </MDBox>
       <MDBox>
-        <DataTable
+        <KanbanMenu
           table={{ columns, rows }}
           showTotalEntries={false}
           isSorted={false}
