@@ -17,14 +17,17 @@ app.set("json spaces", 2);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/", express.static(__dirname + '/build'));
+app.use("/", express.static(__dirname + "/build"));
 morganBody(app);
 
 // CORS allow all
 app.use(cors());
 
 // API routes
-app.use("/api/" + API_VERSION, [require("./server/routes/kanban_route")]);
+app.use("/api/" + API_VERSION, [
+  require("./server/routes/kanban_route"),
+  require("./server/routes/index_route"),
+]);
 
 app.listen(port, async () => {
   console.log(`Listening on port: ${port}`);
