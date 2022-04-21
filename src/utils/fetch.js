@@ -1,5 +1,10 @@
-async function fetchData(url) {
-  const res = await fetch(url);
+async function fetchData(url, params) {
+  let res;
+  if (!params) {
+    res = await fetch(url);
+  } else {
+    res = await fetch(url, "/", params);
+  }
   const { data } = await res.json();
 
   return data;
