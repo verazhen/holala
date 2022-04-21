@@ -16,7 +16,6 @@ import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 import logoInvesion from "assets/images/small-logos/logo-invision.svg";
 
 export default function data(cards) {
-  console.log(cards);
   const Project = ({ title }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       <MDTypography

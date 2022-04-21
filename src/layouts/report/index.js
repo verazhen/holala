@@ -54,18 +54,18 @@ function Tables() {
   }
 
   useEffect(() => {
-    fetchData(`http://localhost:5000/api/1.0/task/${id}`).then((lists) => {
+    fetchData(`http://localhost:5000/api/1.0/task/${id}`).then((listsData) => {
       //sort the lists data
-      lists.sort((a, b) => {
+      listsData.sort((a, b) => {
         return a.orders - b.orders;
       });
       //sort the tasks data
-      //       lists.forEach(({ tasks }) => {
-      //         tasks.sort((a, b) => {
-      //           return a.orders - b.orders;
-      //         });
-      //       });
-      setLists(lists);
+      listsData.forEach(({ tasks }) => {
+        tasks.sort((a, b) => {
+          return a.orders - b.orders;
+        });
+      });
+      setLists(listsData);
     });
   }, []);
 
@@ -80,7 +80,6 @@ function Tables() {
       }
     );
   }, [lists]);
-
 
   const style = {
     overflowY: "hidden",
@@ -111,13 +110,13 @@ function Tables() {
                 </MDBox>
                 <MDBox pt={3}>
                   <List listId={id} listName={title} tasks={tasks} />
-{/*                                     <DataTable */}
-{/*                                       table={{ columns: pColumns, rows: pRows }} */}
-{/*                                       isSorted={false} */}
-{/*                                       entriesPerPage={false} */}
-{/*                                       showTotalEntries={false} */}
-{/*                                       noEndBorder */}
-{/*                                     /> */}
+                  {/*                                     <DataTable */}
+                  {/*                                       table={{ columns: pColumns, rows: pRows }} */}
+                  {/*                                       isSorted={false} */}
+                  {/*                                       entriesPerPage={false} */}
+                  {/*                                       showTotalEntries={false} */}
+                  {/*                                       noEndBorder */}
+                  {/*                                     /> */}
                 </MDBox>
               </Card>
             </Grid>
