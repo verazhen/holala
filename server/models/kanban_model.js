@@ -2,8 +2,8 @@ const { mongo } = require("./mongocon");
 const { pool } = require("./mysqlcon");
 
 //TODO: Efficiency
-const getTasks = async () => {
-  const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = 1");
+const getTasks = async (id) => {
+  const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = ?",[id]);
   let data = [];
   for (let i = 0; i < lists.length; i++) {
     const { id, title, orders } = lists[i];
