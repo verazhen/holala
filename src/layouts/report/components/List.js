@@ -4,6 +4,7 @@ import MDButton from "components/MDButton";
 import DataTable from "examples/Tables/KanbanList";
 import projectsTableData from "layouts/report/data/projectsTableData";
 import { fetchData, fetchSetData } from "utils/fetch";
+import { v4 } from "uuid";
 //post data
 // async function fetchSetData(listName, tasks, listId) {
 //   await fetch(`http://localhost:5000/api/1.0/task?list=${listId}`, {
@@ -28,24 +29,26 @@ import { fetchData, fetchSetData } from "utils/fetch";
 //   );
 // }
 //
-const List = ({ tasks }) => {
+const List = ({ kanbanId, listId, tasks }) => {
   const [cards, setCards] = useState(tasks);
+  const submittingStatus = useRef(false);
 
   const { columns: pColumns, rows: pRows } = projectsTableData(cards);
   //   const submittingStatus = useRef(false);
   //   const delStatus = useRef(false);
 
-  //   //post data
-  //   useEffect(() => {
-  //     //     預防data在網頁 第一次render時被清掉
-  //     if (!submittingStatus.current) {
-  //       return;
-  //     }
-  //
-  //     fetchSetData(listName, cards, listId).then(
-  //       (lists) => (submittingStatus.current = false)
-  //     );
-  //   }, [cards]);
+  //post data
+  useEffect(() => {
+    //     預防data在網頁 第一次render時被清掉
+    if (!submittingStatus.current) {
+      return;
+    }
+
+    fetchSetData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}`,
+      cards
+    ).then((lists) => (submittingStatus.current = false));
+  }, [cards]);
 
   //delete data
   //   useEffect(() => {
@@ -58,13 +61,15 @@ const List = ({ tasks }) => {
   //     );
   //   }, [cards]);
   function addTask() {
-//     submittingStatus.current = true;
+    submittingStatus.current = true;
     const title = "Task Untitled";
     setCards(function (prevData) {
       return [
         ...prevData,
         {
+          unique_id: v4(),
           title,
+          checked: 0,
         },
       ];
     });

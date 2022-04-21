@@ -40,7 +40,7 @@ import { fetchData, fetchSetData } from "utils/fetch";
 function Tables() {
   const [lists, setLists] = useState([]);
   const submittingStatus = useRef(false);
-  const { id } = useParams();
+  const { kanbanId } = useParams();
 
   function addList() {
     submittingStatus.current = true;
@@ -54,19 +54,21 @@ function Tables() {
   }
 
   useEffect(() => {
-    fetchData(`http://localhost:5000/api/1.0/task/${id}`).then((listsData) => {
-      //sort the lists data
-      listsData.sort((a, b) => {
-        return a.orders - b.orders;
-      });
-      //sort the tasks data
-      listsData.forEach(({ tasks }) => {
-        tasks.sort((a, b) => {
+    fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`).then(
+      (listsData) => {
+        //sort the lists data
+        listsData.sort((a, b) => {
           return a.orders - b.orders;
         });
-      });
-      setLists(listsData);
-    });
+        //sort the tasks data
+        listsData.forEach(({ tasks }) => {
+          tasks.sort((a, b) => {
+            return a.orders - b.orders;
+          });
+        });
+        setLists(listsData);
+      }
+    );
   }, []);
 
   //   post data
@@ -74,7 +76,7 @@ function Tables() {
     if (!submittingStatus.current) {
       return;
     }
-    fetchSetData(`http://localhost:5000/api/1.0/task/${id}`, lists).then(
+    fetchSetData(`http://localhost:5000/api/1.0/task/${kanbanId}`, lists).then(
       (lists) => {
         submittingStatus.current = false;
       }
@@ -109,7 +111,12 @@ function Tables() {
                   </MDTypography>
                 </MDBox>
                 <MDBox pt={3}>
-                  <List listId={id} listName={title} tasks={tasks} />
+                  <List
+                    kanbanId={kanbanId}
+                    listId={id}
+                    listName={title}
+                    tasks={tasks}
+                  />
                   {/*                                     <DataTable */}
                   {/*                                       table={{ columns: pColumns, rows: pRows }} */}
                   {/*                                       isSorted={false} */}

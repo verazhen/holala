@@ -82,7 +82,7 @@ const routes = [
     name: "Kanban",
     key: "kanban",
     icon: <Icon fontSize="small">dashboard</Icon>,
-    route: `/project/:id/kanban`,
+    route: `/project/:kanbanId/kanban`,
     component: <Tables/>,
   },
   {
@@ -90,7 +90,7 @@ const routes = [
     name: "Report",
     key: "report",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/project/:id/report",
+    route: "/project/:kanbanId/report",
     component: <Dashboard />,
   },
   {
@@ -98,7 +98,7 @@ const routes = [
     name: "MeetingMinute",
     key: "meetingMinute",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/project/:id/meeting-minute",
+    route: "/project/:kanbanId/meeting-minute",
     component: <Meeting />,
   },
   {
