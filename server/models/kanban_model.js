@@ -6,11 +6,11 @@ const getTasks = async () => {
   const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = 1");
   let data = [];
   for (let i = 0; i < lists.length; i++) {
-    const { id, title } = lists[i];
+    const { id, title, orders } = lists[i];
     const [tasks] = await pool.query(
       `SELECT * FROM tasks WHERE list_id = ${id}`
     );
-    data.push({ id, title, tasks });
+    data.push({ id, title, orders, tasks });
   }
 
   return data;
@@ -66,15 +66,14 @@ const addTask = async ({ listId, tasks }) => {
   }
 };
 
-const delTask = async ({ listId, tasks },delUniqueId) => {
+const delTask = async ({ listId, tasks }, delUniqueId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
 
-    const [res] = await pool.query(
-      "DELETE FROM tasks WHERE uniqueId=?;",
-      [delUniqueId]
-    );
+    const [res] = await pool.query("DELETE FROM tasks WHERE uniqueId=?;", [
+      delUniqueId,
+    ]);
 
     await conn.query("COMMIT");
     return res;
@@ -103,5 +102,5 @@ module.exports = {
   addList,
   getChat,
   updateChat,
-  delTask
+  delTask,
 };
