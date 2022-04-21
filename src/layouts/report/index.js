@@ -20,6 +20,7 @@ import Card from "@mui/material/Card";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import MDButton from "components/MDButton";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -36,7 +37,20 @@ import { fetchData, fetchSetData } from "utils/fetch";
 
 function Tables() {
   const [lists, setLists] = useState([]);
+  const submittingStatus = useRef(false);
   const { id } = useParams();
+
+  function addItem() {
+    submittingStatus.current = true;
+    const newList = {
+      title: "List untitled",
+      tasks: [],
+    };
+    setLists(function (prevData) {
+      return [...prevData, newList];
+    });
+  }
+
   useEffect(() => {
     fetchData(`http://localhost:5000/api/1.0/task/${id}`).then((lists) => {
       //sort the lists data
@@ -52,6 +66,17 @@ function Tables() {
       setLists(lists);
     });
   }, []);
+
+  //   post data
+  useEffect(() => {
+    //預防data在網頁 第一次render時被清掉
+    if (!submittingStatus.current) {
+      return;
+    }
+    fetchSetData(lists, "http://localhost:5000/api/1.0/task").then((lists) => {
+      submittingStatus.current = false;
+    });
+  }, [lists]);
 
   const { columns: pColumns, rows: pRows } = projectsTableData();
   const style = {
@@ -93,6 +118,19 @@ function Tables() {
               </Card>
             </Grid>
           ))}
+          <Grid item xs={3}>
+            <MDButton
+              //               component={Link}
+              //               to={action.route}
+              variant="gradient"
+              color="secondary"
+              fullWidth
+              onClick={addItem}
+              //               color={action.color}
+            >
+              Add List
+            </MDButton>
+          </Grid>
         </Grid>
       </MDBox>
     </DashboardLayout>
