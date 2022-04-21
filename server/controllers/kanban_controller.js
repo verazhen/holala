@@ -1,7 +1,9 @@
 const Kanban = require("../models/kanban_model");
 
 const getTasks = async (req, res) => {
-  const data = await Kanban.getTasks();
+  const {id} = req.params;
+  const data = await Kanban.getTasks(id);
+
 
   return res.json({
     data,
@@ -44,7 +46,7 @@ const delCard = async (req, res) => {
   if (!list) {
     console.log("刪除整張list");
   }
-  const response = await Kanban.delTask(data,uniqueId);
+  const response = await Kanban.delTask(data, uniqueId);
   if (!response) {
     return res.status(401).json({
       error: "wrong input",

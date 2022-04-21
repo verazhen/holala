@@ -10,7 +10,7 @@ const {
 const { wrapAsync } = require("../../util/util");
 
 //get all task in all list
-router.route("/task").get(wrapAsync(getTasks));
+router.route("/task/:id").get(wrapAsync(getTasks));
 
 //add new task or update order
 router.route("/task").post(wrapAsync(addCard));
