@@ -31,13 +31,14 @@ import DataTable from "examples/Tables/KanbanList";
 // import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/report/data/projectsTableData";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData } from "utils/fetch";
 
 function Tables() {
   const [lists, setLists] = useState([]);
-  // const columns, rows ;
+  const { id } = useParams();
   useEffect(() => {
-    fetchData("http://localhost:5000/api/1.0/task").then((lists) => {
+    fetchData(`http://localhost:5000/api/1.0/task/${id}`).then((lists) => {
       //sort the lists data
       lists.sort((a, b) => {
         return a.orders - b.orders;
