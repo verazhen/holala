@@ -28,6 +28,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 // import Footer from "examples/Footer";
 import DataTable from "examples/Tables/KanbanList";
 
+import List from "./components/List";
+
 // Data
 // import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/report/data/projectsTableData";
@@ -40,7 +42,7 @@ function Tables() {
   const submittingStatus = useRef(false);
   const { id } = useParams();
 
-  function addItem() {
+  function addList() {
     submittingStatus.current = true;
     const newList = {
       title: "List untitled",
@@ -79,7 +81,7 @@ function Tables() {
     );
   }, [lists]);
 
-  const { columns: pColumns, rows: pRows } = projectsTableData();
+
   const style = {
     overflowY: "hidden",
     overflow: "scroll",
@@ -91,7 +93,7 @@ function Tables() {
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6} wrap="nowrap" style={style}>
           {lists.map(({ id, title, tasks }) => (
-            <Grid item xs={3}>
+            <Grid item xs={6}>
               <Card>
                 <MDBox
                   mx={2}
@@ -108,13 +110,14 @@ function Tables() {
                   </MDTypography>
                 </MDBox>
                 <MDBox pt={3}>
-                  <DataTable
-                    table={{ columns: pColumns, rows: pRows }}
-                    isSorted={false}
-                    entriesPerPage={false}
-                    showTotalEntries={false}
-                    noEndBorder
-                  />
+                  <List listId={id} listName={title} tasks={tasks} />
+{/*                                     <DataTable */}
+{/*                                       table={{ columns: pColumns, rows: pRows }} */}
+{/*                                       isSorted={false} */}
+{/*                                       entriesPerPage={false} */}
+{/*                                       showTotalEntries={false} */}
+{/*                                       noEndBorder */}
+{/*                                     /> */}
                 </MDBox>
               </Card>
             </Grid>
@@ -126,7 +129,7 @@ function Tables() {
               variant="gradient"
               color="secondary"
               fullWidth
-              onClick={addItem}
+              onClick={addList}
               //               color={action.color}
             >
               Add List

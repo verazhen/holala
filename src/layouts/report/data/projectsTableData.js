@@ -15,11 +15,18 @@ import logoSlack from "assets/images/small-logos/logo-slack.svg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 import logoInvesion from "assets/images/small-logos/logo-invision.svg";
 
-export default function data() {
-  const Project = ({ image, name }) => (
+export default function data(cards) {
+  console.log(cards);
+  const Project = ({ title }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
-      <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
-        {name}
+      <MDTypography
+        display="block"
+        variant="button"
+        fontWeight="medium"
+        ml={1}
+        lineHeight={1}
+      >
+        {title}
       </MDTypography>
     </MDBox>
   );
@@ -42,25 +49,26 @@ export default function data() {
       { Header: "action", accessor: "action", align: "center" },
     ],
 
-    rows: [
-      {
-        project: <Project image={LogoAsana} name="Asana" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
-            $2,500
-          </MDTypography>
-        ),
-        status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            working
-          </MDTypography>
-        ),
-        action: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      }
-    ],
+    rows: cards.map(({ title, checked }) => {
+      const project = <Project title={title} />;
+      const status = (
+        <MDTypography
+          component="a"
+          href="#"
+          variant="caption"
+          color="text"
+          fontWeight="medium"
+        >
+          {checked == 0 ? "Working" : "Done"}
+        </MDTypography>
+      );
+      const action = (
+        <MDTypography component="a" href="#" color="text">
+          <Icon>more_vert</Icon>
+        </MDTypography>
+      );
+
+      return { project, status, action };
+    }),
   };
 }
