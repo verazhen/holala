@@ -31,32 +31,31 @@ import Item from "./Item";
 //   );
 // }
 //
-const List = ({ kanbanId, listId, tasks,listIndex }) => {
+const List = ({
+  kanbanId,
+  listId,
+  tasks,
+  listIndex,
+  lists,
+  setLists,
+  submitTask,
+}) => {
   const droppableId = `${listIndex}`;
-  const [cards, setCards] = useState(tasks);
-  const submittingStatus = useRef(false);
   const delStatus = useRef(false);
 
-  const { columns: pColumns, rows: pRows } = projectsTableData(cards);
   //   const submittingStatus = useRef(false);
   //   const delStatus = useRef(false);
 
-  //post data
   useEffect(() => {
-     console.log("useEffect cards");
-    //     預防data在網頁 第一次render時被清掉
-    if (!submittingStatus.current) {
+    console.log("useEffect tasks");
+    if (!submitTask.current) {
       return;
     }
 
     fetchSetData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}`,
-      cards
-    ).then((lists) => (submittingStatus.current = false));
-  }, [cards]);
-
-  useEffect(()=>{
-    console.log("useEffect tasks");
+      tasks
+    ).then((lists) => (submitTask.current = false));
   }, [tasks]);
   //delete data
   //   useEffect(() => {
@@ -69,18 +68,14 @@ const List = ({ kanbanId, listId, tasks,listIndex }) => {
   //     );
   //   }, [cards]);
   function addTask() {
-    submittingStatus.current = true;
+    submitTask.current = true;
     const title = "Task Untitled";
-    setCards(function (prevData) {
-      return [
-        ...prevData,
-        {
-          unique_id: v4(),
-          title,
-          checked: 0,
-        },
-      ];
-    });
+    const list = lists[listIndex];
+    const newTasks = [...list.tasks, { unique_id: v4(), title, checked: 0 }];
+    const newList = JSON.parse(JSON.stringify(lists));
+    newList[listIndex].tasks = newTasks;
+
+    setLists(newList);
   }
 
   //   function handleOnDragEnd(result) {
@@ -129,8 +124,7 @@ const List = ({ kanbanId, listId, tasks,listIndex }) => {
                   taskName={title}
                   taskOrder={orders}
                   index={index}
-                  setCards={setCards}
-                  submittingStatus={submittingStatus}
+                  submittingStatus={submitTask}
                   delStatus={delStatus}
                   //                       editData={editData}
                   //                       submittingStatus={submittingStatus}

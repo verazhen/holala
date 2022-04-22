@@ -41,6 +41,7 @@ import { fetchData, fetchSetData } from "utils/fetch";
 function Tables() {
   const [lists, setLists] = useState([]);
   const submittingStatus = useRef(false);
+  const submitTask = useRef(false);
   const { kanbanId } = useParams();
 
   function addList() {
@@ -79,22 +80,17 @@ function Tables() {
         },
       });
     } else {
-      console.log("old");
-      console.log(lists);
       const list = lists[source.droppableId];
       const copiedItems = [...list.tasks];
       const [removed] = copiedItems.splice(source.index, 1);
       copiedItems.splice(destination.index, 0, removed);
       const newList = JSON.parse(JSON.stringify(lists));
       newList[source.droppableId].tasks = copiedItems;
-      console.log("new");
-      console.log(newList);
       setLists(newList);
     }
   };
 
   useEffect(() => {
-    console.log("hi");
     fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`).then(
       (listsData) => {
         //sort the lists data
@@ -163,6 +159,9 @@ function Tables() {
                       listName={title}
                       tasks={tasks}
                       listIndex={index}
+                      lists={lists}
+                      setLists={setLists}
+                      submitTask={submitTask}
                     />
                   </MDBox>
                 </Card>
