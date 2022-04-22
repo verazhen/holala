@@ -22,7 +22,7 @@ const addCard = async (req, res) => {
 const addTask = async (req, res) => {
   const { data } = req.body;
   const { listId } = req.params;
-  const response = await Kanban.addTask(listId, data);
+  const response = await Kanban.addTask(data);
 
   return res.json({
     data: { listId, taskId: response.insertId },
