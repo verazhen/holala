@@ -93,7 +93,7 @@ function Tables() {
       }
       const newList = JSON.parse(JSON.stringify(lists));
       newList[source.droppableId].tasks = copiedItems;
-
+      submitTask.current = true;
       setLists(newList);
     }
   };
