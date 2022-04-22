@@ -81,7 +81,7 @@ const addTask = async (tasks) => {
 
     const [res] = await pool.query(
       `INSERT INTO tasks (list_id,title,orders,assignee,due_dt,checked,delete_dt,unique_id) VALUES ? ON DUPLICATE KEY
-       UPDATE orders =VALUES(orders),list_id =VALUES(list_id)`,
+       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),due_dt =VALUES(due_dt)`,
       [values]
     );
 
