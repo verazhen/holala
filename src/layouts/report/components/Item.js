@@ -19,6 +19,9 @@ const Item = ({
   submittingStatus,
   index,
   delStatus,
+  lists,
+  listIndex,
+  setLists,
 }) => {
   const draggableId = uniqueId.toString();
   const [open, setOpen] = useState(false);
@@ -81,6 +84,11 @@ const Item = ({
             setOpen={setOpen}
             onCloseModal={onCloseModal}
             taskName={taskName}
+            taskIndex={index}
+            setLists={setLists}
+            lists={lists}
+            listIndex={listIndex}
+            submittingStatus={submittingStatus}
           />
         </div>
       )}

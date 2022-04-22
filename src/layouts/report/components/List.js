@@ -50,6 +50,8 @@ const List = ({
     if (!submitTask.current) {
       return;
     }
+    console.log('useEffect Task')
+    console.log(tasks)
     fetchSetData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}`,
       tasks
@@ -75,22 +77,6 @@ const List = ({
 
     setLists(newList);
   }
-
-  //   function handleOnDragEnd(result) {
-  //     const items = Array.from(cards);
-  //     const [reorderedItem] = items.splice(result.source.index, 1);
-  //     items.splice(result.destination.index, 0, reorderedItem);
-  //
-  //     if (result.destination.index != 0) {
-  //       items[result.destination.index].orders =
-  //         items[result.destination.index - 1].orders + 1;
-  //     } else {
-  //       items[result.destination.index].orders =
-  //         items[result.destination.index + 1].orders - 1;
-  //     }
-  //     submittingStatus.current = true;
-  //     setCards(items);
-  //   }
 
   return (
     <div>
@@ -124,6 +110,9 @@ const List = ({
                   index={index}
                   submittingStatus={submitTask}
                   delStatus={delStatus}
+                  lists={lists}
+                  listIndex={listIndex}
+                  setLists={setLists}
                   //                       editData={editData}
                   //                       submittingStatus={submittingStatus}
                 />
