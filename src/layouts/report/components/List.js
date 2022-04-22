@@ -84,11 +84,11 @@ const List = ({ kanbanId, listId, tasks }) => {
     items.splice(result.destination.index, 0, reorderedItem);
 
     if (result.destination.index != 0) {
-      items[result.destination.index].taskOrder =
-        items[result.destination.index - 1].taskOrder + 1;
+      items[result.destination.index].orders =
+        items[result.destination.index - 1].orders + 1;
     } else {
-      items[result.destination.index].taskOrder =
-        items[result.destination.index + 1].taskOrder - 1;
+      items[result.destination.index].orders =
+        items[result.destination.index + 1].orders - 1;
     }
     submittingStatus.current = true;
     setCards(items);
