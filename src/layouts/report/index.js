@@ -68,17 +68,23 @@ function Tables() {
       const [removed] = sourceItems.splice(source.index, 1);
 
       destItems.splice(destination.index, 0, removed);
+
       if (destination.index != 0) {
         destItems[destination.index].orders =
           destItems[destination.index - 1].orders + 1;
+        destItems[destination.index].list_id =
+          destItems[destination.index - 1].list_id;
       } else {
         destItems[destination.index].orders =
           destItems[destination.index + 1].orders - 1;
+        destItems[destination.index].list_id =
+          destItems[destination.index + 1].list_id;
       }
 
       const newList = JSON.parse(JSON.stringify(lists));
       newList[source.droppableId].tasks = sourceItems;
       newList[destination.droppableId].tasks = destItems;
+      submitTask.current = true;
       setLists(newList);
     } else {
       const list = lists[source.droppableId];
@@ -119,7 +125,7 @@ function Tables() {
 
   //   post data
   useEffect(() => {
-    console.log("changed");
+    console.log("useEffect lists");
     console.log(lists);
     if (!submittingStatus.current) {
       return;

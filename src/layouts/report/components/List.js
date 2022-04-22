@@ -50,7 +50,7 @@ const List = ({
     if (!submitTask.current) {
       return;
     }
-    console.log("useEffect tasks");
+    console.log("useEffect tasks, listId=> ",listId);
     fetchSetData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}`,
       tasks
