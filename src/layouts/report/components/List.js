@@ -107,7 +107,7 @@ const List = ({ kanbanId, listId, tasks }) => {
       >
         Add Task
       </MDButton>
-      <DragDropContext /* onDragEnd={handleOnDragEnd} */>
+      <DragDropContext  onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="list">
           {(provided) => (
             <div
