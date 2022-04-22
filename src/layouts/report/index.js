@@ -106,7 +106,7 @@ function Tables() {
                   borderRadius="lg"
                   coloredShadow="info"
                 >
-                  <MDTypography variant="h6" color="white">
+                  <MDTypography variant="h5" color="white">
                     {title}
                   </MDTypography>
                 </MDBox>
@@ -117,13 +117,6 @@ function Tables() {
                     listName={title}
                     tasks={tasks}
                   />
-                  {/*                                     <DataTable */}
-                  {/*                                       table={{ columns: pColumns, rows: pRows }} */}
-                  {/*                                       isSorted={false} */}
-                  {/*                                       entriesPerPage={false} */}
-                  {/*                                       showTotalEntries={false} */}
-                  {/*                                       noEndBorder */}
-                  {/*                                     /> */}
                 </MDBox>
               </Card>
             </Grid>

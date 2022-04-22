@@ -5,6 +5,8 @@ import DataTable from "examples/Tables/KanbanList";
 import projectsTableData from "layouts/report/data/projectsTableData";
 import { fetchData, fetchSetData } from "utils/fetch";
 import { v4 } from "uuid";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import Item from "./Item";
 //post data
 // async function fetchSetData(listName, tasks, listId) {
 //   await fetch(`http://localhost:5000/api/1.0/task?list=${listId}`, {
@@ -32,6 +34,7 @@ import { v4 } from "uuid";
 const List = ({ kanbanId, listId, tasks }) => {
   const [cards, setCards] = useState(tasks);
   const submittingStatus = useRef(false);
+  const delStatus = useRef(false);
 
   const { columns: pColumns, rows: pRows } = projectsTableData(cards);
   //   const submittingStatus = useRef(false);
@@ -74,6 +77,23 @@ const List = ({ kanbanId, listId, tasks }) => {
       ];
     });
   }
+
+  function handleOnDragEnd(result) {
+    const items = Array.from(cards);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    if (result.destination.index != 0) {
+      items[result.destination.index].taskOrder =
+        items[result.destination.index - 1].taskOrder + 1;
+    } else {
+      items[result.destination.index].taskOrder =
+        items[result.destination.index + 1].taskOrder - 1;
+    }
+    submittingStatus.current = true;
+    setCards(items);
+  }
+
   return (
     <div>
       <MDButton
@@ -87,13 +107,36 @@ const List = ({ kanbanId, listId, tasks }) => {
       >
         Add Task
       </MDButton>
-      <DataTable
-        table={{ columns: pColumns, rows: pRows }}
-        isSorted={false}
-        entriesPerPage={false}
-        showTotalEntries={false}
-        noEndBorder
-      />
+      <DragDropContext /* onDragEnd={handleOnDragEnd} */>
+        <Droppable droppableId="list">
+          {(provided) => (
+            <div
+              className="list"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {cards.map(({ title, id, orders, unique_id }, index) => {
+                return (
+                  <Item
+                    key={id}
+                    taskId={id}
+                    uniqueId={unique_id}
+                    taskName={title}
+                    taskOrder={orders}
+                    index={index}
+                    setCards={setCards}
+                    submittingStatus={submittingStatus}
+                    delStatus={delStatus}
+                    //                       editData={editData}
+                    //                       submittingStatus={submittingStatus}
+                  />
+                );
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };
