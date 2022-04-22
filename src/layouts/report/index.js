@@ -29,6 +29,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/KanbanList";
 
 import List from "./components/List";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 // Data
 // import authorsTableData from "layouts/tables/data/authorsTableData";
@@ -53,7 +54,47 @@ function Tables() {
     });
   }
 
+  const onDragEnd = (result, columns, setColumns) => {
+    if (!result.destination) return;
+    const { source, destination } = result;
+
+    if (source.droppableId !== destination.droppableId) {
+      //if not the same list
+      const sourceColumn = columns[source.droppableId];
+      const destColumn = columns[destination.droppableId];
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(source.index, 1);
+
+      destItems.splice(destination.index, 0, removed);
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destColumn,
+          items: destItems,
+        },
+      });
+    } else {
+      console.log("old");
+      console.log(lists);
+      const list = lists[source.droppableId];
+      const copiedItems = [...list.tasks];
+      const [removed] = copiedItems.splice(source.index, 1);
+      copiedItems.splice(destination.index, 0, removed);
+      const newList = JSON.parse(JSON.stringify(lists));
+      newList[source.droppableId].tasks = copiedItems;
+      console.log("new");
+      console.log(newList);
+      setLists(newList);
+    }
+  };
+
   useEffect(() => {
+    console.log("hi");
     fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`).then(
       (listsData) => {
         //sort the lists data
@@ -73,6 +114,8 @@ function Tables() {
 
   //   post data
   useEffect(() => {
+    console.log("changed");
+    console.log(lists);
     if (!submittingStatus.current) {
       return;
     }
@@ -93,34 +136,39 @@ function Tables() {
       <DashboardNavbar />
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6} wrap="nowrap" style={style}>
-          {lists.map(({ id, title, tasks }) => (
-            <Grid item xs={6}>
-              <Card>
-                <MDBox
-                  mx={2}
-                  mt={-3}
-                  py={3}
-                  px={2}
-                  variant="gradient"
-                  bgColor="info"
-                  borderRadius="lg"
-                  coloredShadow="info"
-                >
-                  <MDTypography variant="h5" color="white">
-                    {title}
-                  </MDTypography>
-                </MDBox>
-                <MDBox pt={3}>
-                  <List
-                    kanbanId={kanbanId}
-                    listId={id}
-                    listName={title}
-                    tasks={tasks}
-                  />
-                </MDBox>
-              </Card>
-            </Grid>
-          ))}
+          <DragDropContext
+            onDragEnd={(result) => onDragEnd(result, lists, setLists)}
+          >
+            {lists.map(({ id, title, tasks }, index) => (
+              <Grid item xs={6}>
+                <Card>
+                  <MDBox
+                    mx={2}
+                    mt={-3}
+                    py={3}
+                    px={2}
+                    variant="gradient"
+                    bgColor="info"
+                    borderRadius="lg"
+                    coloredShadow="info"
+                  >
+                    <MDTypography variant="h5" color="white">
+                      {title}
+                    </MDTypography>
+                  </MDBox>
+                  <MDBox pt={3}>
+                    <List
+                      kanbanId={kanbanId}
+                      listId={id}
+                      listName={title}
+                      tasks={tasks}
+                      listIndex={index}
+                    />
+                  </MDBox>
+                </Card>
+              </Grid>
+            ))}
+          </DragDropContext>
           <Grid item xs={3}>
             <MDButton
               //               component={Link}

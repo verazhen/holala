@@ -31,7 +31,8 @@ import Item from "./Item";
 //   );
 // }
 //
-const List = ({ kanbanId, listId, tasks }) => {
+const List = ({ kanbanId, listId, tasks,listIndex }) => {
+  const droppableId = `${listIndex}`;
   const [cards, setCards] = useState(tasks);
   const submittingStatus = useRef(false);
   const delStatus = useRef(false);
@@ -42,6 +43,7 @@ const List = ({ kanbanId, listId, tasks }) => {
 
   //post data
   useEffect(() => {
+     console.log("useEffect cards");
     //     預防data在網頁 第一次render時被清掉
     if (!submittingStatus.current) {
       return;
@@ -53,6 +55,9 @@ const List = ({ kanbanId, listId, tasks }) => {
     ).then((lists) => (submittingStatus.current = false));
   }, [cards]);
 
+  useEffect(()=>{
+    console.log("useEffect tasks");
+  }, [tasks]);
   //delete data
   //   useEffect(() => {
   //     //     預防data在網頁 第一次render時被清掉
@@ -78,21 +83,21 @@ const List = ({ kanbanId, listId, tasks }) => {
     });
   }
 
-  function handleOnDragEnd(result) {
-    const items = Array.from(cards);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    if (result.destination.index != 0) {
-      items[result.destination.index].orders =
-        items[result.destination.index - 1].orders + 1;
-    } else {
-      items[result.destination.index].orders =
-        items[result.destination.index + 1].orders - 1;
-    }
-    submittingStatus.current = true;
-    setCards(items);
-  }
+  //   function handleOnDragEnd(result) {
+  //     const items = Array.from(cards);
+  //     const [reorderedItem] = items.splice(result.source.index, 1);
+  //     items.splice(result.destination.index, 0, reorderedItem);
+  //
+  //     if (result.destination.index != 0) {
+  //       items[result.destination.index].orders =
+  //         items[result.destination.index - 1].orders + 1;
+  //     } else {
+  //       items[result.destination.index].orders =
+  //         items[result.destination.index + 1].orders - 1;
+  //     }
+  //     submittingStatus.current = true;
+  //     setCards(items);
+  //   }
 
   return (
     <div>
@@ -107,36 +112,35 @@ const List = ({ kanbanId, listId, tasks }) => {
       >
         Add Task
       </MDButton>
-      <DragDropContext  onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="list">
-          {(provided) => (
-            <div
-              className="list"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {cards.map(({ title, id, orders, unique_id }, index) => {
-                return (
-                  <Item
-                    key={id}
-                    taskId={id}
-                    uniqueId={unique_id}
-                    taskName={title}
-                    taskOrder={orders}
-                    index={index}
-                    setCards={setCards}
-                    submittingStatus={submittingStatus}
-                    delStatus={delStatus}
-                    //                       editData={editData}
-                    //                       submittingStatus={submittingStatus}
-                  />
-                );
-              })}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+
+      <Droppable droppableId={droppableId} index={listIndex}>
+        {(provided) => (
+          <div
+            className="list"
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {tasks.map(({ title, id, orders, unique_id }, index) => {
+              return (
+                <Item
+                  key={id}
+                  taskId={id}
+                  uniqueId={unique_id}
+                  taskName={title}
+                  taskOrder={orders}
+                  index={index}
+                  setCards={setCards}
+                  submittingStatus={submittingStatus}
+                  delStatus={delStatus}
+                  //                       editData={editData}
+                  //                       submittingStatus={submittingStatus}
+                />
+              );
+            })}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
     </div>
   );
 };
