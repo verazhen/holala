@@ -84,8 +84,16 @@ function Tables() {
       const copiedItems = [...list.tasks];
       const [removed] = copiedItems.splice(source.index, 1);
       copiedItems.splice(destination.index, 0, removed);
+      if (destination.index != 0) {
+        copiedItems[destination.index].orders =
+          copiedItems[destination.index - 1].orders + 1;
+      } else {
+        copiedItems[destination.index].orders =
+          copiedItems[destination.index + 1].orders - 1;
+      }
       const newList = JSON.parse(JSON.stringify(lists));
       newList[source.droppableId].tasks = copiedItems;
+
       setLists(newList);
     }
   };
