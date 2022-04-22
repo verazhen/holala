@@ -20,12 +20,12 @@ const Item = ({
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const draggableId = uniqueId.toString();
-//   function deleteItem() {
-//     delStatus.current = uniqueId;
-//     setCards(function (prev) {
-//       return prev.filter((item) => item.taskId !== taskId);
-//     });
-//   }
+  //   function deleteItem() {
+  //     delStatus.current = uniqueId;
+  //     setCards(function (prev) {
+  //       return prev.filter((item) => item.taskId !== taskId);
+  //     });
+  //   }
 
   return (
     <Draggable key={taskId} draggableId={draggableId} index={index}>
@@ -36,21 +36,24 @@ const Item = ({
           {...provided.dragHandleProps}
           id="task"
         >
-          <MDBox mx={0} mt={0} bgColor="transparent" className="item">
-            <Grid container direction="row"  justifyContent="flex-start" wrap="nowrap">
-              <Grid item xs={6}>
-              <MDTypography variant="h6">
-                {taskName}
-                </MDTypography>
+          <MDBox m="auto" my={2} bgColor="secondary" className="item">
+            <Grid
+              container
+              direction="row"
+              justifyContent="flex-start"
+              wrap="nowrap"
+            >
+              <Grid item xs={9}>
+                <MDTypography variant="h6" color="white">{taskName}</MDTypography>
               </Grid>
+              {/*               <Grid item xs={3}> */}
+              {/*                 <MDButton variant="gradient" color="secondary" size="small"> */}
+              {/*                   EDIT */}
+              {/*                 </MDButton> */}
+              {/*               </Grid> */}
               <Grid item xs={3}>
-                <MDButton variant="gradient" color="secondary" size="small">
-                  EDIT
-                </MDButton>
-              </Grid>
-              <Grid item xs={3}>
-                <MDButton variant="gradient" color="secondary" size="small">
-                  DELETE
+                <MDButton variant="primary" color="secondary" size="small">
+                  x
                 </MDButton>
               </Grid>
             </Grid>

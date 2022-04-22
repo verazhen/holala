@@ -3,8 +3,10 @@
 }
 
 .item {
-  height: 50px;
+  height: 70px;
+  width: 90%;
   font-size: 1em;
   letter-spacing: 2px;
-  padding: 10px
+  padding: 10px;
+  border-radius: 10px;
 }
