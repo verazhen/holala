@@ -66,6 +66,12 @@ const addTask = async (tasks) => {
         if (!checked) {
           checked = 0;
         }
+
+        if (delete_dt == 1) {
+          const dateTime = new Date();
+          const timestamp = Math.floor(dateTime / 1000);
+          delete_dt = dateTime;
+        }
         return [
           list_id,
           title,
@@ -81,7 +87,7 @@ const addTask = async (tasks) => {
 
     const [res] = await pool.query(
       `INSERT INTO tasks (list_id,title,orders,assignee,due_dt,checked,delete_dt,unique_id) VALUES ? ON DUPLICATE KEY
-       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),due_dt =VALUES(due_dt)`,
+       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),delete_dt =VALUES(delete_dt)`,
       [values]
     );
 

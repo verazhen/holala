@@ -14,30 +14,33 @@ const Item = ({
   uniqueId,
   taskName,
   taskOrder,
-  editData,
-  deleteData,
   submittingStatus,
   index,
   delStatus,
   lists,
   listIndex,
   setLists,
+  deleteDt,
 }) => {
   const draggableId = uniqueId.toString();
   const [open, setOpen] = useState(false);
-  //   function deleteItem() {
-  //     delStatus.current = uniqueId;
-  //     setCards(function (prev) {
-  //       return prev.filter((item) => item.taskId !== taskId);
-  //     });
-  //   }
+
+  function deleteItem() {
+    submittingStatus.current = true;
+    const list = lists[listIndex];
+    const newLists = JSON.parse(JSON.stringify(lists));
+    newLists[listIndex].tasks[index].delete_dt = 1;
+
+    setLists(newLists);
+  }
   const styles = {
     fontFamily: "sans-serif",
     textAlign: "center",
     top: "30%",
   };
 
-  function onOpenModal() {
+  function onOpenModal(e) {
+    console.log("hi");
     setOpen(true);
   }
 
@@ -53,14 +56,9 @@ const Item = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           id="task"
+          onClick={(e) => onOpenModal}
         >
-          <MDBox
-            m="auto"
-            my={2}
-            bgColor="secondary"
-            className="item"
-            onClick={onOpenModal}
-          >
+          <MDBox m="auto" my={2} bgColor="secondary" className="item">
             <Grid
               container
               direction="row"
