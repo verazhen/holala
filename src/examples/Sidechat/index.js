@@ -17,6 +17,7 @@ import TextField from "@mui/material/TextField";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
 // import MDInput from "components/MDInput";
 import Grid from "@mui/material/Grid";
 
@@ -28,6 +29,7 @@ import SidenavRoot from "examples/Sidenav/SidenavRoot";
 import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 
 import { fetchData, fetchSetData } from "utils/fetch";
+import webSocket from "socket.io-client";
 // Material Dashboard 2 React context
 import {
   useMaterialUIController,
@@ -38,18 +40,56 @@ import {
 
 function Sidenav({ color, brand, brandName, ...rest }) {
   const [messages, setMessages] = useState([]);
+  const [ws, setWs] = useState(null);
+  const [input, setInput] = useState(null);
+  function inputChange(e) {
+    setInput(e.target.value);
+  }
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } =
     controller;
   const location = useLocation();
   //   const collapseName = location.pathname.replace("/", "");
 
+  const listenMessage = () => {
+    ws.emit("kanban", { kanbanId: 1, uid: localStorage.getItem("uid") });
+    ws.on("getMessage", ({ uid, sender, message }) => {
+      setMessages(function (prevData) {
+        let me;
+        if (uid == 1) {
+          me = "me";
+        } else {
+          me = "notMe";
+        }
+        return [...prevData, { uid, sender, me, message }];
+      });
+    });
+  };
+  const sendMessage = () => {
+    const uid = localStorage.getItem("uid");
+    let sender;
+    if (uid == 1) {
+      sender = "ME";
+    } else {
+      sender = "Vera";
+    }
+    const message = input;
+    ws.emit("getMessage", { uid, sender, message });
+    setInput("")
+  };
+
+  useEffect(() => {
+    if (ws) {
+      listenMessage();
+    }
+  }, [ws]);
+
   useEffect(() => {
     fetchData("http://localhost:5000/api/1.0/chat").then((messages) =>
       setMessages(messages)
     );
     //       .then(() => isMyMessage());
-    //     setWs(webSocket("http://localhost:3400"));
+    setWs(webSocket("http://localhost:3400"));
     //     const uid = window.prompt("userid", "1");
     //     localStorage.setItem("uid", uid);
   }, []);
@@ -158,10 +198,19 @@ function Sidenav({ color, brand, brandName, ...rest }) {
 
       <Grid container direction="row" justifyContent="space-evenly">
         <Grid item xs={6} md={6} lg={10} mt={1}>
-          <TextField fullWidth label="Say Something" id="fullWidth" />
+          <MDInput
+            type="text"
+            value={input}
+            onChange={inputChange}
+          />
         </Grid>
         <Grid item xs={6} md={6} lg={10} mt={1}>
-          <MDButton variant="gradient" color="info" fullWidth>
+          <MDButton
+            variant="gradient"
+            color="info"
+            fullWidth
+            onClick={sendMessage}
+          >
             Send Message
           </MDButton>
         </Grid>
