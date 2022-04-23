@@ -1,19 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // react-router-dom components
 import { useLocation, NavLink } from "react-router-dom";
@@ -42,6 +27,7 @@ import Grid from "@mui/material/Grid";
 import SidenavRoot from "examples/Sidenav/SidenavRoot";
 import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 
+import { fetchData, fetchSetData } from "utils/fetch";
 // Material Dashboard 2 React context
 import {
   useMaterialUIController,
@@ -51,10 +37,26 @@ import {
 } from "context";
 
 function Sidenav({ color, brand, brandName, ...rest }) {
+  const [messages, setMessages] = useState([]);
   const [controller, dispatch] = useMaterialUIController();
-  const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller;
+  const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } =
+    controller;
   const location = useLocation();
   //   const collapseName = location.pathname.replace("/", "");
+
+  useEffect(() => {
+    fetchData("http://localhost:5000/api/1.0/chat").then((messages) =>
+      setMessages(messages)
+    );
+    //       .then(() => isMyMessage());
+    //     setWs(webSocket("http://localhost:3400"));
+    //     const uid = window.prompt("userid", "1");
+    //     localStorage.setItem("uid", uid);
+  }, []);
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
 
   let textColor = "white";
 
@@ -73,8 +75,14 @@ function Sidenav({ color, brand, brandName, ...rest }) {
     // A function that sets the mini state of the sidenav.
     function handleMiniSidenav() {
       setMiniSidenav(dispatch, window.innerWidth < 1200);
-      setTransparentSidenav(dispatch, window.innerWidth < 1200 ? false : transparentSidenav);
-      setWhiteSidenav(dispatch, window.innerWidth < 1200 ? false : whiteSidenav);
+      setTransparentSidenav(
+        dispatch,
+        window.innerWidth < 1200 ? false : transparentSidenav
+      );
+      setWhiteSidenav(
+        dispatch,
+        window.innerWidth < 1200 ? false : whiteSidenav
+      );
     }
 
     /**
@@ -110,12 +118,19 @@ function Sidenav({ color, brand, brandName, ...rest }) {
           </MDTypography>
         </MDBox>
         <MDBox component={NavLink} to="/" display="flex" alignItems="center">
-          {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
+          {brand && (
+            <MDBox component="img" src={brand} alt="Brand" width="2rem" />
+          )}
           <MDBox
             width={!brandName && "100%"}
             sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
           >
-            <MDTypography component="h6" variant="button" fontWeight="bold" color={textColor}>
+            <MDTypography
+              component="h6"
+              variant="button"
+              fontWeight="bold"
+              color={textColor}
+            >
               {brandName}
             </MDTypography>
           </MDBox>
@@ -129,26 +144,15 @@ function Sidenav({ color, brand, brandName, ...rest }) {
       />
       <div style={style}>
         <Grid container direction="column" alignItems="space-evenly" px={3}>
-          <Grid item xs={6} md={6} lg={10} mt={1}>
-            <MDTypography variant="h6" color="white">
-              hi
-            </MDTypography>
-          </Grid>
-          <Grid item xs={6} md={6} lg={10} mt={1} alignSelf="flex-end">
-            <MDTypography variant="h6" color="white">
-              hi
-            </MDTypography>
-          </Grid>
-          <Grid item xs={6} md={6} lg={10} mt={1}>
-            <MDTypography variant="h6" color="white">
-              hi
-            </MDTypography>
-          </Grid>
-          <Grid item xs={6} md={6} lg={10} mt={1}>
-            <MDTypography variant="h6" color="white">
-              hi
-            </MDTypography>
-          </Grid>
+          {messages.map(({ sender, message }) => {
+            return (
+              <Grid item xs={6} md={6} lg={10} mt={1}>
+                <MDTypography variant="h6" color="white">
+                  {sender}: {message}
+                </MDTypography>
+              </Grid>
+            );
+          })}
         </Grid>
       </div>
 
@@ -192,7 +196,15 @@ Sidenav.defaultProps = {
 
 // Typechecking props for the Sidenav
 Sidenav.propTypes = {
-  color: PropTypes.oneOf(["primary", "secondary", "info", "success", "warning", "error", "dark"]),
+  color: PropTypes.oneOf([
+    "primary",
+    "secondary",
+    "info",
+    "success",
+    "warning",
+    "error",
+    "dark",
+  ]),
   brand: PropTypes.string,
   brandName: PropTypes.string.isRequired,
 };
