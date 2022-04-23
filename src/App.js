@@ -84,33 +84,13 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
   const [stream, setStream] = useState(false);
+  const [screen, setScreen] = useState(false);
   const [ws, setWs] = useState(null);
   const [peers, setPeers] = useState([]);
   const socketRef = useRef();
   const userVideo = useRef();
   const peersRef = useRef([]);
   const roomID = 1;
-  async function init(
-    setVideo,
-    userVideo,
-    ws,
-    remoteVideos,
-    setRemoteVideos,
-    remoteVideoRef1,
-    remoteVideoRef2
-  ) {
-    //開啟webcam並投播
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: false,
-    });
-
-    setVideo(stream);
-    console.log(userVideo.current);
-    if (userVideo.current) {
-      userVideo.current.srcObject = stream;
-    }
-  }
 
   function createPeer(userToSignal, callerID, stream) {
     const peer = new Peer({
@@ -197,6 +177,51 @@ export default function App() {
     }
   }, [stream]);
 
+  useEffect(() => {
+    console.log("useEffect screem");
+    if (screen) {
+      console.log("螢幕分享");
+      const constraints = {
+        frameRate: 15,
+        width: 640,
+        height: 360,
+      };
+      navigator.mediaDevices.getDisplayMedia(constraints).then((stream) => {
+        userVideo.current.srcObject = stream;
+        ws.emit("join room", roomID);
+        ws.on("all users", (users) => {
+          const peers = [];
+          users.forEach((userID) => {
+            const peer = createPeer(userID, ws.id, stream);
+            peersRef.current.push({
+              peerID: userID,
+              peer,
+            });
+            peers.push(peer);
+          });
+          setPeers(peers);
+        });
+
+        ws.on("user joined", (payload) => {
+          const peer = addPeer(payload.signal, payload.callerID, stream);
+          peersRef.current.push({
+            peerID: payload.callerID,
+            peer,
+          });
+
+          setPeers((users) => [...users, peer]);
+        });
+
+        ws.on("receiving returned signal", (payload) => {
+          const item = peersRef.current.find((p) => p.peerID === payload.id);
+          item.peer.signal(payload.signal);
+        });
+      });
+    } else {
+      console.log("關閉螢幕分享");
+    }
+  }, [screen]);
+
   // Open sidenav when mouse enter on mini sidenav
   const handleOnMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {
@@ -280,6 +305,14 @@ export default function App() {
     }
   }
 
+  function changeScreenState() {
+    if (screen) {
+      setScreen(false);
+    } else {
+      setScreen(true);
+    }
+  }
+
   return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
@@ -292,6 +325,14 @@ export default function App() {
             onClick={changeStreamState}
           >
             Sync Kanban
+          </MDButton>
+          <MDButton
+            variant="gradient"
+            color="info"
+            fullWidth
+            onClick={changeScreenState}
+          >
+            ScreenSharing
           </MDButton>
           <Sidenav
             ws={ws}
@@ -307,13 +348,22 @@ export default function App() {
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
           />
+
           <Container2>
+            <MDButton
+              variant="gradient"
+              color="primary"
+              onClick={changeScreenState}
+            >
+              ScreenSharing
+            </MDButton>
             <StyledVideo muted ref={userVideo} autoPlay playsInline />
             {peers.map((peer, index) => {
               return <Video2 key={index} peer={peer} class="video-peer" />;
             })}
           </Container2>
           <Configurator />
+
           {configsButton}
         </>
       )}
