@@ -40,7 +40,9 @@ const Item = ({
   };
 
   function onOpenModal(e) {
-    console.log("hi");
+    if (e.target.nodeName == "BUTTON") {
+      return;
+    }
     setOpen(true);
   }
 
@@ -56,7 +58,7 @@ const Item = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           id="task"
-          onClick={(e) => onOpenModal}
+          onClick={(e) => onOpenModal(e)}
         >
           <MDBox m="auto" my={2} bgColor="secondary" className="item">
             <Grid
@@ -71,7 +73,12 @@ const Item = ({
                 </MDTypography>
               </Grid>
               <Grid item xs={3}>
-                <MDButton variant="primary" color="secondary" size="small">
+                <MDButton
+                  variant="primary"
+                  color="secondary"
+                  size="small"
+                  onClick={deleteItem}
+                >
                   x
                 </MDButton>
               </Grid>

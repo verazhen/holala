@@ -67,11 +67,6 @@ const addTask = async (tasks) => {
           checked = 0;
         }
 
-        if (delete_dt == 1) {
-          const dateTime = new Date();
-          const timestamp = Math.floor(dateTime / 1000);
-          delete_dt = dateTime;
-        }
         return [
           list_id,
           title,
