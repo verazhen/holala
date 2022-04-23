@@ -38,9 +38,8 @@ import {
   setWhiteSidenav,
 } from "context";
 
-function Sidenav({ color, brand, brandName, ...rest }) {
+function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
   const [messages, setMessages] = useState([]);
-  const [ws, setWs] = useState(null);
   const [input, setInput] = useState(null);
   function inputChange(e) {
     setInput(e.target.value);
@@ -75,7 +74,7 @@ function Sidenav({ color, brand, brandName, ...rest }) {
     }
     const message = input;
     ws.emit("getMessage", { uid, sender, message });
-    setInput("")
+    setInput("");
   };
 
   useEffect(() => {
@@ -89,7 +88,6 @@ function Sidenav({ color, brand, brandName, ...rest }) {
       setMessages(messages)
     );
     //       .then(() => isMyMessage());
-    setWs(webSocket("http://localhost:3400"));
     //     const uid = window.prompt("userid", "1");
     //     localStorage.setItem("uid", uid);
   }, []);
@@ -198,11 +196,7 @@ function Sidenav({ color, brand, brandName, ...rest }) {
 
       <Grid container direction="row" justifyContent="space-evenly">
         <Grid item xs={6} md={6} lg={10} mt={1}>
-          <MDInput
-            type="text"
-            value={input}
-            onChange={inputChange}
-          />
+          <MDInput type="text" value={input} onChange={inputChange} />
         </Grid>
         <Grid item xs={6} md={6} lg={10} mt={1}>
           <MDButton
