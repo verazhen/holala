@@ -410,13 +410,6 @@ export default function App() {
           />
 
           <Container2>
-            <MDButton
-              variant="gradient"
-              color="primary"
-              onClick={changeScreenState}
-            >
-              ScreenSharing
-            </MDButton>
             <StyledVideo muted ref={userVideo} autoPlay playsInline />
             {peers.map((peer, index) => {
               return <Video2 key={index} peer={peer} class="video-peer" />;
