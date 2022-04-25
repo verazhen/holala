@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 // react-router components
 import { useLocation, Link } from "react-router-dom";
+import { getLocalStorage } from "utils/utils";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -45,7 +46,13 @@ import {
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
-  const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
+  const {
+    miniSidenav,
+    transparentNavbar,
+    fixedNavbar,
+    openConfigurator,
+    darkMode,
+  } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
 
@@ -59,7 +66,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
     // A function that sets the transparent state of the navbar.
     function handleTransparentNavbar() {
-      setTransparentNavbar(dispatch, (fixedNavbar && window.scrollY === 0) || !fixedNavbar);
+      setTransparentNavbar(
+        dispatch,
+        (fixedNavbar && window.scrollY === 0) || !fixedNavbar
+      );
     }
 
     /**
@@ -76,7 +86,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
   }, [dispatch, fixedNavbar]);
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
-  const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
+  const handleConfiguratorOpen = () =>
+    setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
 
@@ -94,13 +105,22 @@ function DashboardNavbar({ absolute, light, isMini }) {
       sx={{ mt: 2 }}
     >
       <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
-      <NotificationItem icon={<Icon>podcasts</Icon>} title="Manage Podcast sessions" />
-      <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Payment successfully completed" />
+      <NotificationItem
+        icon={<Icon>podcasts</Icon>}
+        title="Manage Podcast sessions"
+      />
+      <NotificationItem
+        icon={<Icon>shopping_cart</Icon>}
+        title="Payment successfully completed"
+      />
     </Menu>
   );
 
   // Styles for the navbar icons
-  const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }) => ({
+  const iconsStyle = ({
+    palette: { dark, white, text },
+    functions: { rgba },
+  }) => ({
     color: () => {
       let colorValue = light || darkMode ? white.main : dark.main;
 
@@ -112,11 +132,15 @@ function DashboardNavbar({ absolute, light, isMini }) {
     },
   });
 
+  const kanbanId = getLocalStorage("kanbanId");
+
   return (
     <AppBar
       position={absolute ? "absolute" : navbarType}
       color="inherit"
-      sx={(theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode })}
+      sx={(theme) =>
+        navbar(theme, { transparentNavbar, absolute, light, darkMode })
+      }
     >
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <Grid container lg={8}>
@@ -135,18 +159,28 @@ function DashboardNavbar({ absolute, light, isMini }) {
             </MDBox>
           </Grid>
           <Grid item xs={12} md={6} lg={6}>
-            <MDBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
-              <DefaultNavbarLink icon="donut_large" name="KANBAN" route="/kanban" light={light} />
+            <MDBox
+              color="inherit"
+              display={{ xs: "none", lg: "flex" }}
+              m={0}
+              p={0}
+            >
+              <DefaultNavbarLink
+                icon="donut_large"
+                name="KANBAN"
+                route={`/project/${kanbanId}/kanban`}
+                light={light}
+              />
               <DefaultNavbarLink
                 icon="person"
                 name="MEETING MINUTE"
-                route="/meeting-minute"
+                route={`/project/${kanbanId}/meeting-minute`}
                 light={light}
               />
               <DefaultNavbarLink
                 icon="account_circle"
                 name="REPORT"
-                route="/report"
+                route={`/project/${kanbanId}/report`}
                 light={light}
               />
             </MDBox>
