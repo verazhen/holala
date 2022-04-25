@@ -35,7 +35,7 @@ const getRoom = async ({ uid, kanbanId }) => {
   }
 };
 
-const leaveRoom = async ({ uid, kanbanId }) => {
+const leaveRoom = async ({ uid, kanbanId, url }) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
@@ -50,7 +50,7 @@ const leaveRoom = async ({ uid, kanbanId }) => {
     } else {
       const [result] = await pool.query(
         `UPDATE meetings SET end_dt=?, record=? WHERE id=? `,
-        [1, 1, res.id]
+        [1, url, res.id]
       );
       response = result;
     }
@@ -69,5 +69,5 @@ const leaveRoom = async ({ uid, kanbanId }) => {
 
 module.exports = {
   getRoom,
-  leaveRoom
+  leaveRoom,
 };

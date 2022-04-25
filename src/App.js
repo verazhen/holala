@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useReactMediaRecorder } from "react-media-recorder";
 
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
@@ -86,6 +86,7 @@ export default function App() {
   } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
+  const [roomBtn, setRoomBtn] = useState("START MEETING");
   const [room, setRoom] = useState(false);
   const [stream, setStream] = useState(false);
   const [screen, setScreen] = useState(false);
@@ -95,6 +96,8 @@ export default function App() {
   const userVideo = useRef();
   const peersRef = useRef([]);
   const roomRef = useRef(false);
+  const { status, startRecording, stopRecording, mediaBlobUrl } =
+    useReactMediaRecorder({ screen: true, audio: true, video: false });
 
   let roomID;
 
@@ -146,6 +149,7 @@ export default function App() {
   useEffect(() => {
     if (room) {
       console.log("創建房間");
+      setRoomBtn("LEAVE THE ROOM")
       const uid = getLocalStorage("uid");
       const kanbanId = getLocalStorage("kanbanId");
       roomRef.current = true;
@@ -154,14 +158,19 @@ export default function App() {
         roomID = id;
         console.log(`you are inside a meeting room: `, roomID);
       });
+      startRecording();
     } else {
       if (!roomRef.current) {
         return;
       }
       console.log("停止會議");
+      setRoomBtn("LEAVE THE ROOM")
+      setRoomBtn("START MEETING")
       const uid = getLocalStorage("uid");
       const kanbanId = getLocalStorage("kanbanId");
-      ws.emit("leave room", { uid, kanbanId });
+      stopRecording();
+      const url = mediaBlobUrl;
+      ws.emit("leave room", { uid, kanbanId, url });
       ws.on("leave room", (msg) => {
         console.log(msg);
       });
@@ -367,7 +376,7 @@ export default function App() {
             fullWidth
             onClick={changeMeetingState}
           >
-            Start Meeting
+            {roomBtn}
           </MDButton>
           <MDButton
             variant="gradient"
