@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
 import Icon from "@mui/material/Icon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -18,14 +20,27 @@ import data from "layouts/authentication/components/Projects/data";
 import { useEffect } from "react";
 import { fetchData, fetchSetData } from "utils/fetch";
 
+//       {/*         <KanbanMenu */}
+//         {/*           table={{ columns, rows }} */}
+//         {/*           showTotalEntries={false} */}
+//         {/*           isSorted={false} */}
+//         {/*           noEndBorder */}
+//         {/*           entriesPerPage={false} */}
+//         {/*           kanbans = {kanbans} */}
+//         {/*         /> */}
+
 function Projects() {
-  const [kanbans, setKanbans] = useState(null);
+  const [kanbans, setKanbans] = useState([]);
   // const columns, rows ;
   useEffect(() => {
     fetchData("http://localhost:5000/api/1.0/kanbans").then((kanbans) => {
       setKanbans(kanbans);
     });
   }, []);
+
+  const style = {
+    borderBottom: "1px dashed lightgrey",
+  };
 
   const { columns, rows } = data(kanbans);
   const [menu, setMenu] = useState(null);
@@ -77,7 +92,7 @@ function Projects() {
               done
             </Icon>
             <MDTypography variant="button" fontWeight="regular" color="text">
-              &nbsp;<strong>30 </strong> kanbans
+              &nbsp;<strong>{kanbans.length} </strong> kanbans
             </MDTypography>
           </MDBox>
         </MDBox>
@@ -93,13 +108,15 @@ function Projects() {
         {renderMenu}
       </MDBox>
       <MDBox>
-        <KanbanMenu
-          table={{ columns, rows }}
-          showTotalEntries={false}
-          isSorted={false}
-          noEndBorder
-          entriesPerPage={false}
-        />
+        {kanbans.map(({ kanban_id, title }) => (
+          <Grid container>
+            <Grid item xs={12} m={3} style={style}>
+              <MDTypography variant="h5">
+                <Link to={`/project/${kanban_id}/kanban`}>{title}</Link>
+              </MDTypography>
+            </Grid>
+          </Grid>
+        ))}
       </MDBox>
     </Card>
   );

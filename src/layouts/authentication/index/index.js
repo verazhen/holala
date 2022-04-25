@@ -32,7 +32,6 @@ function Index() {
           </Grid>
         </MDBox>
       </MDBox>
-      <Footer />
     </BasicLayout>
   );
 }
