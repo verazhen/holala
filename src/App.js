@@ -8,6 +8,8 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Icon from "@mui/material/Icon";
+import VideoCallIcon from "@material-ui/icons/VideoCall";
+import AspectRatioIcon from "@material-ui/icons/AspectRatio";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -346,6 +348,27 @@ export default function App() {
     </MDBox>
   );
 
+  const style = {
+    position: "absolute",
+    marginTop: "45px",
+    marginLeft: "1200px",
+    zIndex: 998,
+  };
+
+  const style1 = {
+    position: "absolute",
+    marginTop: "45px",
+    marginLeft: "1350px",
+    zIndex: 998,
+  };
+
+  const style2 = {
+    position: "absolute",
+    marginTop: "45px",
+    marginLeft: "1420px",
+    zIndex: 998,
+  };
+
   function changeMeetingState() {
     if (room) {
       setRoom(false);
@@ -375,30 +398,6 @@ export default function App() {
       <CssBaseline />
       {layout === "dashboard" && (
         <>
-          <MDButton
-            variant="gradient"
-            color="info"
-            fullWidth
-            onClick={changeMeetingState}
-          >
-            {roomBtn}
-          </MDButton>
-          <MDButton
-            variant="gradient"
-            color="info"
-            fullWidth
-            onClick={changeStreamState}
-          >
-            Sync Kanban
-          </MDButton>
-          <MDButton
-            variant="gradient"
-            color="info"
-            fullWidth
-            onClick={changeScreenState}
-          >
-            ScreenSharing
-          </MDButton>
           <Sidenav
             ws={ws}
             setWs={setWs}
@@ -423,6 +422,30 @@ export default function App() {
           <Configurator />
 
           {configsButton}
+          <MDButton
+            variant="gradient"
+            color="primary"
+            style={style}
+            onClick={changeMeetingState}
+          >
+            {roomBtn}
+          </MDButton>
+          <MDButton
+            variant="gradient"
+            color="info"
+            style={style1}
+            onClick={changeStreamState}
+          >
+            <VideoCallIcon></VideoCallIcon>
+          </MDButton>
+          <MDButton
+            variant="gradient"
+            color="info"
+            style={style2}
+            onClick={changeScreenState}
+          >
+            <AspectRatioIcon></AspectRatioIcon>
+          </MDButton>
         </>
       )}
       {layout === "vr" && <Configurator />}

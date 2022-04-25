@@ -10,14 +10,16 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MDButton from "components/MDButton";
 
-const styles = {
-  fontFamily: "sans-serif",
-  textAlign: "center",
-  top: "30%",
-};
+// const styles = {
+//   fontFamily: "sans-serif",
+//   textAlign: "center",
+//   position: "absolute",
+//   width: "100vw",
+//   top: "50%",
+// };
 const formStyle = {
   width: "50vw",
-  height: "80vh",
+  height: "30vh",
 };
 const inputStyle = {
   margin: "1%",
@@ -56,8 +58,12 @@ function BasicModal({
   }
 
   return (
-    <div style={styles}>
-      <Modal open={open} onClose={onCloseModal}>
+    <Modal
+      open={open}
+      onClose={onCloseModal}
+//       style={formStyle}
+    >
+      <div>
         <h2>Task Detail</h2>
         <MDInput
           type="text"
@@ -66,8 +72,8 @@ function BasicModal({
           style={titleStyle}
           onChange={(e) => handleChange(e, title, setTitle)}
         />
-        <form style={formStyle}>
-          <div class="input-group input-group-static mb-4">
+        <form>
+          <div className="input-group input-group-static mb-4">
             <label>Assignee</label>
             <br />
             <FormControl style={inputStyle}>
@@ -96,8 +102,8 @@ function BasicModal({
           </div>
         </form>
         <MDButton onClick={onSaveModal}>Save</MDButton>
-      </Modal>
-    </div>
+      </div>
+    </Modal>
   );
 }
 

@@ -10,3 +10,9 @@
   padding: 10px;
   border-radius: 10px;
 }
+
+.react-responsive-modal-modal {
+  width: 1000px;
+  margin-top: 30vh;
+  border-radius: 10px;
+}
