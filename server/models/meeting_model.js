@@ -1,5 +1,13 @@
 const { pool } = require("./mysqlcon");
 
+const getMeetings = async (kanbanId) => {
+  const [res] = await pool.query(
+    `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
+    [kanbanId]
+  );
+  return res;
+};
+
 const getRoom = async ({ uid, kanbanId }) => {
   let roomId;
   const conn = await pool.getConnection();
@@ -70,4 +78,5 @@ const leaveRoom = async ({ uid, kanbanId, url }) => {
 module.exports = {
   getRoom,
   leaveRoom,
+  getMeetings,
 };

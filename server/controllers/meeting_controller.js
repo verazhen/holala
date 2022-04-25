@@ -1,13 +1,12 @@
 require("dotenv").config();
 const Meeting = require("../models/meeting_model");
 
-const getRoom = async (req, res) => {
-  const { data } = req.body;
-
+const getMeetings = async (req, res) => {
   try {
-    const response = await Meeting.getRoom(data);
+    const {kanbanId} = req.params;
+    const response = await Meeting.getMeetings(kanbanId);
     return res.json({
-      room: response,
+      data: response,
     });
   } catch (error) {
     return { error };
@@ -15,5 +14,5 @@ const getRoom = async (req, res) => {
 };
 
 module.exports = {
-  getRoom,
+  getMeetings,
 };

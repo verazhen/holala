@@ -1,15 +1,9 @@
-const router = require('express').Router();
+const router = require("express").Router();
 
-const {
-    wrapAsync,
-    authentication
-} = require('../../util/util');
+const { wrapAsync, authentication } = require("../../util/util");
 
-const {
-    getRoom,
-} = require('../controllers/meeting_controller');
+const { getMeetings } = require("../controllers/meeting_controller");
 
-router.route("/kanban/:kanbanId/meeting").post(wrapAsync(getRoom));
-
+router.route("/kanban/:kanbanId/meeting").get(wrapAsync(getMeetings));
 
 module.exports = router;
