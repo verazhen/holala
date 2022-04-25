@@ -112,11 +112,11 @@ function Tables() {
 
   //   post data
   useEffect(() => {
-    console.log("useEffect lists");
-    console.log(lists);
     if (!submittingStatus.current) {
       return;
     }
+    console.log("useEffect lists");
+    console.log(lists);
     fetchSetData(`http://localhost:5000/api/1.0/task/${kanbanId}`, lists).then(
       (lists) => {
         submittingStatus.current = false;
@@ -137,7 +137,7 @@ function Tables() {
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >
-            {lists.map(({ id, title, tasks }, index) => (
+            {lists.map(({ id, title, tasks, delete_dt }, index) => (
               <Grid item xs={6}>
                 <Card>
                   <MDBox

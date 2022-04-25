@@ -43,21 +43,19 @@ const List = ({
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
 
-  //   const submittingStatus = useRef(false);
-  //   const delStatus = useRef(false);
-
   useEffect(() => {
     if (!submitTask.current) {
       return;
     }
-    console.log('useEffect Task')
-    console.log(tasks)
+    console.log("useEffect Task");
+    console.log(tasks);
     fetchSetData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}`,
       tasks
     ).then((lists) => (submitTask.current = false));
   }, [tasks]);
-  //delete data
+
+  //   delete data;
   //   useEffect(() => {
   //     //     預防data在網頁 第一次render時被清掉
   //     if (!delStatus.current) {
@@ -66,12 +64,16 @@ const List = ({
   //     fetchDelData(listName, cards, listId, delStatus.current).then(
   //       (lists) => (delStatus.current = false)
   //     );
-  //   }, [cards]);
+  //   }, [tasks]);
+
   function addTask() {
     submitTask.current = true;
     const title = "Task Untitled";
     const list = lists[listIndex];
-    const newTasks = [...list.tasks, { unique_id: v4(), title, checked: 0 }];
+    const newTasks = [
+      ...list.tasks,
+      { list_id: listId, unique_id: v4(), title, checked: 0 },
+    ];
     const newList = JSON.parse(JSON.stringify(lists));
     newList[listIndex].tasks = newTasks;
 
@@ -99,24 +101,27 @@ const List = ({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {tasks.map(({ title, id, orders, unique_id }, index) => {
-              return (
-                <Item
-                  key={id}
-                  taskId={id}
-                  uniqueId={unique_id}
-                  taskName={title}
-                  taskOrder={orders}
-                  index={index}
-                  submittingStatus={submitTask}
-                  delStatus={delStatus}
-                  lists={lists}
-                  listIndex={listIndex}
-                  setLists={setLists}
-                  //                       editData={editData}
-                  //                       submittingStatus={submittingStatus}
-                />
-              );
+            {tasks.map(({ title, id, orders, unique_id, delete_dt }, index) => {
+              if (!delete_dt) {
+                return (
+                  <Item
+                    key={id}
+                    taskId={id}
+                    uniqueId={unique_id}
+                    taskName={title}
+                    taskOrder={orders}
+                    index={index}
+                    submittingStatus={submitTask}
+                    delStatus={delStatus}
+                    lists={lists}
+                    listIndex={listIndex}
+                    setLists={setLists}
+                    deleteDt={delete_dt}
+                  />
+                );
+              } else {
+                <></>;
+              }
             })}
             {provided.placeholder}
           </div>

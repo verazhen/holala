@@ -23,6 +23,7 @@ import PropTypes from "prop-types";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 
 // Material Dashboard 2 React context
 import { useMaterialUIController, setLayout } from "context";
