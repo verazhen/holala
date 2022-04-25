@@ -6,7 +6,7 @@ import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 import { fetchData, fetchSetData } from "utils/fetch";
 import { v4 } from "uuid";
-import ReactPlayer from 'react-player'
+import ReactPlayer from "react-player";
 const style = {
   margin: "0 50px 10px 50px",
   borderBottom: "1px solid grey",
@@ -15,7 +15,8 @@ const style = {
 };
 
 const Meeting = ({ meetingTitle, src }) => {
-  console.log(src);
+  const url = `https://s3.ap-southeast-1.amazonaws.com/verazon.online/${src}`;
+  console.log(url);
   return (
     <MDBox m="auto" my={2} bgColor="transparent" style={style}>
       <Grid container>
@@ -26,7 +27,10 @@ const Meeting = ({ meetingTitle, src }) => {
           <MDTypography variant="h6">開始時間：{meetingTitle}</MDTypography>
         </Grid>
         <Grid item xs={6}>
-          <ReactPlayer url='https://www.youtube.com/watch?v=ysz5S6PUM-U' />
+          <video width="500"  controls>
+            <source src={url} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </Grid>
       </Grid>
     </MDBox>

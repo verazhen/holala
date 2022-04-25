@@ -104,7 +104,7 @@ export default function App() {
       onStop: function (blobUrl, blob) {
         const uid = getLocalStorage("uid");
         const kanbanId = getLocalStorage("kanbanId");
-        console.log("hi");
+        console.log(blob);
         ws.emit("leave room", { uid, kanbanId, url: blob });
       },
     });
@@ -168,6 +168,9 @@ export default function App() {
         roomID = id;
         console.log(`you are inside a meeting room: `, roomID);
       });
+      ws.on("leave room", (msg) => {
+        console.log(msg);
+      });
       startRecording();
     } else {
       if (!roomRef.current) {
@@ -176,9 +179,6 @@ export default function App() {
       console.log("停止會議");
       setRoomBtn("START MEETING");
       stopRecording();
-      ws.on("leave room", (msg) => {
-        console.log(msg);
-      });
       roomRef.current = false;
     }
   }, [room]);
