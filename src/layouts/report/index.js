@@ -1,4 +1,3 @@
-
 /// @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -22,6 +21,7 @@ import projectsTableData from "layouts/report/data/projectsTableData";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData } from "utils/fetch";
+import { addLocalStorage, getLocalStorage } from "utils/utils";
 
 function Tables() {
   const [lists, setLists] = useState([]);
@@ -91,6 +91,7 @@ function Tables() {
   };
 
   useEffect(() => {
+    addLocalStorage("kanbanId", kanbanId);
     fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`).then(
       (listsData) => {
         //sort the lists data

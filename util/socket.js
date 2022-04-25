@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 const { createAdapter } = require("@socket.io/redis-adapter");
 const Kanban = require("../server/models/kanban_model");
+const Meeting = require("../server/models/meeting_model");
 const webrtc = require("wrtc");
 
 function findNowRoom(client) {
@@ -42,19 +43,39 @@ module.exports = (server) => {
   io.listen(3400);
 
   io.on("connection", (socket) => {
+    console.log(`user ${socket.id} is connected`);
     //---------------chatroom socket
     socket.on("kanban", ({ kanbanId, uid }) => {
       socket.join(kanbanId);
       console.log(`user ${socket.id} joins in kanban: ${kanbanId}`);
-      users[socket.id] = uid;
-      console.log("socket user list updated=> ", users);
       socket.on("getMessage", (message) => {
         Kanban.updateChat(message).then((res) => console.log(res));
         io.to(kanbanId).emit("getMessage", message);
       });
     });
 
+    socket.on("get room", async ({ uid, kanbanId }) => {
+      const roomId = await Meeting.getRoom({ uid, kanbanId });
+      socket.emit("get room", roomId);
+    });
+
+    socket.on("leave room", async ({ uid, kanbanId, url }) => {
+      const result = await Meeting.leaveRoom({ uid, kanbanId, url });
+      let message;
+
+      if (!result) {
+        message = `failed to leave room`;
+      } else if (result == 1) {
+        message = `You are not allowed to close room`;
+      } else {
+        message = `Successfully to leave room`;
+      }
+
+      socket.emit("leave room", message);
+    });
+
     socket.on("join room", (roomID) => {
+      console.log("a user join in room-", roomID);
       if (users[roomID]) {
         const length = users[roomID].length;
         if (length === 4) {
@@ -67,7 +88,6 @@ module.exports = (server) => {
       }
       socketToRoom[socket.id] = roomID;
       const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
-
       socket.emit("all users", usersInThisRoom);
     });
 

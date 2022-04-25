@@ -6,8 +6,7 @@ import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 import { fetchData, fetchSetData } from "utils/fetch";
 import { v4 } from "uuid";
-import "node_modules/video-react/dist/video-react.css";
-import { Player } from "video-react";
+import ReactPlayer from 'react-player'
 const style = {
   margin: "0 50px 10px 50px",
   borderBottom: "1px solid grey",
@@ -27,12 +26,7 @@ const Meeting = ({ meetingTitle, src }) => {
           <MDTypography variant="h6">開始時間：{meetingTitle}</MDTypography>
         </Grid>
         <Grid item xs={6}>
-          <Player
-            playsInline
-            fluid={false}
-            width={300}
-            src="https://storage.googleapis.com/holala-vera/Untitled.mov"
-          />
+          <ReactPlayer url='https://www.youtube.com/watch?v=ysz5S6PUM-U' />
         </Grid>
       </Grid>
     </MDBox>

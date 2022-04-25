@@ -97,7 +97,13 @@ export default function App() {
   const peersRef = useRef([]);
   const roomRef = useRef(false);
   const { status, startRecording, stopRecording, mediaBlobUrl } =
-    useReactMediaRecorder({ screen: true, audio: true, video: false });
+    useReactMediaRecorder({
+      screen: true,
+      audio: true,
+      video: false,
+      downloadRecordingPath: "/video",
+      downloadRecordingType: "mp4",
+    });
 
   let roomID;
 
@@ -149,7 +155,7 @@ export default function App() {
   useEffect(() => {
     if (room) {
       console.log("創建房間");
-      setRoomBtn("LEAVE THE ROOM")
+      setRoomBtn("LEAVE THE ROOM");
       const uid = getLocalStorage("uid");
       const kanbanId = getLocalStorage("kanbanId");
       roomRef.current = true;
@@ -164,8 +170,7 @@ export default function App() {
         return;
       }
       console.log("停止會議");
-      setRoomBtn("LEAVE THE ROOM")
-      setRoomBtn("START MEETING")
+      setRoomBtn("START MEETING");
       const uid = getLocalStorage("uid");
       const kanbanId = getLocalStorage("kanbanId");
       stopRecording();
