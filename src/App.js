@@ -94,6 +94,7 @@ export default function App() {
   const socketRef = useRef();
   const userVideo = useRef();
   const peersRef = useRef([]);
+  const roomRef = useRef(false);
 
   let roomID;
 
@@ -145,22 +146,26 @@ export default function App() {
   useEffect(() => {
     if (room) {
       console.log("創建房間");
-      const uid = getLocalStorage("uid")
+      const uid = getLocalStorage("uid");
       const kanbanId = getLocalStorage("kanbanId");
+      roomRef.current = true;
       ws.emit("get room", { uid, kanbanId });
       ws.on("get room", (id) => {
         roomID = id;
         console.log(`you are inside a meeting room: `, roomID);
       });
     } else {
+      if (!roomRef.current) {
+        return;
+      }
       console.log("停止會議");
-      const uid = getLocalStorage("uid")
+      const uid = getLocalStorage("uid");
       const kanbanId = getLocalStorage("kanbanId");
       ws.emit("leave room", { uid, kanbanId });
-      //       ws.on("leave room", (id) => {
-      //         roomID = id;
-      //         console.log(`you are inside a meeting room: `, roomID);
-      //       });
+      ws.on("leave room", (msg) => {
+        console.log(msg);
+      });
+      roomRef.current = false;
     }
   }, [room]);
 
