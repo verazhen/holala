@@ -27,6 +27,7 @@ app.use(cors());
 app.use("/api/" + API_VERSION, [
   require("./server/routes/kanban_route"),
   require("./server/routes/index_route"),
+  require("./server/routes/meeting_route"),
 ]);
 
 app.listen(port, async () => {
