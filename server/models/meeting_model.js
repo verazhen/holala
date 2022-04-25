@@ -24,11 +24,12 @@ const getRoom = async ({ uid, kanbanId }) => {
     await conn.query("START TRANSACTION");
 
     //check if there's an ongoing kanban
-    const [res] = await pool.query(
+    const [[res]] = await pool.query(
       `SELECT id FROM meetings WHERE kanban_id = ? AND end_dt IS NULL`,
       [kanbanId]
     );
-    if (res.length == 0) {
+
+    if (!res) {
       const [result] = await pool.query(
         `INSERT INTO meetings (kanban_id,user_id) VALUES (?,?) `,
         [kanbanId, uid]

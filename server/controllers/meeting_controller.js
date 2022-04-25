@@ -5,7 +5,7 @@ const getRoom = async (req, res) => {
   const { data } = req.body;
 
   try {
-    const response = await Meeting.createRoom(data);
+    const response = await Meeting.getRoom(data);
     return res.json({
       room: response,
     });

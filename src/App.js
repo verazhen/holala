@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useParams } from "react-router-dom";
 
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
@@ -39,6 +40,7 @@ import brandDark from "assets/images/logo-ct-dark.png";
 //Peer
 import Peer from "simple-peer";
 import webSocket from "socket.io-client";
+import { getLocalStorage } from "utils/utils";
 import styled from "styled-components";
 const Container2 = styled.div`
   padding: 20px;
@@ -71,6 +73,7 @@ const Video2 = (props) => {
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
+  let kanbanId = 1;
   const {
     miniSidenav,
     direction,
@@ -83,6 +86,7 @@ export default function App() {
   } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
+  const [room, setRoom] = useState(false);
   const [stream, setStream] = useState(false);
   const [screen, setScreen] = useState(false);
   const [ws, setWs] = useState(null);
@@ -90,7 +94,8 @@ export default function App() {
   const socketRef = useRef();
   const userVideo = useRef();
   const peersRef = useRef([]);
-  const roomID = 1;
+
+  let roomID;
 
   function createPeer(userToSignal, callerID, stream) {
     const peer = new Peer({
@@ -128,12 +133,36 @@ export default function App() {
 
   useEffect(() => {
     setWs(webSocket("http://localhost:3400"));
+    const uid = window.prompt("userid", "1");
+    localStorage.setItem("uid", uid);
   }, []);
 
   useEffect(() => {
     console.log("peers");
     console.log(peers);
   }, [peers]);
+
+  useEffect(() => {
+    if (room) {
+      console.log("創建房間");
+      const uid = getLocalStorage("uid")
+      const kanbanId = getLocalStorage("kanbanId");
+      ws.emit("get room", { uid, kanbanId });
+      ws.on("get room", (id) => {
+        roomID = id;
+        console.log(`you are inside a meeting room: `, roomID);
+      });
+    } else {
+      console.log("停止會議");
+      const uid = getLocalStorage("uid")
+      const kanbanId = getLocalStorage("kanbanId");
+      ws.emit("leave room", { uid, kanbanId });
+      //       ws.on("leave room", (id) => {
+      //         roomID = id;
+      //         console.log(`you are inside a meeting room: `, roomID);
+      //       });
+    }
+  }, [room]);
 
   useEffect(() => {
     console.log("useEffect stream");
@@ -145,6 +174,7 @@ export default function App() {
           userVideo.current.srcObject = stream;
           ws.emit("join room", roomID);
           ws.on("all users", (users) => {
+            console.log(`there're: ${users} in the room now`);
             const peers = [];
             users.forEach((userID) => {
               const peer = createPeer(userID, ws.id, stream);
@@ -178,7 +208,7 @@ export default function App() {
   }, [stream]);
 
   useEffect(() => {
-    console.log("useEffect screem");
+    console.log("useEffect screen");
     if (screen) {
       console.log("螢幕分享");
       const constraints = {
@@ -297,6 +327,14 @@ export default function App() {
     </MDBox>
   );
 
+  function changeMeetingState() {
+    if (room) {
+      setRoom(false);
+    } else {
+      setRoom(true);
+    }
+  }
+
   function changeStreamState() {
     if (stream) {
       setStream(false);
@@ -318,6 +356,14 @@ export default function App() {
       <CssBaseline />
       {layout === "dashboard" && (
         <>
+          <MDButton
+            variant="gradient"
+            color="info"
+            fullWidth
+            onClick={changeMeetingState}
+          >
+            Start Meeting
+          </MDButton>
           <MDButton
             variant="gradient"
             color="info"
