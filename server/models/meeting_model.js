@@ -1,4 +1,16 @@
 const { pool } = require("./mysqlcon");
+const fs = require("fs/promises");
+const aws = require("aws-sdk");
+// const multerS3 = require('multer-s3');
+
+const s3 = new aws.S3({
+  secretAccessKey: process.env.S3_SECRET,
+  accessKeyId: process.env.S3_KEY,
+  region: process.env.S3_REGION,
+  params: {
+    Bucket: "verazon.online",
+  },
+});
 
 const getMeetings = async (kanbanId) => {
   const [res] = await pool.query(
@@ -44,6 +56,18 @@ const getRoom = async ({ uid, kanbanId }) => {
 };
 
 const leaveRoom = async ({ uid, kanbanId, url }) => {
+  const dateTime = Date.now();
+  const timestamp = Math.floor(dateTime / 1000);
+  const s3Path = `holala/${timestamp}.mp4`;
+  const res = await s3
+    .putObject({
+      Key: s3Path,
+      Body: url,
+      ContentType: "video/mp4",
+      ACL: "public-read",
+    })
+    .promise();
+
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
@@ -58,7 +82,7 @@ const leaveRoom = async ({ uid, kanbanId, url }) => {
     } else {
       const [result] = await pool.query(
         `UPDATE meetings SET end_dt=?, record=? WHERE id=? `,
-        [1, url, res.id]
+        [1, s3Path, res.id]
       );
       response = result;
     }

@@ -101,8 +101,12 @@ export default function App() {
       screen: true,
       audio: true,
       video: false,
-      downloadRecordingPath: "/video",
-      downloadRecordingType: "mp4",
+      onStop: function (blobUrl, blob) {
+        const uid = getLocalStorage("uid");
+        const kanbanId = getLocalStorage("kanbanId");
+        console.log("hi");
+        ws.emit("leave room", { uid, kanbanId, url: blob });
+      },
     });
 
   let roomID;
@@ -171,11 +175,7 @@ export default function App() {
       }
       console.log("停止會議");
       setRoomBtn("START MEETING");
-      const uid = getLocalStorage("uid");
-      const kanbanId = getLocalStorage("kanbanId");
       stopRecording();
-      const url = mediaBlobUrl;
-      ws.emit("leave room", { uid, kanbanId, url });
       ws.on("leave room", (msg) => {
         console.log(msg);
       });
