@@ -28,7 +28,7 @@ const getNote = async (req, res) => {
 const sendEmail = async (req, res) => {
   try {
     const { kanbanId, noteId } = req.params;
-    const data = req.params;
+    const {data} = req.body;
     const response = await Meeting.sendEmail(kanbanId, noteId, data);
     return res.json({
       data: response,
