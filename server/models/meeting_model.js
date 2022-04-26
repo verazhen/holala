@@ -1,6 +1,7 @@
 const { pool } = require("./mysqlcon");
 const fs = require("fs/promises");
 const aws = require("aws-sdk");
+const axios = require("axios").default;
 
 const s3 = new aws.S3({
   secretAccessKey: process.env.S3_SECRET,
@@ -98,8 +99,41 @@ const leaveRoom = async ({ uid, kanbanId, url }) => {
   }
 };
 
+//TODO: CACHE
+const getNote = async (kanbanId, noteId) => {
+  try {
+    const url = `https://s3.ap-southeast-1.amazonaws.com/verazon.online/${noteId}.json`;
+    console.log(url);
+    const { data } = await axios.get(url);
+    const { items } = data.results;
+    let textArr = [];
+    let text = " ";
+    let start_time;
+    items.map((item) => {
+      if (item.start_time) {
+        start_time = start_time || item.start_time;
+        text = text.concat(item.alternatives[0].content, " ");
+      } else {
+        const content = text.trim();
+        textArr.push({
+          start_time,
+          content: content.concat(item.alternatives[0].content),
+        });
+        text = " ";
+        start_time = undefined;
+      }
+    });
+
+    return textArr;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 module.exports = {
   getRoom,
   leaveRoom,
   getMeetings,
+  getNote,
 };
