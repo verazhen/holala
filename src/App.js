@@ -149,7 +149,7 @@ export default function App() {
 
   useEffect(() => {
     setWs(webSocket("http://localhost:3400"));
-    const uid = window.prompt("userid", "1");
+    const uid = 1;
     localStorage.setItem("uid", uid);
   }, []);
 
@@ -350,23 +350,23 @@ export default function App() {
 
   const style = {
     position: "absolute",
-    marginTop: "45px",
-    marginLeft: "1200px",
-    zIndex: 998,
+    marginTop: "1045px",
+    marginLeft: "1600px",
+    zIndex: 999,
   };
 
   const style1 = {
     position: "absolute",
-    marginTop: "45px",
-    marginLeft: "1350px",
-    zIndex: 998,
+    marginTop: "1045px",
+    marginLeft: "1750px",
+    zIndex: 999,
   };
 
   const style2 = {
     position: "absolute",
-    marginTop: "45px",
-    marginLeft: "1420px",
-    zIndex: 998,
+    marginTop: "1045px",
+    marginLeft: "1820px",
+    zIndex: 999,
   };
 
   function changeMeetingState() {
