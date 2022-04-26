@@ -5,6 +5,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Icon from "@mui/material/Icon";
 import { useState, useEffect, useRef } from "react";
 import {
   Container,
@@ -36,6 +37,22 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
   };
+
+  const scriptDivStyle = {
+    overflowY: "auto",
+    height: "510px",
+    marginLeft: "20px"
+  };
+
+  const scriptTitleStyle = {
+    fontSize: "1.2rem",
+    marginLeft: "20px"
+  };
+
+  const scriptStyle = {
+    fontSize: "0.8rem",
+  };
+
   const url = `https://s3.ap-southeast-1.amazonaws.com/verazon.online/${src}`;
 
   useEffect(() => {
@@ -43,7 +60,7 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
       return;
     }
     fetchData("http://localhost:5000/api/1.0/kanban/1/meeting/1650882217").then(
-      ( data ) => {
+      (data) => {
         setNotes(data);
       }
     );
@@ -90,19 +107,28 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
           </Grid>
         </AccordionSummary>
         <AccordionDetails>
-          <video width="800" controls>
-            <source src={url} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          {notes.map(({ start_time, content }) => (
-            <Grid container direction="row">
-              <Grid item xs={3}>
-                <Typography>
-                  {start_time}: {content}
-                </Typography>
-              </Grid>
+          <Grid container direction="row">
+            <Grid item >
+              <video height="530px" controls>
+                <source src={url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </Grid>
-          ))}
+            <Grid item xs={4}>
+              <Typography style={scriptTitleStyle}>Transcription</Typography>
+              <div style={scriptDivStyle} className="transcript">
+                {notes.map(({ start_time, content }) => (
+                  <Grid container direction="column">
+                    <Grid item>
+                      <Typography style={scriptStyle}>
+                        {start_time}: {content}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                ))}
+              </div>
+            </Grid>
+          </Grid>
         </AccordionDetails>
       </Accordion>
     </MDBox>

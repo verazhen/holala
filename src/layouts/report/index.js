@@ -133,7 +133,7 @@ function Tables() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pt={6} pb={3}>
-        <Grid container spacing={6} wrap="nowrap" style={style}>
+        <Grid container spacing={6} wrap="nowrap" style={style} className="kanban">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >

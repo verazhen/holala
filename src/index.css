@@ -1,4 +1,4 @@
-::-webkit-scrollbar {
+.kanban::-webkit-scrollbar {
   display: none;
 }
 
