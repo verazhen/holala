@@ -37,37 +37,16 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
     setExpanded(newExpanded ? panel : false);
   };
   const url = `https://s3.ap-southeast-1.amazonaws.com/verazon.online/${src}`;
-  const jsonFile = `https://s3.ap-southeast-1.amazonaws.com/verazon.online/${transcript}.json`;
 
   useEffect(() => {
     if (!transcript) {
       return;
     }
-    fetch(jsonFile)
-      .then((response) => response.json())
-      .then(({ results }) => {
-        let textArr = [];
-        let text = " ";
-        let counter = 0;
-        let start_time;
-        results.items.map((item) => {
-          if (item.start_time) {
-            if (counter === 0) {
-              start_time = item.start_time;
-            }
-            text = text.concat(item.alternatives[0].content, " ");
-            console.log(text);
-            counter++;
-          } else {
-            const content = text.trim();
-            content.concat(".");
-            textArr.push({ start_time, content });
-            counter = 0;
-            text = " ";
-          }
-        });
-        setNotes(textArr);
-      });
+    fetchData("http://localhost:5000/api/1.0/kanban/1/meeting/1650882217").then(
+      ( data ) => {
+        setNotes(data);
+      }
+    );
   }, []);
 
   return (
@@ -116,9 +95,13 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
             Your browser does not support the video tag.
           </video>
           {notes.map(({ start_time, content }) => (
-            <Typography>
-              {start_time}: {content}
-            </Typography>
+            <Grid container direction="row">
+              <Grid item xs={3}>
+                <Typography>
+                  {start_time}: {content}
+                </Typography>
+              </Grid>
+            </Grid>
           ))}
         </AccordionDetails>
       </Accordion>
