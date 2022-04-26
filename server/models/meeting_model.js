@@ -1,7 +1,6 @@
 const { pool } = require("./mysqlcon");
 const fs = require("fs/promises");
 const aws = require("aws-sdk");
-// const multerS3 = require('multer-s3');
 
 const s3 = new aws.S3({
   secretAccessKey: process.env.S3_SECRET,
