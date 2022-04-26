@@ -84,7 +84,16 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
     const emailHtml = draftToHtml(
       convertToRaw(editorState.getCurrentContent())
     );
-    console.log(emailHtml);
+    const data = {
+      from: "vera.zhen63@gmail.com",
+      to: "vera.zhen63@gmail.com",
+      subject: "test",
+      html: emailHtml,
+    };
+    fetchSetData(
+      "http://localhost:5000/api/1.0/kanban/1/meeting/1650882217/email",
+      data
+    );
   }
 
   function onEditorStateChange(editorState) {
