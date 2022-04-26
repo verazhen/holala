@@ -2,6 +2,9 @@ const { pool } = require("./mysqlcon");
 const fs = require("fs/promises");
 const aws = require("aws-sdk");
 const axios = require("axios").default;
+const api_key = process.env.MAILGUN_KEY;
+const domain = "verazon.online";
+const mailgun = require("mailgun-js")({ apiKey: api_key, domain: domain });
 
 const s3 = new aws.S3({
   secretAccessKey: process.env.S3_SECRET,
@@ -131,9 +134,33 @@ const getNote = async (kanbanId, noteId) => {
   }
 };
 
+const sendEmail = async (kanbanId, noteId, data) => {
+  try {
+    //send Email
+    const mail = {
+      from: data.from,
+      to: data.to,
+      subject: data.subject,
+      html: data.html,
+    };
+
+    mailgun.messages().send(mail, function (error, body) {
+      console.log(body);
+    });
+
+    //TODO: email sending record
+
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 module.exports = {
   getRoom,
   leaveRoom,
   getMeetings,
   getNote,
+  sendEmail,
 };
