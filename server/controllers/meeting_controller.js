@@ -27,9 +27,9 @@ const getNote = async (req, res) => {
 
 const saveNote = async (req, res) => {
   try {
-    const { noteId } = req.params;
+    const { meetingId } = req.params;
     const { data } = req.body;
-    const response = await Meeting.saveNote(noteId, data);
+    const response = await Meeting.saveNote(meetingId, data);
     return res.json({
       data: response,
     });

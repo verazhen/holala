@@ -16,7 +16,7 @@ const s3 = new aws.S3({
 });
 
 const getMeetings = async (kanbanId) => {
-  const [meetingsResponse] = await pool.query(
+  const [res] = await pool.query(
     `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
     [kanbanId]
   );
@@ -157,16 +157,16 @@ const sendEmail = async (kanbanId, noteId, data) => {
   }
 };
 
-const saveNote = async (noteId, data) => {
+const saveNote = async (meetingId, data) => {
   const conn = await pool.getConnection();
   try {
-    const { notes } = data;
+    const { notes,actions } = data;
     await conn.query("START TRANSACTION");
 
-    const [result] = await conn.query(`UPDATE notes SET notes=? WHERE id=?`, [
-      notes,
-      noteId,
-    ]);
+    const [result] = await conn.query(
+      `UPDATE meetings SET notes=?, actions=? WHERE id=?`,
+      [notes,actions, meetingId]
+    );
 
     await conn.query("COMMIT");
 
