@@ -65,7 +65,7 @@ const nativeSignIn = async (email, password) => {
 };
 
 const signIn = async (req, res) => {
-  const data = req.body;
+  const {data} = req.body;
 
   let result;
   result = await nativeSignIn(data.email, data.password);

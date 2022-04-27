@@ -11,7 +11,7 @@ const signUp = async (name, email, password) => {
     await conn.query("START TRANSACTION");
 
     const emails = await conn.query(
-      "SELECT email FROM users WHERE email = ? ",/* FOR UPDATE */
+      "SELECT email FROM users WHERE email = ? " /* FOR UPDATE */,
       [email]
     );
     if (emails[0].length > 0) {
@@ -39,8 +39,6 @@ const signUp = async (name, email, password) => {
       TOKEN_SECRET
     );
 
-    console.log(accessToken);
-
     user.access_token = accessToken;
 
     await conn.query("COMMIT");
@@ -53,51 +51,55 @@ const signUp = async (name, email, password) => {
     await conn.release();
   }
 };
-//
-// const nativeSignIn = async (email, password) => {
-//   const conn = await poolWrite.getConnection();
-//   try {
-//     await conn.query("START TRANSACTION");
-//
-//     const [[user]] = await conn.query("SELECT * FROM users WHERE email = ?", [
-//       email,
-//     ]);
-// //     const user = users[0];
-//     if (!bcrypt.compareAsync(password, user.password)) {
-//       await conn.query("COMMIT");
-//       return { error: "Password is wrong" };
-//     }
-//
-//     const loginAt = new Date();
-//     const accessToken = jwt.asyncSign(
-//       {
-//         name: user.name,
-//         email: user.email,
-//         picture: user.picture,
-//       },
-//       TOKEN_SECRET
-//     );
-//
-//     const queryStr =
-//       "UPDATE users SET access_token = ?, access_expired = ?, login_at = ? WHERE uid = ?";
-//     await conn.query(queryStr, [accessToken, TOKEN_EXPIRE, loginAt, user.id]);
-//
-//     await conn.query("COMMIT");
-//
-//     user.access_token = accessToken;
-//     user.login_at = loginAt;
-//     user.access_expired = TOKEN_EXPIRE;
-//
-//     return { user };
-//   } catch (error) {
-//     await conn.query("ROLLBACK");
-//     return { error };
-//   } finally {
-//     await conn.release();
-//   }
-// };
+
+const nativeSignIn = async (email, password) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+
+    const [[user]] = await conn.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+
+    const hashedPwd = await bcrypt.compareAsync(password, user.password);
+
+    if (!hashedPwd) {
+      await conn.query("COMMIT");
+      return { error: "Password is wrong" };
+    }
+
+    const loginDt = new Date();
+
+    await conn.query("UPDATE users SET login_dt = ? WHERE uid = ?", [
+      loginDt,
+      user.id,
+    ]);
+
+    const accessToken = await jwt.asyncSign(
+      {
+        id: user.id,
+      },
+      TOKEN_SECRET
+    );
+
+    await conn.query("COMMIT");
+
+    user.access_token = accessToken;
+    user.login_dt = loginDt;
+    user.access_expired = TOKEN_EXPIRE;
+    console.log(user);
+
+    return { user };
+  } catch (error) {
+    console.log(error);
+    await conn.query("ROLLBACK");
+    return { error };
+  } finally {
+    await conn.release();
+  }
+};
 
 module.exports = {
   signUp,
-  //   nativeSignIn,
+    nativeSignIn,
 };
