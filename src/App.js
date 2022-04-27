@@ -413,16 +413,16 @@ export default function App() {
             onMouseLeave={handleOnMouseLeave}
           />
 
-          <Container2>
-            <StyledVideo muted ref={userVideo} autoPlay playsInline />
-            {peers.map((peer, index) => {
-              return <Video2 key={index} peer={peer} class="video-peer" />;
-            })}
-          </Container2>
+{/*           <Container2> */}
+{/*             <StyledVideo muted ref={userVideo} autoPlay playsInline /> */}
+{/*             {peers.map((peer, index) => { */}
+{/*               return <Video2 key={index} peer={peer} class="video-peer" />; */}
+{/*             })} */}
+{/*           </Container2> */}
           <Configurator />
 
           {configsButton}
-          <MDButton
+          {/* <MDButton
             variant="gradient"
             color="primary"
             style={style}
@@ -445,7 +445,7 @@ export default function App() {
             onClick={changeScreenState}
           >
             <AspectRatioIcon></AspectRatioIcon>
-          </MDButton>
+          </MDButton> */}
         </>
       )}
       {layout === "vr" && <Configurator />}
