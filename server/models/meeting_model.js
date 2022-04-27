@@ -16,7 +16,7 @@ const s3 = new aws.S3({
 });
 
 const getMeetings = async (kanbanId) => {
-  const [res] = await pool.query(
+  const [meetingsResponse] = await pool.query(
     `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
     [kanbanId]
   );
@@ -89,12 +89,6 @@ const leaveRoom = async ({ uid, kanbanId, url }) => {
       );
       response = result;
     }
-
-//create an empty note
-    await pool.query(
-      `INSERT INTO notes (meeting_id) VALUES (?)`,
-      [res.id]
-    );
 
     await conn.query("COMMIT");
 
