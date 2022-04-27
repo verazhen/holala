@@ -160,12 +160,12 @@ const sendEmail = async (kanbanId, noteId, data) => {
 const saveNote = async (meetingId, data) => {
   const conn = await pool.getConnection();
   try {
-    const { notes } = data;
+    const { notes,actions } = data;
     await conn.query("START TRANSACTION");
 
     const [result] = await conn.query(
-      `UPDATE meetings SET notes=? WHERE id=?`,
-      [notes, meetingId]
+      `UPDATE meetings SET notes=?, actions=? WHERE id=?`,
+      [notes,actions, meetingId]
     );
 
     await conn.query("COMMIT");
