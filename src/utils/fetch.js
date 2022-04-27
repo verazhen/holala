@@ -16,4 +16,14 @@ async function fetchSetData(url, data) {
   });
 }
 
-export { fetchData, fetchSetData };
+async function fetchPutData(url, data) {
+  await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ data }),
+  });
+}
+
+export { fetchData, fetchSetData, fetchPutData };
