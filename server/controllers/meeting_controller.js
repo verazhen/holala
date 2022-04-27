@@ -25,10 +25,23 @@ const getNote = async (req, res) => {
   }
 };
 
+const saveNote = async (req, res) => {
+  try {
+    const { noteId } = req.params;
+    const { data } = req.body;
+    const response = await Meeting.saveNote(noteId, data);
+    return res.json({
+      data: response,
+    });
+  } catch (error) {
+    return { error };
+  }
+};
+
 const sendEmail = async (req, res) => {
   try {
     const { kanbanId, noteId } = req.params;
-    const {data} = req.body;
+    const { data } = req.body;
     const response = await Meeting.sendEmail(kanbanId, noteId, data);
     return res.json({
       data: response,
@@ -42,4 +55,5 @@ module.exports = {
   getMeetings,
   getNote,
   sendEmail,
+  saveNote,
 };

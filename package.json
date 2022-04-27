@@ -37,6 +37,7 @@
     "cors": "^2.8.5",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
+    "html-to-draftjs": "^1.5.0",
     "mailgun-js": "^0.22.0",
     "mongodb": "^4.5.0",
     "morgan-body": "^2.6.6",

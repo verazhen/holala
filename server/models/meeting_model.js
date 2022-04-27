@@ -74,7 +74,7 @@ const leaveRoom = async ({ uid, kanbanId, url }) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const [[res]] = await pool.query(
+    const [[res]] = await conn.query(
       `SELECT user_id,id FROM meetings WHERE kanban_id = ? AND end_dt IS NULL`,
       [kanbanId]
     );
@@ -83,7 +83,7 @@ const leaveRoom = async ({ uid, kanbanId, url }) => {
     if (res.user_id != uid) {
       response = 1;
     } else {
-      const [result] = await pool.query(
+      const [result] = await conn.query(
         `UPDATE meetings SET end_dt=?, record=? WHERE id=? `,
         [1, s3Path, res.id]
       );
@@ -157,10 +157,34 @@ const sendEmail = async (kanbanId, noteId, data) => {
   }
 };
 
+const saveNote = async (noteId, data) => {
+  const conn = await pool.getConnection();
+  try {
+    const { notes } = data;
+    await conn.query("START TRANSACTION");
+
+    const [result] = await conn.query(
+      `UPDATE notes SET notes=? WHERE id=?`,
+      [notes, noteId]
+    );
+
+    await conn.query("COMMIT");
+
+    return result;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   getRoom,
   leaveRoom,
   getMeetings,
   getNote,
   sendEmail,
+  saveNote,
 };
