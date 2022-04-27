@@ -6,7 +6,13 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Editor as Editor2 } from "react-draft-wysiwyg";
-import { Editor, EditorState, convertToRaw, ContentState } from "draft-js";
+import {
+  Editor,
+  EditorState,
+  convertToRaw,
+  convertFromRaw,
+  ContentState,
+} from "draft-js";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import PropTypes from "prop-types";
@@ -14,6 +20,7 @@ import Box from "@mui/material/Box";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Icon from "@mui/material/Icon";
 import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 import { useState, useEffect, useRef } from "react";
 import {
   Container,
@@ -28,9 +35,17 @@ import {
 import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
 import MDTypography from "components/MDTypography";
 import { Link } from "react-router-dom";
 import { fetchData, fetchSetData } from "utils/fetch";
+
+const btnStyle = {
+  border: "0px",
+  backgroundColor: "transparent",
+  textAlign: "left",
+  marginRight: "5px",
+};
 
 const boxStyle = {
   width: "95%",
@@ -92,12 +107,17 @@ function a11yProps(index) {
 
 const Meeting = ({ meetingTitle, src, transcript }) => {
   const [expanded, setExpanded] = useState(false);
-  const [notes, setNotes] = useState([]);
+  const [transcription, setTranscription] = useState([]);
 
   const [editor2State, setEditor2State] = useState(
     EditorState.createWithContent(ContentState.createFromText("hi"))
   );
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const [notes, setNotes] = useState("notes");
+  //   const [editorState, setEditorState] = useState(
+  //     EditorState.createWithContent(ContentState.createFromText(notes))
+  //   );
+
   const editor = useRef(null);
   const [value, setValue] = useState(0);
 
@@ -122,14 +142,21 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
     }
     fetchData("http://localhost:5000/api/1.0/kanban/1/meeting/1650882217").then(
       (data) => {
-        setNotes(data);
+        setTranscription(data);
       }
     );
   }, []);
 
+  function addNote(e) {
+    if (document.activeElement !== editor.current) {
+      focusEditor();
+    }
+    setNotes((prev) => prev.concat("\n", e.target.innerText));
+  }
+
   function sendEmail() {
     const emailHtml = draftToHtml(
-      convertToRaw(editorState.getCurrentContent())
+      convertToRaw(editor2State.getCurrentContent())
     );
     const data = {
       from: "vera.zhen63@gmail.com",
@@ -143,7 +170,7 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
     );
   }
 
-  function onEditorStateChange(editor2State) {
+  function onEditor2StateChange(editor2State) {
     setEditor2State(editor2State);
   }
 
@@ -198,12 +225,19 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
             <Grid item xs={4}>
               <Typography style={scriptTitleStyle}>Transcription</Typography>
               <div style={scriptDivStyle} className="transcript">
-                {notes.map(({ start_time, content }) => (
-                  <Grid container direction="column">
+                {transcription.map(({ start_time, content }) => (
+                  <Grid container direction="row" wrap="nowrap">
                     <Grid item>
-                      <Typography style={scriptStyle}>
-                        {start_time}: {content}
-                      </Typography>
+                      <button style={btnStyle}>
+                        <Typography style={scriptStyle}>
+                          {start_time}:
+                        </Typography>
+                      </button>
+                    </Grid>
+                    <Grid item>
+                      <button style={btnStyle} onClick={addNote}>
+                        <Typography style={scriptStyle}>{content}</Typography>
+                      </button>
                     </Grid>
                   </Grid>
                 ))}
@@ -224,11 +258,35 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
                   </Tabs>
                 </Box>
                 <TabPanel value={value} index={0}>
-                  <Editor
-                    ref={editor}
-                    editorState={editorState}
-                    onChange={(editorState) => setEditorState(editorState)}
-                  />
+                  <Grid container direction="row" wrap="nowrap">
+                    <Grid item xs={6} mx={2}>
+                      <Typography variant="h5">Highlight</Typography>
+                      <textarea
+                        className="text-area"
+                        ref={editor}
+                        onChange={(e) => setNotes(e.target.value)}
+                        value={notes}
+                      ></textarea>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h5">Action Plan</Typography>
+                      <textarea
+                        className="text-area"
+                        label="list your action plan"
+                      ></textarea>
+                    </Grid>
+                  </Grid>
+                  <MDButton
+                    //               component={Link}
+                    //               to={action.route}
+                    variant="gradient"
+                    color="secondary"
+                    fullWidth
+                    onClick={sendEmail}
+                    //               color={action.color}
+                  >
+                    Save
+                  </MDButton>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
                   <Editor2
@@ -236,7 +294,7 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
                     toolbarClassName="editorToolbar"
                     wrapperClassName="editorWrapper"
                     editorClassName="noteEditor"
-                    onEditorStateChange={onEditorStateChange}
+                    onEditorStateChange={onEditor2StateChange}
                   />
                   <MDButton
                     //               component={Link}
