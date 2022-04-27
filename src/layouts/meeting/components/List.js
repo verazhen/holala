@@ -38,7 +38,7 @@ import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 import MDTypography from "components/MDTypography";
 import { Link } from "react-router-dom";
-import { fetchData, fetchSetData } from "utils/fetch";
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 
 const btnStyle = {
   border: "0px",
@@ -105,7 +105,7 @@ function a11yProps(index) {
   };
 }
 
-const Meeting = ({ meetingTitle, src, transcript }) => {
+const Meeting = ({ id, meetingTitle, src, transcript }) => {
   const [expanded, setExpanded] = useState(false);
   const [transcription, setTranscription] = useState([]);
 
@@ -113,10 +113,8 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
     EditorState.createWithContent(ContentState.createFromText("hi"))
   );
 
-  const [notes, setNotes] = useState("notes");
-  //   const [editorState, setEditorState] = useState(
-  //     EditorState.createWithContent(ContentState.createFromText(notes))
-  //   );
+  const [notes, setNotes] = useState("");
+  const [actions, setActions] = useState("");
 
   const editor = useRef(null);
   const [value, setValue] = useState(0);
@@ -168,6 +166,14 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
       "http://localhost:5000/api/1.0/kanban/1/meeting/1650882217/email",
       data
     );
+  }
+
+  function saveNote() {
+    const data = {
+      notes,
+      actions,
+    };
+    fetchPutData(`http://localhost:5000/api/1.0/kanban/1/meeting/${id}`, data);
   }
 
   function onEditor2StateChange(editor2State) {
@@ -273,17 +279,16 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
                       <textarea
                         className="text-area"
                         label="list your action plan"
+                        value={actions}
+                        onChange={(e) => setActions(e.target.value)}
                       ></textarea>
                     </Grid>
                   </Grid>
                   <MDButton
-                    //               component={Link}
-                    //               to={action.route}
                     variant="gradient"
                     color="secondary"
                     fullWidth
-                    onClick={sendEmail}
-                    //               color={action.color}
+                    onClick={saveNote}
                   >
                     Save
                   </MDButton>
@@ -297,13 +302,10 @@ const Meeting = ({ meetingTitle, src, transcript }) => {
                     onEditorStateChange={onEditor2StateChange}
                   />
                   <MDButton
-                    //               component={Link}
-                    //               to={action.route}
                     variant="gradient"
                     color="secondary"
                     fullWidth
                     onClick={sendEmail}
-                    //               color={action.color}
                   >
                     Send Email
                   </MDButton>

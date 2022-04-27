@@ -56,7 +56,8 @@ function Tables() {
               </MDBox>
               <MDBox pt={3}>
                 {meetings.map((meeting) => (
-                  <Meeting meetingTitle={meeting.start_dt} src={meeting.record} transcript={meeting.transcript}/>
+                  <Meeting id={meeting.id} meetingTitle={meeting.start_dt} src={meeting.record} transcript={meeting
+                  .transcript}/>
                 ))}
               </MDBox>
             </Card>
