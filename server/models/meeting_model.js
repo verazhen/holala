@@ -90,6 +90,12 @@ const leaveRoom = async ({ uid, kanbanId, url }) => {
       response = result;
     }
 
+//create an empty note
+    await pool.query(
+      `INSERT INTO notes (meeting_id) VALUES (?)`,
+      [res.id]
+    );
+
     await conn.query("COMMIT");
 
     return response;
@@ -163,10 +169,10 @@ const saveNote = async (noteId, data) => {
     const { notes } = data;
     await conn.query("START TRANSACTION");
 
-    const [result] = await conn.query(
-      `UPDATE notes SET notes=? WHERE id=?`,
-      [notes, noteId]
-    );
+    const [result] = await conn.query(`UPDATE notes SET notes=? WHERE id=?`, [
+      notes,
+      noteId,
+    ]);
 
     await conn.query("COMMIT");
 
