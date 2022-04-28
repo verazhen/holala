@@ -1,23 +1,10 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -29,23 +16,27 @@ import PageLayout from "examples/LayoutContainers/PageLayout";
 // Authentication pages components
 import Footer from "layouts/authentication/components/Footer";
 
-function BasicLayout({ image, children }) {
+function BasicLayout({ image, children, notification }) {
   return (
     <PageLayout>
-      <DefaultNavbar
-        action={{
-          type: "external",
-          route: "https://creative-tim.com/product/material-dashboard-react",
-          label: "free download",
-          color: "dark",
-        }}
-      />
+      {/*       <DefaultNavbar */}
+      {/*         action={{ */}
+      {/*           type: "external", */}
+      {/*           route: "https://creative-tim.com/product/material-dashboard-react", */}
+      {/*           label: "free download", */}
+      {/*           color: "dark", */}
+      {/*         }} */}
+      {/*       /> */}
+
       <MDBox
         position="absolute"
         width="100%"
         minHeight="100vh"
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
+          backgroundImage: ({
+            functions: { linearGradient, rgba },
+            palette: { gradients },
+          }) =>
             image &&
             `${linearGradient(
               rgba(gradients.dark.main, 0.6),
@@ -56,8 +47,28 @@ function BasicLayout({ image, children }) {
           backgroundRepeat: "no-repeat",
         }}
       />
+      <MDBox position="absolute" width="100%" minHeight="10vh">
+        <Stack
+          sx={{ width: "50%" }}
+          mt={25}
+          mx="auto"
+          spacing={2}
+        >
+          {Object.keys(notification).length !== 0 ? (
+            <Alert severity={notification.status}>{notification.message}</Alert>
+          ) : (
+            <></>
+          )}
+        </Stack>
+      </MDBox>
       <MDBox px={1} width="100%" height="100vh" mx="auto">
-        <Grid container spacing={1} justifyContent="center" alignItems="center" height="100%">
+        <Grid
+          container
+          spacing={1}
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
           <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
             {children}
           </Grid>

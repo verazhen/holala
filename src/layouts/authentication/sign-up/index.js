@@ -1,24 +1,11 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 // react-router-dom components
 import { Link } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
 import Checkbox from "@mui/material/Checkbox";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -27,14 +14,36 @@ import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 
 // Authentication layout components
-import CoverLayout from "layouts/authentication/components/CoverLayout";
+import BasicLayout from "layouts/authentication/components/BasicLayout";
+import { fetchSetData } from "utils/fetch";
+import { useState, useEffect, useRef } from "react";
 
 // Images
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 
 function Cover() {
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [signUpMsg, setSignUpMsg] = useState({});
+
+  function signUp() {
+    const data = { name, password, email };
+    fetchSetData(`http://localhost:5000/api/1.0/user/signup`, data).then(
+      ({ status_code, data, error }) => {
+        if (status_code !== 200) {
+          setSignUpMsg({status:"error",message:error})
+        } else {
+          localStorage.setItem("access_token", data.access_token);
+          setSignUpMsg({status:"success",message:"Sign Up Success!"})
+          window.location.href = "/index";
+        }
+      }
+    );
+  }
+
   return (
-    <CoverLayout image={bgImage}>
+    <BasicLayout notification={signUpMsg}>
       <Card>
         <MDBox
           variant="gradient"
@@ -57,13 +66,34 @@ function Cover() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="text" label="Name" variant="standard" fullWidth />
+              <MDInput
+                type="text"
+                label="Name"
+                variant="standard"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                fullWidth
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" variant="standard" fullWidth />
+              <MDInput
+                type="email"
+                label="Email"
+                variant="standard"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" variant="standard" fullWidth />
+              <MDInput
+                type="password"
+                label="Password"
+                variant="standard"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                fullWidth
+              />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Checkbox />
@@ -87,8 +117,13 @@ function Cover() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
-                sign in
+              <MDButton
+                variant="gradient"
+                color="info"
+                fullWidth
+                onClick={signUp}
+              >
+                sign up
               </MDButton>
             </MDBox>
             <MDBox mt={3} mb={1} textAlign="center">
@@ -109,7 +144,7 @@ function Cover() {
           </MDBox>
         </MDBox>
       </Card>
-    </CoverLayout>
+    </BasicLayout>
   );
 }
 
