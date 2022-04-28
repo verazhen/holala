@@ -3,7 +3,7 @@ require("dotenv").config();
 const { pool } = require("./mysqlcon");
 const salt = parseInt(process.env.BCRYPT_SALT);
 const { TOKEN_EXPIRE, TOKEN_SECRET } = process.env; // 30 days by seconds
-const { jwt, bcrypt } = require("../../util/util");
+const { jwt, bcrypt } = require("../../util/authTool");
 
 const signUp = async (name, email, password) => {
   const conn = await pool.getConnection();
@@ -34,7 +34,7 @@ const signUp = async (name, email, password) => {
     const accessToken = await jwt.asyncSign(
       {
         id: result.insertId,
-        name: user.name
+        name: user.name,
       },
       TOKEN_SECRET
     );
@@ -78,7 +78,7 @@ const nativeSignIn = async (email, password) => {
     const accessToken = await jwt.asyncSign(
       {
         id: user.id,
-        name: user.name
+        name: user.name,
       },
       TOKEN_SECRET
     );
@@ -101,5 +101,5 @@ const nativeSignIn = async (email, password) => {
 
 module.exports = {
   signUp,
-    nativeSignIn,
+  nativeSignIn,
 };
