@@ -7,6 +7,7 @@ const getKanbans = async (req, res) => {
 
     res.status(200).send({
       status_code: 200,
+      user: req.user,
       data,
     });
   } catch (error) {
