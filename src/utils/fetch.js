@@ -7,13 +7,14 @@ async function fetchData(url) {
 }
 
 async function fetchSetData(url, data) {
-  await fetch(url, {
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
     },
     body: JSON.stringify({ data }),
   });
+  return res.json();
 }
 
 async function fetchPutData(url, data) {
