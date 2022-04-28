@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-
+import { fetchData, fetchSetData } from "utils/fetch";
+import { useParams } from "react-router-dom";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Form from "react-bootstrap/Form";
@@ -37,27 +38,116 @@ const inputStyle = {
 
 function Dashboard() {
   const [age, setAge] = useState("");
+  const defaultTask = {
+    taskAmount: 0,
+    taskAmountCompared: 0,
+  };
+  const [totalTasks, setTotalTasks] = useState(defaultTask);
+  const [finishedTasks, setFinishedTasks] = useState(defaultTask);
+  const [unfinishedTasks, setUnfinishedTasks] = useState(defaultTask);
+  const [range, setRange] = useState(7);
+  const { kanbanId } = useParams();
+
+  useEffect(() => {
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
+      true
+    ).then(({ data }) => {
+      const newTask = JSON.parse(JSON.stringify(totalTasks));
+      newTask.taskAmount = data.taskAmount;
+      newTask.taskAmountCompared = data.taskAmountCompared;
+      setTotalTasks(newTask);
+    });
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/finishedByRange?range=${range}`,
+      true
+    ).then(({ data }) => {
+      const newTask = JSON.parse(JSON.stringify(finishedTasks));
+      newTask.taskAmount = data.taskAmount;
+      newTask.taskAmountCompared = data.taskAmountCompared;
+      setFinishedTasks(newTask);
+    });
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/unfinishedByRange?range=${range}`,
+      true
+    ).then(({ data }) => {
+      const newTask = JSON.parse(JSON.stringify(unfinishedTasks));
+      newTask.taskAmount = data.taskAmount;
+      newTask.taskAmountCompared = data.taskAmountCompared;
+      setUnfinishedTasks(newTask);
+    });
+  }, []);
 
   const handleChange = (event) => {
     setAge(event.target.value);
   };
 
+  function compare(a, b) {
+    if (b === 0) return `+999%`;
+    const number = Math.floor((a / b - 1) * 10000) / 100;
+
+    const percentage = a >= b ? `+${number}%` : `${number}%`;
+    return percentage;
+  }
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3}>
+        <MDBox mb={3}>
+          <Grid container spacing={3} wrap="nowrap">
+            <Grid item alignSelf="center">
+              <MDTypography variant="h6" style={{ verticalAlign: "middle" }}>
+                Range:{" "}
+              </MDTypography>
+            </Grid>
+            <Grid item xs={11}>
+              <Form.Select
+                style={inputStyle}
+                className="no-outline"
+                onChange={(e) => setRange(e.target.value)}
+              >
+                <option value={7}>Last 7 Days</option>
+                <option value={30}>Last 30 Days</option>
+                <option value={365}>Last Year</option>
+              </Form.Select>
+            </Grid>
+          </Grid>
+        </MDBox>
+        <MDBox mb={3}>
+          <Grid container spacing={3} wrap="nowrap">
+            <Grid item alignSelf="center">
+              <MDTypography variant="h6" style={{ verticalAlign: "middle" }}>
+                Interval:{" "}
+              </MDTypography>
+            </Grid>
+            <Grid item xs={11}>
+              <Form.Select style={inputStyle} className="no-outline">
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+              </Form.Select>
+            </Grid>
+          </Grid>
+        </MDBox>
+
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
                 icon="assignment"
-                title="Total Tasks"
-                count={281}
+                title="Total Tasks Accumulated"
+                count={totalTasks.taskAmount}
                 percentage={{
                   color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
+                  amount: compare(
+                    totalTasks.taskAmount,
+                    totalTasks.taskAmountCompared
+                  ),
+                  label: `than last ${range} Days`,
                 }}
               />
             </MDBox>
@@ -66,12 +156,15 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 icon="check_circle"
-                title="Finished Tasks"
-                count="2,300"
+                title="Finished Tasks by Range"
+                count={finishedTasks.taskAmount}
                 percentage={{
                   color: "success",
-                  amount: "+3%",
-                  label: "than last month",
+                  amount: compare(
+                    finishedTasks.taskAmount,
+                    finishedTasks.taskAmountCompared
+                  ),
+                  label: `than last ${range} Days`,
                 }}
               />
             </MDBox>
@@ -81,12 +174,15 @@ function Dashboard() {
               <ComplexStatisticsCard
                 color="success"
                 icon="check_circle_outline"
-                title="Unfinished Tasks"
-                count="34k"
+                title="Unfinished Tasks by Range"
+                count={unfinishedTasks.taskAmount}
                 percentage={{
                   color: "success",
-                  amount: "+1%",
-                  label: "than yesterday",
+                  amount: compare(
+                    unfinishedTasks.taskAmount,
+                    unfinishedTasks.taskAmountCompared
+                  ),
+                  label: `than last ${range} Days`,
                 }}
               />
             </MDBox>
@@ -110,26 +206,6 @@ function Dashboard() {
         <MDBox mt={4.5}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={6}>
-              <MDBox mb={3}>
-                <Grid container spacing={3} wrap="nowrap">
-                  <Grid item alignSelf="center">
-                    <MDTypography
-                      variant="h6"
-                      style={{ verticalAlign: "middle" }}
-                    >
-                      Interval:{" "}
-                    </MDTypography>
-                  </Grid>
-                  <Grid item xs={11}>
-                    <Form.Select style={inputStyle} className="no-outline">
-                      <option>Daily</option>
-                      <option>Weekly</option>
-                      <option>Monthly</option>
-                    </Form.Select>
-                  </Grid>
-                </Grid>
-              </MDBox>
-
               <MDBox mb={3}>
                 <MixedChart
                   icon={{ color: "info", component: "leaderboard" }}
@@ -172,27 +248,6 @@ function Dashboard() {
               </MDBox>
             </Grid>
             <Grid item xs={12} md={6} lg={6}>
-              <MDBox mb={3}>
-                <Grid container spacing={3} wrap="nowrap">
-                  <Grid item alignSelf="center">
-                    <MDTypography
-                      variant="h6"
-                      style={{ verticalAlign: "middle" }}
-                    >
-                      Range:{" "}
-                    </MDTypography>
-                  </Grid>
-                  <Grid item xs={11}>
-                    <Form.Select style={inputStyle} className="no-outline">
-                      <option>Today</option>
-                      <option>This Week</option>
-                      <option>This Month</option>
-                      <option>This Quarter</option>
-                    </Form.Select>
-                  </Grid>
-                </Grid>
-              </MDBox>
-
               <MDBox mb={3}>
                 <MixedChart
                   icon={{ color: "info", component: "leaderboard" }}
