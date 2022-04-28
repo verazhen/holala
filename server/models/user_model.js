@@ -21,7 +21,6 @@ const signUp = async (name, email, password) => {
 
     const loginDt = new Date();
     const hashedPassword = await bcrypt.hashAsync(password, salt);
-    console.log(hashedPassword);
     const user = {
       email,
       password: hashedPassword,
@@ -35,6 +34,7 @@ const signUp = async (name, email, password) => {
     const accessToken = await jwt.asyncSign(
       {
         id: result.insertId,
+        name: user.name
       },
       TOKEN_SECRET
     );
@@ -78,6 +78,7 @@ const nativeSignIn = async (email, password) => {
     const accessToken = await jwt.asyncSign(
       {
         id: user.id,
+        name: user.name
       },
       TOKEN_SECRET
     );
