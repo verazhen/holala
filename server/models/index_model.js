@@ -7,14 +7,15 @@ const getKanbans = async (uid) => {
     [uid]
   );
 
+  if (kanbans.length === 0) {
+    return [];
+  }
   const id = kanbans.reduce((accu, prev) => {
     accu.push(prev.kanban_id);
     return accu;
   }, []);
-console.log(id)
-  const test = [[1, 2]];
   const [res] = await pool.query("SELECT * FROM kanbans WHERE kanban_id IN ?", [
-    [id]
+    [id],
   ]);
 
   return res;

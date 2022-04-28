@@ -6,18 +6,15 @@ const {
   delKanban,
 } = require("../controllers/index_controller");
 
-const { wrapAsync } = require("../../util/util");
+const { wrapAsync, authentication } = require("../../util/util");
 
 //get all kanbans
-router.route("/kanbans").get(wrapAsync(getKanbans));
+router.route("/kanbans").get(authentication(),wrapAsync(getKanbans));
 
 //create or edit a kanban
-router.route("/kanban").post(wrapAsync(updateKanban));
+router.route("/kanban").post(authentication(),wrapAsync(updateKanban));
 
 //delete a kanban
-router.route("/kanban").delete(wrapAsync(delKanban));
-
-
-
+router.route("/kanban").delete(authentication(),wrapAsync(delKanban));
 
 module.exports = router;

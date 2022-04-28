@@ -1,12 +1,17 @@
 const Kanban = require("../models/index_model");
 
 const getKanbans = async (req, res) => {
-  const uid = 1;
-  const data = await Kanban.getKanbans(uid);
+  try {
+    const { id } = req.user;
+    const data = await Kanban.getKanbans(id);
 
-  return res.json({
-    data,
-  });
+    res.status(200).send({
+      status_code: 200,
+      data,
+    });
+  } catch (error) {
+    return { error };
+  }
 };
 
 module.exports = {
