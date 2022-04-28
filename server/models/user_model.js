@@ -21,7 +21,6 @@ const signUp = async (name, email, password) => {
 
     const loginDt = new Date();
     const hashedPassword = await bcrypt.hashAsync(password, salt);
-    console.log(hashedPassword);
     const user = {
       email,
       password: hashedPassword,
