@@ -88,7 +88,6 @@ const nativeSignIn = async (email, password) => {
     user.access_token = accessToken;
     user.login_dt = loginDt;
     user.access_expired = TOKEN_EXPIRE;
-    console.log(user);
 
     return { user };
   } catch (error) {
