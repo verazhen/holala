@@ -70,7 +70,7 @@ const nativeSignIn = async (email, password) => {
 
     const loginDt = new Date();
 
-    await conn.query("UPDATE users SET login_dt = ? WHERE uid = ?", [
+    await conn.query("UPDATE users SET login_dt = ? WHERE id = ?", [
       loginDt,
       user.id,
     ]);
@@ -99,7 +99,21 @@ const nativeSignIn = async (email, password) => {
   }
 };
 
+const getUserDetail = async (id) => {
+  try {
+    const [[user]] = await pool.query(
+      "SELECT * FROM users WHERE id = ?",
+      [id]
+    );
+    return user;
+  } catch (e) {
+  console.log(e)
+    return null;
+  }
+};
+
 module.exports = {
   signUp,
   nativeSignIn,
+  getUserDetail,
 };
