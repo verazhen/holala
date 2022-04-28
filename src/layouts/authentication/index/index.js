@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 // @mui material components
 import Grid from "@mui/material/Grid";
 
@@ -5,34 +6,28 @@ import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
-import BasicLayout from "layouts/authentication/components/IndexLayout";
+import IndexLayout from "layouts/authentication/components/IndexLayout";
 import Footer from "examples/Footer";
-// import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
-// import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
-// import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
-
-// Data
-// import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
-// import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 
 // Dashboard components
-import Projects from "layouts/authentication/components/Projects";
+import Projects from "layouts/authentication/index/components/kanbans";
 // import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 
 function Index() {
-  //   const { sales, tasks } = reportsLineChartData;
+  const [user, setUser] = useState({name:""});
+
   return (
-    <BasicLayout>
+    <IndexLayout user={user}>
       <MDBox py={3}>
         <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={12} lg={12}>
-              <Projects />
+              <Projects setUser={setUser} />
             </Grid>
           </Grid>
         </MDBox>
       </MDBox>
-    </BasicLayout>
+    </IndexLayout>
   );
 }
 

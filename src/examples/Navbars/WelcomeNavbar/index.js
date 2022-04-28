@@ -40,7 +40,7 @@ import breakpoints from "assets/theme/base/breakpoints";
 // Material Dashboard 2 React context
 import { useMaterialUIController } from "context";
 
-function DefaultNavbar({ transparent, light, action }) {
+function DefaultNavbar({ transparent, light, action,user }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
 
@@ -110,7 +110,7 @@ function DefaultNavbar({ transparent, light, action }) {
           pl={{ xs: 0, lg: 1 }}
         >
           <MDTypography variant="h2" fontWeight="bold" color={light ? "white" : "dark"}>
-            Hi! Vera
+            Hi! {user.name}
           </MDTypography>
         </MDBox>
         {action &&

@@ -1,19 +1,34 @@
-async function fetchData(url) {
-  let res = await fetch(url);
+async function fetchData(url, needUser) {
+  const access_token = localStorage.getItem("access_token");
+  let res = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: "Bearer " + access_token,
+    },
+  });
 
-  const { data } = await res.json();
+  const { user, data } = await res.json();
 
-  return data;
+  if (needUser) {
+    return { user, data };
+  } else {
+    return data;
+  }
 }
 
 async function fetchSetData(url, data) {
+  const access_token = localStorage.getItem("access_token");
+
   const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
+      Authorization: "Bearer " + access_token,
     },
     body: JSON.stringify({ data }),
   });
+
   return res.json();
 }
 
