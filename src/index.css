@@ -50,3 +50,7 @@
   border: 0;
   background-color: transparent;
 }
+
+.no-outline:focus {
+  outline: 0;
+}
