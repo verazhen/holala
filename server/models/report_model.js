@@ -31,8 +31,9 @@ const getTasksAmount = async (kanbanId, status, range) => {
 
     let tasks;
     let tasksCompared;
-    let rangeStart = new Date();
-    rangeStart.setDate(rangeStart.getDate() - range);
+    const timestamp = Date.now();
+    const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
+    const rangeStartCompared = new Date(timestamp - 1000 * 60 * 60 * 24 * (range*2 - 1));
 
     const tasksSql = {
       all: `SELECT count(*) FROM tasks WHERE list_id in (?) `,
@@ -46,8 +47,6 @@ const getTasksAmount = async (kanbanId, status, range) => {
       unfinishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND (checked IS NULL OR checked >= ?)`,
     };
 
-    let rangeStartCompared = new Date();
-    rangeStartCompared.setDate(rangeStartCompared.getDate() - range * 2);
 
     [[tasks]] = await pool.query(tasksSql[status], [listIds, rangeStart]);
 
@@ -81,8 +80,6 @@ const getTasksChart = async (kanbanId, range, interval) => {
     const timestamp = Date.now();
     const rangeEnd = new Date(timestamp);
     const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
-    console.log(rangeEnd);
-    console.log(rangeStart);
 
     const [tasks] = await pool.query(
       `SELECT checked,create_dt FROM tasks WHERE list_id in (?)`,
@@ -102,11 +99,10 @@ const getTasksChart = async (kanbanId, range, interval) => {
     //     }
 
     function getTags(currTime, end, interval) {
-      for (let i = 0; i < range / interval; i++) {
+      for (let i = 0; i < range / interval + 1; i++) {
         let date = new Date(
-          timestamp - 1000 * 60 * 60 * 24 * (range - 1 + i * interval)
+          timestamp - 1000 * 60 * 60 * 24 * (range - 1 - i * interval)
         );
-        date.setDate(end.getDate() + interval * i);
         date = getFullDate(date);
         intervalTags.push(date);
       }
@@ -134,6 +130,10 @@ const getTasksChart = async (kanbanId, range, interval) => {
       accu.push(checkedInRange.length);
       return accu;
     }, []);
+
+    intervalTags.pop();
+    finishedTaskSet.pop();
+    remainingTaskSet.pop();
 
     const idealTaskSetInterval =
       (remainingTaskSet[0] - remainingTaskSet[remainingTaskSet.length - 1]) /
