@@ -80,6 +80,41 @@ function Dashboard() {
     });
   }, []);
 
+  useEffect(() => {
+    console.log(range);
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
+      true
+    ).then(({ data }) => {
+      const newTask = JSON.parse(JSON.stringify(totalTasks));
+      newTask.taskAmount = data.taskAmount;
+      newTask.taskAmountCompared = data.taskAmountCompared;
+      setTotalTasks(newTask);
+    });
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/finishedByRange?range=${range}`,
+      true
+    ).then(({ data }) => {
+      const newTask = JSON.parse(JSON.stringify(finishedTasks));
+      newTask.taskAmount = data.taskAmount;
+      newTask.taskAmountCompared = data.taskAmountCompared;
+      console.log(newTask);
+      console.log(data);
+      setFinishedTasks(newTask);
+    });
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/unfinishedByRange?range=${range}`,
+      true
+    ).then(({ data }) => {
+      const newTask = JSON.parse(JSON.stringify(unfinishedTasks));
+      newTask.taskAmount = data.taskAmount;
+      newTask.taskAmountCompared = data.taskAmountCompared;
+      setUnfinishedTasks(newTask);
+    });
+  }, [range]);
+
   const handleChange = (event) => {
     setAge(event.target.value);
   };
@@ -97,13 +132,13 @@ function Dashboard() {
       <DashboardNavbar />
       <MDBox py={3}>
         <MDBox mb={3}>
-          <Grid container spacing={3} wrap="nowrap">
+          <Grid container spacing={3} wrap="nowrap" direction="row">
             <Grid item alignSelf="center">
               <MDTypography variant="h6" style={{ verticalAlign: "middle" }}>
                 Range:{" "}
               </MDTypography>
             </Grid>
-            <Grid item xs={11}>
+            <Grid item xs={5}>
               <Form.Select
                 style={inputStyle}
                 className="no-outline"
@@ -114,16 +149,12 @@ function Dashboard() {
                 <option value={365}>Last Year</option>
               </Form.Select>
             </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox mb={3}>
-          <Grid container spacing={3} wrap="nowrap">
             <Grid item alignSelf="center">
               <MDTypography variant="h6" style={{ verticalAlign: "middle" }}>
                 Interval:{" "}
               </MDTypography>
             </Grid>
-            <Grid item xs={11}>
+            <Grid item xs={5}>
               <Form.Select style={inputStyle} className="no-outline">
                 <option>Daily</option>
                 <option>Weekly</option>
@@ -132,7 +163,6 @@ function Dashboard() {
             </Grid>
           </Grid>
         </MDBox>
-
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
