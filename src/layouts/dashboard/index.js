@@ -46,7 +46,18 @@ function Dashboard() {
   const [finishedTasks, setFinishedTasks] = useState(defaultTask);
   const [unfinishedTasks, setUnfinishedTasks] = useState(defaultTask);
   const [range, setRange] = useState(7);
+  const [interval, setInterval] = useState(1);
   const { kanbanId } = useParams();
+  const [intervalTags, setIntervalTags] = useState([
+    "d1",
+    "d2",
+    "d3",
+    "d4",
+    "d5",
+  ]);
+  const [finishedTaskSet, setFinishedTaskSet] = useState([1, 2, 3, 5, 5]);
+  const [remainingTaskSet, setRemainingTaskSet] = useState([5, 5, 5, 3, 2, 1]);
+  const [idealTaskSet, setIdealTaskSet] = useState([5, 5, 4, 3, 2, 1]);
 
   useEffect(() => {
     fetchData(
@@ -77,6 +88,16 @@ function Dashboard() {
       newTask.taskAmount = data.taskAmount;
       newTask.taskAmountCompared = data.taskAmountCompared;
       setUnfinishedTasks(newTask);
+    });
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskChart?range=${range}&interval=${interval}`,
+      true
+    ).then(({ data }) => {
+      setIntervalTags(data.intervalTags);
+      setFinishedTaskSet(data.finishedTaskSet);
+      setRemainingTaskSet(data.remainingTaskSet);
+      setIdealTaskSet(data.idealTaskSet);
     });
   }, []);
 
@@ -99,8 +120,6 @@ function Dashboard() {
       const newTask = JSON.parse(JSON.stringify(finishedTasks));
       newTask.taskAmount = data.taskAmount;
       newTask.taskAmountCompared = data.taskAmountCompared;
-      console.log(newTask);
-      console.log(data);
       setFinishedTasks(newTask);
     });
 
@@ -113,7 +132,17 @@ function Dashboard() {
       newTask.taskAmountCompared = data.taskAmountCompared;
       setUnfinishedTasks(newTask);
     });
-  }, [range]);
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskChart?range=${range}&interval=${interval}`,
+      true
+    ).then(({ data }) => {
+      setIntervalTags(data.intervalTags);
+      setFinishedTaskSet(data.finishedTaskSet);
+      setRemainingTaskSet(data.remainingTaskSet);
+      setIdealTaskSet(data.idealTaskSet);
+    });
+  }, [range, interval]);
 
   const handleChange = (event) => {
     setAge(event.target.value);
@@ -155,10 +184,14 @@ function Dashboard() {
               </MDTypography>
             </Grid>
             <Grid item xs={5}>
-              <Form.Select style={inputStyle} className="no-outline">
-                <option>Daily</option>
-                <option>Weekly</option>
-                <option>Monthly</option>
+              <Form.Select
+                style={inputStyle}
+                className="no-outline"
+                onChange={(e) => setInterval(e.target.value)}
+              >
+                <option value={1}>Daily</option>
+                <option value={7}>Weekly</option>
+                <option value={30}>Monthly</option>
               </Form.Select>
             </Grid>
           </Grid>
@@ -239,38 +272,28 @@ function Dashboard() {
               <MDBox mb={3}>
                 <MixedChart
                   icon={{ color: "info", component: "leaderboard" }}
-                  title="Tasks Status"
-                  description="Tasks finished/unfinished by time"
+                  title="Burn Down Chart"
+                  description="Tasks finished by time"
                   chart={{
-                    labels: [
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ],
+                    labels: intervalTags,
                     datasets: [
                       {
                         chartType: "bar",
                         label: "Finished Tasks",
                         color: "dark",
-                        data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-                      },
-                      {
-                        chartType: "thin-bar",
-                        label: "unFinished Tasks",
-                        color: "primary",
-                        data: [60, 30, 300, 220, 500, 250, 400, 230, 500],
+                        data: finishedTaskSet,
                       },
                       {
                         chartType: "gradient-line",
-                        label: "Total Tasks",
+                        label: "Remaining Tasks",
                         color: "secondary",
-                        data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+                        data: remainingTaskSet,
+                      },
+                      {
+                        chartType: "default-line",
+                        label: "Ideal Burn-down",
+                        color: "primary",
+                        data: idealTaskSet,
                       },
                     ],
                   }}
