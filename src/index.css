@@ -68,8 +68,8 @@
 
 .title {
   border: 0;
-  height: 2rem;
-  font-size: 1.5rem;
+  height: 3rem;
+  font-size: 2rem;
   width: 100%;
   padding: 20px 0;
   border-radius: 5px;
@@ -98,18 +98,36 @@
 }
 .basicModal {
   top: -280px;
-  height:85vh;
+  height: 85vh;
 }
 
 .modal-label {
   font-size: 1.3rem;
   font-weight: bold;
   color: dimgrey;
+  margin-right: 10px;
 }
 
 .leave-comment {
   border: 1px solid lightgray;
   border-radius: 5px;
   height: 2.6rem;
-  width:100%
+  width: 100%;
+}
+
+.todo,
+.file-name {
+  border: 0;
+  height: 1.5rem;
+  font-size: 1rem;
+  width: 80%;
+  padding: 15px 5px;
+  border-radius: 5px;
+}
+
+.todo:focus,
+.todo:hover,
+.file-name:focus,
+.file-name:hover {
+  outline: 1px solid lightgray;
 }

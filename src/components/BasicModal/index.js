@@ -23,7 +23,6 @@ import styled from "styled-components";
 import Paper from "@mui/material/Paper";
 import MDProgress from "components/MDProgress";
 
-
 const ResultArea = styled.div`
   width: 100%;
   height: 100%;
@@ -45,6 +44,7 @@ function BasicModal({
   const [title, setTitle] = useState(taskName);
   const [tagInput, setTagInput] = useState("");
   const [notes, setNotes] = useState("say Something about this task...");
+  const [files, setFiles] = useState([]);
   const [comments, setComments] = useState([
     { name: "Vera", content: "Hello World" },
     { name: "Vera", content: "Hello World2" },
@@ -139,7 +139,7 @@ function BasicModal({
     >
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <Grid container spacing={3} direction="row" wrap="nowrap">
+          <Grid container spacing={3} direction="row" wrap="nowrap"  mb={3}>
             <Grid item xs={10}>
               <input
                 type="text"
@@ -156,8 +156,13 @@ function BasicModal({
             <Grid container spacing={3} direction="row" wrap="nowrap">
               <Grid item>
                 <label className="modal-label">Assignee</label>
-                <br />
-                <Grid container spacing={2} direction="row" wrap="nowrap">
+                <Grid
+                  container
+                  spacing={1}
+                  direction="row"
+                  wrap="nowrap"
+                  mt={0.3}
+                >
                   <Grid item>
                     <Avatar>{assignee.charAt(0)}</Avatar>
                   </Grid>
@@ -197,8 +202,13 @@ function BasicModal({
               </Grid>
               <Grid item>
                 <label className="modal-label">Due</label>
-                <br />
-                <Grid container spacing={2} direction="row" wrap="nowrap">
+                <Grid
+                  container
+                  spacing={2}
+                  direction="row"
+                  wrap="nowrap"
+                  mt={-0.5}
+                >
                   <Grid item>
                     <Checkbox sx={{ transform: "scale(1.2)" }} />
                   </Grid>{" "}
@@ -212,13 +222,12 @@ function BasicModal({
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item>
+            <Grid item mt={1.5}>
               <label className="modal-label">Tags</label>
-              <br />
-              <Grid container direction="row">
+              <Grid container direction="row" mt={1}>
                 {chipData.map((data) => {
                   return (
-                    <Grid item>
+                    <Grid item mr={1}>
                       <Chip
                         label={data.label}
                         onDelete={
@@ -314,8 +323,8 @@ function BasicModal({
         </Grid>
         <Grid item>
           <label className="modal-label">To-Do List</label>
-          <MDProgress value={progress} />
-          <Grid container spacing={2} direction="column" wrap="nowrap">
+          <MDProgress value={progress} mt={1} />
+          <Grid container spacing={2} direction="column" wrap="nowrap" >
             {todos.map((data) => {
               return (
                 <Grid item>
@@ -334,6 +343,7 @@ function BasicModal({
                   <input
                     type="text"
                     value={data.label}
+                    className="todo"
                     onChange={(e) =>
                       setTodos((prev) => {
                         const newArr = [...prev];
@@ -365,6 +375,51 @@ function BasicModal({
               ADD ToDo
             </MDButton>
           </Grid>
+        </Grid>
+        <Grid item>
+          <label className="modal-label">Attachments</label>
+          <MDButton variant="contained" component="label">
+            Upload File
+            <input
+              type="file"
+              onChange={(e) => {
+                setFiles((prev) => {
+                  return [
+                    ...prev,
+                    {
+                      key: prev.length,
+                      src: URL.createObjectURL(e.target.files[0]),
+                      name: e.target.files[0].name,
+                    },
+                  ];
+                });
+              }}
+              hidden
+            />
+          </MDButton>
+          {files.map((file) => {
+            return (
+              <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
+                <Grid item>
+                  <img src={file.src} width="80px" />
+                </Grid>
+                <Grid item xs={8}>
+                  <input
+                    type="text"
+                    value={file.name}
+                    className="file-name"
+                    onChange={(e) =>
+                      setFiles((prev) => {
+                        const newArr = [...prev];
+                        newArr[file.key].name = e.target.value;
+                        return newArr;
+                      })
+                    }
+                  ></input>
+                </Grid>
+              </Grid>
+            );
+          })}
         </Grid>
         <Grid item>
           <label className="modal-label">Comment</label>
