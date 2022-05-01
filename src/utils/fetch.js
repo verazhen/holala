@@ -33,13 +33,17 @@ async function fetchSetData(url, data) {
 }
 
 async function fetchPutData(url, data) {
-  await fetch(url, {
+  const access_token = localStorage.getItem("access_token");
+  const res = await fetch(url, {
     method: "PUT",
     headers: {
       "Content-type": "application/json",
+      Authorization: "Bearer " + access_token,
     },
     body: JSON.stringify({ data }),
   });
+
+  return res.json();
 }
 
 export { fetchData, fetchSetData, fetchPutData };

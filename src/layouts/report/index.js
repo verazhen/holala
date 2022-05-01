@@ -21,7 +21,7 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import projectsTableData from "layouts/report/data/projectsTableData";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { fetchData, fetchSetData } from "utils/fetch";
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { addLocalStorage, getLocalStorage } from "utils/utils";
 
 function Tables() {

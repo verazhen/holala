@@ -7,6 +7,7 @@ import MDTypography from "components/MDTypography";
 import BasicModal from "components/BasicModal";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 
 import { Draggable } from "react-beautiful-dnd";
 const Item = ({
@@ -31,12 +32,16 @@ const Item = ({
   const [open, setOpen] = useState(false);
 
   function deleteItem() {
-    submittingStatus.current = true;
+//     submittingStatus.current = true;
     const list = lists[listIndex];
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[listIndex].tasks[index].delete_dt = 1;
-
     setLists(newLists);
+
+    const data = {delete_dt : 1}
+    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,data).then(
+    res=>console.log(res)
+    )
   }
   const styles = {
     fontFamily: "sans-serif",
