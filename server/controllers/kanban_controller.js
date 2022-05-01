@@ -10,30 +10,11 @@ const getTasks = async (req, res) => {
   });
 };
 
-const getTodos = async (req, res) => {
+
+const getTaskDetails = async (req, res) => {
   const { user } = req;
   const { kanbanId, listId, taskId } = req.params;
-  const data = await Kanban.getTodos(taskId);
-
-  return res.json({
-    data,
-  });
-};
-
-const getImages = async (req, res) => {
-  const { user } = req;
-  const { kanbanId, listId, taskId } = req.params;
-  const data = await Kanban.getImages(taskId);
-
-  return res.json({
-    data,
-  });
-};
-
-const getComment = async (req, res) => {
-  const { user } = req;
-  const { kanbanId, listId, taskId } = req.params;
-  const data = await Kanban.getComment(user, taskId);
+  const data = await Kanban.getTaskDetails(user, taskId);
 
   return res.json({
     data,
@@ -131,8 +112,6 @@ module.exports = {
   updateChat,
   delCard,
   addComment,
-  getComment,
   uploadImage,
-  getTodos,
-  getImages,
+  getTaskDetails
 };

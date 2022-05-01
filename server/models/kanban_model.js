@@ -43,17 +43,16 @@ const getTodos = async (taskId) => {
   const [tasks] = await pool.query(`SELECT * FROM tasks WHERE parent_id = ?`, [
     taskId,
   ]);
-  return tasks ;
+  return tasks;
 };
 
 const getImages = async (taskId) => {
   const [images] = await pool.query(`SELECT * FROM images WHERE task_id = ?`, [
     taskId,
   ]);
-  return images ;
+  return images;
 };
 
-//TODO: Efficiency
 const getComment = async (user, taskId) => {
   const [comments] = await pool.query(
     "SELECT * FROM comments WHERE task_id = ?",
@@ -70,6 +69,30 @@ const getComment = async (user, taskId) => {
   return comments;
 };
 
+const getTaskDetails = async (user, taskId) => {
+  const [comments] = await pool.query(
+    "SELECT * FROM comments WHERE task_id = ?",
+    [taskId]
+  );
+
+  for (const i in comments) {
+    const [[users]] = await pool.query("SELECT name FROM users WHERE id = ?", [
+      comments[i].uid,
+    ]);
+    comments[i].name = users.name;
+  }
+
+  const [images] = await pool.query(`SELECT * FROM images WHERE task_id = ?`, [
+    taskId,
+  ]);
+
+  const [tasks] = await pool.query(`SELECT * FROM tasks WHERE parent_id = ?`, [
+    taskId,
+  ]);
+  return { comments, images, tasks };
+};
+
+//TODO: Efficiency
 const addList = async (id, data) => {
   const conn = await pool.getConnection();
   try {
@@ -236,8 +259,6 @@ module.exports = {
   updateChat,
   delTask,
   addComment,
-  getComment,
   uploadImage,
-  getTodos,
-  getImages
+  getTaskDetails,
 };
