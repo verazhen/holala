@@ -23,6 +23,7 @@ const Item = ({
   deleteDt,
   kanbanId,
   listId,
+  task
 }) => {
   const draggableId = uniqueId.toString();
   const [open, setOpen] = useState(false);
@@ -99,6 +100,7 @@ const Item = ({
             kanbanId={kanbanId}
             listId={listId}
             taskId={taskId}
+            task={task}
           />
         </div>
       )}

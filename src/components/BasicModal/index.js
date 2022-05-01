@@ -31,6 +31,24 @@ const ResultArea = styled.div`
   font-size: 17px;
 `;
 
+function getFullDate(targetDate) {
+  var D, y, m, d;
+  if (targetDate) {
+    D = new Date(targetDate);
+    y = D.getFullYear();
+    m = D.getMonth() + 1;
+    d = D.getDate();
+  } else {
+    y = null;
+    m = null;
+    d = null;
+  }
+  m = m > 9 ? m : "0" + m;
+  d = d > 9 ? d : "0" + d;
+
+  return y + "-" + m + "-" + d;
+}
+
 function BasicModal({
   open,
   setOpen,
@@ -44,24 +62,26 @@ function BasicModal({
   kanbanId,
   listId,
   taskId,
+  task,
 }) {
   const [title, setTitle] = useState(taskName);
+  const [checked, setChecked] = useState(task.checked ? true : false);
+  const [due, setDue] = useState(getFullDate(task.due_dt));
   const [tagInput, setTagInput] = useState("");
   const [notes, setNotes] = useState("say Something about this task...");
   const [files, setFiles] = useState([]);
-  const [comments, setComments] = useState([
-    { name: "Vera", content: "Hello World" },
-    { name: "Vera", content: "Hello World2" },
-  ]);
+  const [comments, setComments] = useState([]);
   const [myComment, setMyComment] = useState("");
   const [progress, setProgress] = useState(0);
-  const [editStatus, setEditStatus] = useState(true);
-  const [markdownText, setMarkdownText] = useState("");
+  const [editStatus, setEditStatus] = useState(false);
+  const [markdownText, setMarkdownText] = useState(
+    task.description ? task.description : ""
+  );
   const [openTagModal, setOpenTagModal] = useState(false);
   const [openMemberModal, setOpenMemberModal] = useState(false);
   const [members, setMembers] = useState(["Vera", "Shane", "Tony"]);
   const editor = useRef(null);
-  const [assignee, setAssignee] = useState("");
+  const [assignee, setAssignee] = useState(task.name);
   const [todos, setTodos] = useState([
     { key: 0, label: "task 1", checked: true },
     { key: 1, label: "task 2", checked: true },
@@ -78,6 +98,28 @@ function BasicModal({
     { key: 2, label: "Polymer", checked: true },
     { key: 3, label: "Another", checked: false },
   ]);
+
+  useEffect(() => {
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/todos`,
+      false
+    ).then((todos) => {
+      const newTodos = todos.map((todo, i, arr) => {
+        arr[i].key = i;
+        arr[i].checked = arr[i].checked ? true : false;
+        return arr[i];
+      });
+      setTodos(newTodos);
+    });
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/comments`,
+      false
+    ).then((comment) => {
+      setComments(comment);
+    });
+  }, []);
+
   function onSaveModal() {
     submittingStatus.current = true;
     const newTitle = title;
@@ -101,7 +143,6 @@ function BasicModal({
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/imageUrl`,
       false
     );
-    console.log(url);
 
     await fetch(url, {
       method: "PUT",
@@ -198,7 +239,7 @@ function BasicModal({
                   mt={0.3}
                 >
                   <Grid item>
-                    <Avatar>{assignee.charAt(0)}</Avatar>
+                    <Avatar>{assignee ? assignee.charAt(0) : "null"}</Avatar>
                   </Grid>
                   <Grid item>
                     <MDButton onClick={() => setOpenMemberModal(true)}>
@@ -244,12 +285,15 @@ function BasicModal({
                   mt={-0.5}
                 >
                   <Grid item>
-                    <Checkbox sx={{ transform: "scale(1.2)" }} />
+                    <Checkbox
+                      checked={checked}
+                      sx={{ transform: "scale(1.2)" }}
+                    />
                   </Grid>{" "}
                   <Grid item>
                     <MDInput
                       type="date"
-                      value="2018-11-23"
+                      value={due}
                       style={{ width: "100%" }}
                     />
                   </Grid>
@@ -376,12 +420,12 @@ function BasicModal({
 
                   <input
                     type="text"
-                    value={data.label}
+                    value={data.title}
                     className="todo"
                     onChange={(e) =>
                       setTodos((prev) => {
                         const newArr = [...prev];
-                        newArr[data.key].label = e.target.value;
+                        newArr[data.key].title = e.target.value;
                         return newArr;
                       })
                     }

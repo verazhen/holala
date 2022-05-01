@@ -102,22 +102,23 @@ const List = ({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {tasks.map(({ title, id, orders, unique_id, delete_dt }, index) => {
-              if (!delete_dt) {
+            {tasks.map((task, index) => {
+              if (!task.delete_dt) {
                 return (
                   <Item
-                    key={id}
-                    taskId={id}
-                    uniqueId={unique_id}
-                    taskName={title}
-                    taskOrder={orders}
+                    key={task.id}
+                    taskId={task.id}
+                    uniqueId={task.unique_id}
+                    task={task}
+                    taskName={task.title}
+                    taskOrder={task.orders}
                     index={index}
                     submittingStatus={submitTask}
                     delStatus={delStatus}
                     lists={lists}
                     listIndex={listIndex}
                     setLists={setLists}
-                    deleteDt={delete_dt}
+                    deleteDt={task.delete_dt}
                     kanbanId={kanbanId}
                     listId={listId}
                   />
