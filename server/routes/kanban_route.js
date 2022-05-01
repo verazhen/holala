@@ -5,11 +5,11 @@ const {
   addCard,
   addTask,
   getChat,
-  delCard,
   addComment,
   uploadImage,
   getTaskDetails,
-  addNewTask
+  addNewTask,
+  updateTask
 } = require("../controllers/kanban_controller");
 
 const { wrapAsync, authentication } = require("../../util/util");
@@ -30,6 +30,11 @@ router
   .route("/kanban/:kanbanId/list/:listId/addTest")
   .post(authentication(), wrapAsync(addNewTask));
 
+//update a task/todo
+router
+  .route("/kanban/:kanbanId/list/:listId/task/:taskId")
+  .put(authentication(), wrapAsync(updateTask));
+
 
   //add new task/todos or update order
 router
@@ -38,7 +43,7 @@ router
 
 //add comments
 router
-  .route("/kanban/:kanbanId/list/:listId/task/:taskId")
+  .route("/kanban/:kanbanId/list/:listId/task/:taskId/comment")
   .post(authentication(), wrapAsync(addComment));
 
 //upload image
@@ -46,8 +51,6 @@ router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId/imageUrl")
   .get(authentication(), wrapAsync(uploadImage));
 
-//delete card
-router.route("/task").delete(wrapAsync(delCard));
 
 //get history chat
 router.route("/chat").get(wrapAsync(getChat));

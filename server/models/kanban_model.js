@@ -143,7 +143,28 @@ const addNewTask = async (data, listId) => {
     const orders = timestamp;
     const [res] = await conn.query(
       "INSERT INTO tasks (list_id,title,unique_id,orders) VALUES (?,?,?,?)",
-      [listId, data.title,data.unique_id, orders]
+      [listId, data.title, data.unique_id, orders]
+    );
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
+const updateTask = async (data, taskId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    console.log(data);
+    const [res] = await conn.query(
+      `UPDATE tasks SET delete_dt = ? WHERE id=?`,
+      [data.delete_dt, taskId]
     );
 
     await conn.query("COMMIT");
@@ -218,26 +239,6 @@ const addTask = async (tasks) => {
   }
 };
 
-const delTask = async ({ listId, tasks }, delUniqueId) => {
-  const conn = await pool.getConnection();
-  try {
-    await conn.query("START TRANSACTION");
-
-    const [res] = await pool.query("DELETE FROM tasks WHERE uniqueId=?;", [
-      delUniqueId,
-    ]);
-
-    await conn.query("COMMIT");
-    return res;
-  } catch (e) {
-    await conn.query("ROLLBACK");
-    console.log(e);
-    return false;
-  } finally {
-    await conn.release();
-  }
-};
-
 const getChat = async () => {
   const data = await mongo.collection("chat").find({}).toArray();
   return data;
@@ -298,9 +299,9 @@ module.exports = {
   addList,
   getChat,
   updateChat,
-  delTask,
   addComment,
   uploadImage,
   getTaskDetails,
   addNewTask,
+  updateTask,
 };

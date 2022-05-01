@@ -10,7 +10,7 @@ const getTasks = async (req, res) => {
 const addNewTask = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId } = req.params;
-  const response = await Kanban.addNewTask(data,listId);
+  const response = await Kanban.addNewTask(data, listId);
 
   return res.json(response);
 };
@@ -45,31 +45,14 @@ const addTask = async (req, res) => {
   });
 };
 
-const delCard = async (req, res) => {
-  const data = req.body;
+const updateTask = async (req, res) => {
+  const { data } = req.body;
+  const { taskId } = req.params;
+  const response = await Kanban.updateTask(data, taskId);
 
-  const { list, uniqueId } = req.query;
-
-  if (!uniqueId) {
-    return res.status(401).json({
-      error: "please send the task id you want to delete",
-    });
-  }
-
-  if (!list) {
-    console.log("刪除整張list");
-  }
-  const response = await Kanban.delTask(data, uniqueId);
-  if (!response) {
-    return res.status(401).json({
-      error: "wrong input",
-    });
-  }
-
-  return res.json({
-    data: { listId: list, response },
-  });
+  return res.json({ data: response });
 };
+
 const getChat = async (req, res) => {
   const data = await Kanban.getChat();
 
@@ -114,9 +97,9 @@ module.exports = {
   addTask,
   getChat,
   updateChat,
-  delCard,
   addComment,
   uploadImage,
   getTaskDetails,
   addNewTask,
+  updateTask,
 };
