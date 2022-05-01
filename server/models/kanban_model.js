@@ -1,7 +1,7 @@
 const { mongo } = require("./mongocon");
 const { pool } = require("./mysqlcon");
+const { generateUploadURL } = require("./s3");
 
-//TODO: Efficiency
 const getTasks = async (id) => {
   const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = ?", [
     id,
@@ -39,17 +39,19 @@ const getTasks = async (id) => {
   return { data, members };
 };
 
+//TODO: Efficiency
 const getComment = async (user, taskId) => {
-  const [comments] = await pool.query("SELECT * FROM comments WHERE task_id = ?", [
-    taskId,
-  ]);
+  const [comments] = await pool.query(
+    "SELECT * FROM comments WHERE task_id = ?",
+    [taskId]
+  );
 
   for (const i in comments) {
-      const [[users]] = await pool.query("SELECT name FROM users WHERE id = ?", [
-        comments[i].uid,
-      ]);
-      comments[i].name = users.name;
-    }
+    const [[users]] = await pool.query("SELECT name FROM users WHERE id = ?", [
+      comments[i].uid,
+    ]);
+    comments[i].name = users.name;
+  }
 
   return comments;
 };
@@ -189,6 +191,28 @@ const addComment = async (data, user, taskId) => {
   }
 };
 
+const uploadImage = async (taskId) => {
+  const conn = await pool.getConnection();
+  try {
+    const url = await generateUploadURL();
+    await conn.query("START TRANSACTION");
+
+    const [res] = await pool.query(
+      "INSERT INTO images (task_id,url) VALUES (?,?)",
+      [taskId, url]
+    );
+
+    await conn.query("COMMIT");
+    return url;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   getTasks,
   addTask,
@@ -197,5 +221,6 @@ module.exports = {
   updateChat,
   delTask,
   addComment,
-  getComment
+  getComment,
+  uploadImage,
 };

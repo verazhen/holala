@@ -7,11 +7,8 @@ const s3 = new aws.S3({
   secretAccessKey: process.env.S3_SECRET,
   accessKeyId: process.env.S3_KEY,
   region: process.env.S3_REGION,
-  params: {
-    Bucket: "verazon.online",
-  },
+  signatureVersion: "v4",
 });
-
 
 async function generateUploadURL() {
   const rawBytes = await randomBytes(16);

@@ -93,6 +93,17 @@ const addComment = async (req, res) => {
   });
 };
 
+
+const uploadImage = async (req, res) => {
+  const { data } = req.body;
+  const { kanbanId, listId, taskId } = req.params;
+  const response = await Kanban.uploadImage(taskId);
+
+  return res.json({
+    data:response
+  });
+};
+
 module.exports = {
   getTasks,
   addCard,
@@ -101,5 +112,6 @@ module.exports = {
   updateChat,
   delCard,
   addComment,
-  getComment
+  getComment,
+  uploadImage
 };
