@@ -8,13 +8,17 @@ const {
   delCard,
   addComment,
   getComment,
-  uploadImage
+  uploadImage,
+  getTodos
 } = require("../controllers/kanban_controller");
 
 const { wrapAsync,authentication } = require("../../util/util");
 
 //get all task in all list
 router.route("/task/:id").get(wrapAsync(getTasks));
+
+//get all todos in all list
+router.route("/kanban/:kanbanId/list/:listId/task/:taskId/todos").get(wrapAsync(getTodos));
 
 //add new List or update order
 router.route("/task/:id").post(wrapAsync(addCard));
@@ -29,7 +33,7 @@ router.route("/kanban/:kanbanId/list/:listId/task/:taskId").post(authentication(
 router.route("/kanban/:kanbanId/list/:listId/task/:taskId/imageUrl").get(authentication(),wrapAsync(uploadImage));
 
 //get comments
-router.route("/kanban/:kanbanId/list/:listId/task/:taskId").get(authentication(),wrapAsync(getComment));
+router.route("/kanban/:kanbanId/list/:listId/task/:taskId/comments").get(authentication(),wrapAsync(getComment));
 
 //delete card
 router.route("/task").delete(wrapAsync(delCard));

@@ -39,6 +39,13 @@ const getTasks = async (id) => {
   return { data, members };
 };
 
+const getTodos = async (taskId) => {
+  const [tasks] = await pool.query(`SELECT * FROM tasks WHERE parent_id = ?`, [
+    taskId,
+  ]);
+  return tasks ;
+};
+
 //TODO: Efficiency
 const getComment = async (user, taskId) => {
   const [comments] = await pool.query(
@@ -223,4 +230,5 @@ module.exports = {
   addComment,
   getComment,
   uploadImage,
+  getTodos,
 };

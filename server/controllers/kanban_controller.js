@@ -10,13 +10,23 @@ const getTasks = async (req, res) => {
   });
 };
 
+const getTodos = async (req, res) => {
+  const { user } = req;
+  const { kanbanId, listId, taskId } = req.params;
+  const data = await Kanban.getTodos(taskId);
+
+  return res.json({
+    data,
+  });
+};
+
 const getComment = async (req, res) => {
   const { user } = req;
   const { kanbanId, listId, taskId } = req.params;
-  const data  = await Kanban.getComment(user,taskId);
+  const data = await Kanban.getComment(user, taskId);
 
   return res.json({
-    data
+    data,
   });
 };
 
@@ -93,14 +103,13 @@ const addComment = async (req, res) => {
   });
 };
 
-
 const uploadImage = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId, taskId } = req.params;
   const response = await Kanban.uploadImage(taskId);
 
   return res.json({
-    data:response
+    data: response,
   });
 };
 
@@ -113,5 +122,6 @@ module.exports = {
   delCard,
   addComment,
   getComment,
-  uploadImage
+  uploadImage,
+  getTodos,
 };
