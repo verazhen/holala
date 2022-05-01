@@ -118,6 +118,19 @@ function BasicModal({
     ).then((comment) => {
       setComments(comment);
     });
+
+    fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/images`,
+      false
+    ).then((files) => {
+      const newFiles = files.map((file, i, arr) => {
+        arr[i].key = i;
+        arr[i].src = file.url;
+        arr[i].name = file.create_dt;
+        return arr[i];
+      });
+      setFiles(newFiles);
+    });
   }, []);
 
   function onSaveModal() {
@@ -153,7 +166,6 @@ function BasicModal({
     });
 
     const imageUrl = url.split("?")[0];
-    console.log(imageUrl);
 
     setFiles((prev) => {
       return [

@@ -13,7 +13,6 @@ async function fetchData(url, needUser) {
     return { user, data };
   } else {
     const { data } = await res.json();
-    console.log(data)
     return data;
   }
 }
