@@ -15,7 +15,20 @@ const getTasks = async (id) => {
     data.push({ id, title, orders, tasks });
   }
 
-  return data;
+  let [members] = await pool.query(
+    "SELECT uid,role_id FROM kanban_permission WHERE kanban_id = ?",
+    [id]
+  );
+
+  for (const i in members) {
+    const [[users]] = await pool.query(
+      "SELECT name FROM users WHERE id = ?",
+      [members[i].uid]
+    );
+    members[i].name = users.name;
+  }
+
+  return { data, members };
 };
 
 const addList = async (id, data) => {
