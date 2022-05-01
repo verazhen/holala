@@ -149,14 +149,14 @@ function BasicModal({
         break;
       }
     }
-
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[listIndex].tasks[taskIndex].title = title;
     newLists[listIndex].tasks[taskIndex].assignee = assigneeId;
     newLists[listIndex].tasks[taskIndex].due = due;
+    newLists[listIndex].tasks[taskIndex].checked = checked;
     setLists(newLists);
 
-    const newTask = { title, assignee: assigneeId, due_dt: due };
+    const newTask = { title, assignee: assigneeId, due_dt: due, checked };
     fetchPutData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       newTask
@@ -328,6 +328,7 @@ function BasicModal({
                     <Checkbox
                       checked={checked}
                       sx={{ transform: "scale(1.2)" }}
+                      onChange={(e) => setChecked(!checked)}
                     />
                   </Grid>{" "}
                   <Grid item>
