@@ -2,14 +2,10 @@ const Kanban = require("../models/kanban_model");
 
 const getTasks = async (req, res) => {
   const { id } = req.params;
-  const { data, members } = await Kanban.getTasks(id);
+  const data = await Kanban.getTasks(id);
 
-  return res.json({
-    members,
-    data,
-  });
+  return res.json(data);
 };
-
 
 const getTaskDetails = async (req, res) => {
   const { user } = req;
@@ -113,5 +109,5 @@ module.exports = {
   delCard,
   addComment,
   uploadImage,
-  getTaskDetails
+  getTaskDetails,
 };

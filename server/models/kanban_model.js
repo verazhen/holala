@@ -36,7 +36,13 @@ const getTasks = async (id) => {
     members[i].name = users.name;
   }
 
-  return { data, members };
+  let [tags] = await pool.query(
+    "SELECT label FROM tags WHERE kanban_id = ?",
+    [id]
+  );
+
+
+  return { data, members, tags };
 };
 
 const getTodos = async (taskId) => {
@@ -94,15 +100,13 @@ const getTaskDetails = async (user, taskId) => {
     taskId,
   ]);
   for (const i in tags) {
-      const [[tag]] = await pool.query("SELECT label FROM tags WHERE id = ?", [
-        tags[i].tag_id,
-      ]);
-      tags[i].label = tag.label;
-    }
+    const [[tag]] = await pool.query("SELECT label FROM tags WHERE id = ?", [
+      tags[i].tag_id,
+    ]);
+    tags[i].label = tag.label;
+  }
 
-
-
-  return { comments, images, todos,tags };
+  return { comments, images, todos, tags };
 };
 
 //TODO: Efficiency
