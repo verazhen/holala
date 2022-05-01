@@ -21,10 +21,9 @@ const getTasks = async (id) => {
   );
 
   for (const i in members) {
-    const [[users]] = await pool.query(
-      "SELECT name FROM users WHERE id = ?",
-      [members[i].uid]
-    );
+    const [[users]] = await pool.query("SELECT name FROM users WHERE id = ?", [
+      members[i].uid,
+    ]);
     members[i].name = users.name;
   }
 
@@ -70,6 +69,8 @@ const addTask = async (tasks) => {
         checked,
         delete_dt,
         unique_id,
+        description,
+        parent_id,
       }) => {
         if (!orders) {
           const dateTime = Date.now();
@@ -89,13 +90,16 @@ const addTask = async (tasks) => {
           checked,
           delete_dt,
           unique_id,
+          description,
+          parent_id
         ];
       }
     );
 
     const [res] = await pool.query(
-      `INSERT INTO tasks (list_id,title,orders,assignee,due_dt,checked,delete_dt,unique_id) VALUES ? ON DUPLICATE KEY
-       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),delete_dt =VALUES(delete_dt)`,
+      `INSERT INTO tasks (list_id,title,orders,assignee,due_dt,checked,delete_dt,unique_id,description,parent_id) VALUES ? ON
+      DUPLICATE KEY
+       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),delete_dt =VALUES(delete_dt),assignee =VALUES(assignee),due_dt =VALUES(due_dt),checkedt =VALUES(checked),description =VALUES(description),parent_id =VALUES(parent_id)`,
       [values]
     );
 
