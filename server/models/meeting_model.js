@@ -1,19 +1,12 @@
 const { pool } = require("./mysqlcon");
 const fs = require("fs/promises");
-const aws = require("aws-sdk");
+const {s3} = require("./s3");
 const axios = require("axios").default;
 const api_key = process.env.MAILGUN_KEY;
 const domain = "verazon.online";
 const mailgun = require("mailgun-js")({ apiKey: api_key, domain: domain });
 
-const s3 = new aws.S3({
-  secretAccessKey: process.env.S3_SECRET,
-  accessKeyId: process.env.S3_KEY,
-  region: process.env.S3_REGION,
-  params: {
-    Bucket: "verazon.online",
-  },
-});
+
 
 const getMeetings = async (kanbanId) => {
   const [res] = await pool.query(
