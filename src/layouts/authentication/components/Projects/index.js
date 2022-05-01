@@ -20,15 +20,6 @@ import data from "layouts/authentication/components/Projects/data";
 import { useEffect } from "react";
 import { fetchData, fetchSetData } from "utils/fetch";
 
-//       {/*         <KanbanMenu */}
-//         {/*           table={{ columns, rows }} */}
-//         {/*           showTotalEntries={false} */}
-//         {/*           isSorted={false} */}
-//         {/*           noEndBorder */}
-//         {/*           entriesPerPage={false} */}
-//         {/*           kanbans = {kanbans} */}
-//         {/*         /> */}
-
 function Projects() {
   const [kanbans, setKanbans] = useState([]);
   // const columns, rows ;

@@ -29,6 +29,7 @@ app.use("/api/" + API_VERSION, [
   require("./server/routes/index_route"),
   require("./server/routes/meeting_route"),
   require("./server/routes/user_route"),
+  require("./server/routes/report_route"),
 ]);
 
 app.listen(port, async () => {
