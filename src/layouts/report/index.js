@@ -27,6 +27,7 @@ import { addLocalStorage, getLocalStorage } from "utils/utils";
 function Tables() {
   const [lists, setLists] = useState([]);
   const [tags, setTags] = useState([]);
+  const [members, setMembers] = useState([]);
   const submittingStatus = useRef(false);
   const submitTask = useRef(false);
   const { kanbanId } = useParams();
@@ -107,6 +108,7 @@ function Tables() {
           });
         });
         setLists(data);
+        setMembers(user);
 
         const newTags = tags.map((tag, i, arr) => {
           arr[i].key = i;
@@ -180,6 +182,7 @@ function Tables() {
                       setTags={setTags}
                       setLists={setLists}
                       submitTask={submitTask}
+                      members={members}
                     />
                   </MDBox>
                 </Card>

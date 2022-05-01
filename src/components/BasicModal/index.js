@@ -22,7 +22,7 @@ import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 import Paper from "@mui/material/Paper";
 import MDProgress from "components/MDProgress";
-import { fetchData, fetchSetData } from "utils/fetch";
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 
 const ResultArea = styled.div`
   width: 100%;
@@ -65,6 +65,7 @@ function BasicModal({
   task,
   hashtags,
   setTags,
+  memberList,
 }) {
   const [title, setTitle] = useState(taskName);
   const [checked, setChecked] = useState(task.checked ? true : false);
@@ -81,7 +82,7 @@ function BasicModal({
   );
   const [openTagModal, setOpenTagModal] = useState(false);
   const [openMemberModal, setOpenMemberModal] = useState(false);
-  const [members, setMembers] = useState(["Vera", "Shane", "Tony"]);
+  const [members, setMembers] = useState([]);
   const editor = useRef(null);
   const [assignee, setAssignee] = useState(task.name);
   const [todos, setTodos] = useState([]);
@@ -107,6 +108,11 @@ function BasicModal({
   }, [hashtags, chipData]);
 
   useEffect(() => {
+    setMembers(memberList);
+  }, [memberList]);
+
+  useEffect(() => {
+    console.log(memberList);
     //getTaskDetails
     fetchData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
@@ -136,11 +142,24 @@ function BasicModal({
   }, []);
 
   function onSaveModal() {
-    submittingStatus.current = true;
-    const newTitle = title;
+    let assigneeId;
+    for (let i = 0; i < memberList.length; i++) {
+      if (memberList[i].name === assignee) {
+        assigneeId = memberList[i].uid;
+        break;
+      }
+    }
+
     const newLists = JSON.parse(JSON.stringify(lists));
-    newLists[listIndex].tasks[taskIndex].title = newTitle;
+    newLists[listIndex].tasks[taskIndex].title = title;
+    newLists[listIndex].tasks[taskIndex].assignee = assigneeId;
     setLists(newLists);
+
+    const newTask = { title, assignee: assigneeId };
+    fetchPutData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
+      newTask
+    );
     onCloseModal();
   }
 
@@ -190,6 +209,10 @@ function BasicModal({
         100
     );
   }, [todos]);
+
+  useEffect(() => {
+    console.log(assignee);
+  }, [assignee]);
 
   function Myform({ data }) {
     return (
@@ -273,14 +296,16 @@ function BasicModal({
                         aria-labelledby="demo-radio-buttons-group-label"
                         defaultValue="female"
                         name="radio-buttons-group"
-                        onChange={(e) => setAssignee(e.target.value)}
+                        onChange={(e) => {
+                          setAssignee(e.target.value);
+                        }}
                       >
                         {members.map((member) => {
                           return (
                             <FormControlLabel
-                              value={member}
+                              value={member.name}
                               control={<Radio />}
-                              label={member}
+                              label={member.name}
                             />
                           );
                         })}

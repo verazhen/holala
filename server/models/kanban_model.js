@@ -161,10 +161,10 @@ const updateTask = async (data, taskId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    console.log(data);
+    const { delete_dt, title,assignee } = data;
     const [res] = await conn.query(
-      `UPDATE tasks SET delete_dt = ? WHERE id=?`,
-      [data.delete_dt, taskId]
+      `UPDATE tasks SET delete_dt = ?, title=?,assignee=? WHERE id=?`,
+      [delete_dt, title, assignee, taskId]
     );
 
     await conn.query("COMMIT");

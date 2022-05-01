@@ -27,6 +27,7 @@ const Item = ({
   task,
   tags,
   setTags,
+  members
 }) => {
   const draggableId = `${taskOrder}-${taskName}`;
   const [open, setOpen] = useState(false);
@@ -111,6 +112,7 @@ const Item = ({
             task={task}
             hashtags={tags}
             setTags={setTags}
+            memberList={members}
           />
         </div>
       )}
