@@ -153,9 +153,10 @@ function BasicModal({
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[listIndex].tasks[taskIndex].title = title;
     newLists[listIndex].tasks[taskIndex].assignee = assigneeId;
+    newLists[listIndex].tasks[taskIndex].due = due;
     setLists(newLists);
 
-    const newTask = { title, assignee: assigneeId };
+    const newTask = { title, assignee: assigneeId, due_dt: due };
     fetchPutData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       newTask
@@ -211,8 +212,8 @@ function BasicModal({
   }, [todos]);
 
   useEffect(() => {
-    console.log(assignee);
-  }, [assignee]);
+    console.log(due);
+  }, [due]);
 
   function Myform({ data }) {
     return (
@@ -334,6 +335,7 @@ function BasicModal({
                       type="date"
                       value={due}
                       style={{ width: "100%" }}
+                      onChange={(e) => setDue(e.target.value)}
                     />
                   </Grid>
                 </Grid>
