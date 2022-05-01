@@ -36,13 +36,11 @@ const getTasks = async (id) => {
     members[i].name = users.name;
   }
 
-  let [tags] = await pool.query(
-    "SELECT label FROM tags WHERE kanban_id = ?",
-    [id]
-  );
+  let [tags] = await pool.query("SELECT label FROM tags WHERE kanban_id = ?", [
+    id,
+  ]);
 
-
-  return { data, user:members, tags };
+  return { data, user: members, tags };
 };
 
 const getTodos = async (taskId) => {
@@ -135,6 +133,30 @@ const addList = async (id, data) => {
   }
 };
 
+const addNewTask = async (data, listId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+
+    const dateTime = Date.now();
+    const timestamp = Math.floor(dateTime / 1000);
+    const orders = timestamp;
+    const [res] = await conn.query(
+      "INSERT INTO tasks (list_id,title,unique_id,orders) VALUES (?,?,?,?)",
+      [listId, data.title,data.unique_id, orders]
+    );
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 const addTask = async (tasks) => {
   const conn = await pool.getConnection();
   try {
@@ -179,7 +201,9 @@ const addTask = async (tasks) => {
     const [res] = await pool.query(
       `INSERT INTO tasks (list_id,title,orders,assignee,due_dt,checked,delete_dt,unique_id,description,parent_id) VALUES ? ON
       DUPLICATE KEY
-       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),delete_dt =VALUES(delete_dt),assignee =VALUES(assignee),due_dt =VALUES(due_dt),checkedt =VALUES(checked),description =VALUES(description),parent_id =VALUES(parent_id)`,
+       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),delete_dt =VALUES(delete_dt),
+       assignee =VALUES(assignee),due_dt =VALUES(due_dt),checked =VALUES(checked),description =VALUES(description),
+       parent_id =VALUES(parent_id)`,
       [values]
     );
 
@@ -278,4 +302,5 @@ module.exports = {
   addComment,
   uploadImage,
   getTaskDetails,
+  addNewTask,
 };

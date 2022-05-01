@@ -9,6 +9,7 @@ const {
   addComment,
   uploadImage,
   getTaskDetails,
+  addNewTask
 } = require("../controllers/kanban_controller");
 
 const { wrapAsync, authentication } = require("../../util/util");
@@ -24,7 +25,13 @@ router
 //add new List or update order
 router.route("/task/:id").post(wrapAsync(addCard));
 
-//add new task/todos or update order
+//add a new task/todo
+router
+  .route("/kanban/:kanbanId/list/:listId/addTest")
+  .post(authentication(), wrapAsync(addNewTask));
+
+
+  //add new task/todos or update order
 router
   .route("/kanban/:kanbanId/list/:listId")
   .post(authentication(), wrapAsync(addTask));

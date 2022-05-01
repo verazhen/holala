@@ -7,6 +7,14 @@ const getTasks = async (req, res) => {
   return res.json(data);
 };
 
+const addNewTask = async (req, res) => {
+  const { data } = req.body;
+  const { kanbanId, listId } = req.params;
+  const response = await Kanban.addNewTask(data,listId);
+
+  return res.json(response);
+};
+
 const getTaskDetails = async (req, res) => {
   const { user } = req;
   const { kanbanId, listId, taskId } = req.params;
@@ -110,4 +118,5 @@ module.exports = {
   addComment,
   uploadImage,
   getTaskDetails,
+  addNewTask,
 };
