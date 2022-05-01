@@ -7,30 +7,7 @@ import { fetchData, fetchSetData } from "utils/fetch";
 import { v4 } from "uuid";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Item from "./Item";
-//post data
-// async function fetchSetData(listName, tasks, listId) {
-//   await fetch(`http://localhost:5000/api/1.0/task?list=${listId}`, {
-//     method: "POST",
-//     headers: {
-//       "Content-type": "application/json",
-//     },
-//     body: JSON.stringify({ listId, listName, tasks }),
-//   });
-// }
-//
-// async function fetchDelData(listName, tasks, listId, uniqueId) {
-//   await fetch(
-//     `http://localhost:5000/api/1.0/task?list=${listId}&uniqueId=${uniqueId}`,
-//     {
-//       method: "delete",
-//       headers: {
-//         "Content-type": "application/json",
-//       },
-//       body: JSON.stringify({ listId, listName, tasks }),
-//     }
-//   );
-// }
-//
+
 const List = ({
   kanbanId,
   listId,
@@ -39,10 +16,11 @@ const List = ({
   lists,
   setLists,
   submitTask,
+  tags,
+  setTags,
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
-
 
   useEffect(() => {
     if (!submitTask.current) {
@@ -121,6 +99,8 @@ const List = ({
                     deleteDt={task.delete_dt}
                     kanbanId={kanbanId}
                     listId={listId}
+                    tags={tags}
+                    setTags={setTags}
                   />
                 );
               } else {

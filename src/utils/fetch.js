@@ -9,8 +9,8 @@ async function fetchData(url, needUser) {
   });
 
   if (needUser) {
-    const { user, data } = await res.json();
-    return { user, data };
+    const { user, data, tags } = await res.json();
+    return { user, data, tags };
   } else {
     const { data } = await res.json();
     return data;

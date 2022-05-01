@@ -63,6 +63,8 @@ function BasicModal({
   listId,
   taskId,
   task,
+  hashtags,
+  setTags,
 }) {
   const [title, setTitle] = useState(taskName);
   const [checked, setChecked] = useState(task.checked ? true : false);
@@ -84,14 +86,28 @@ function BasicModal({
   const [assignee, setAssignee] = useState(task.name);
   const [todos, setTodos] = useState([]);
   const [chipData, setChipData] = useState([]);
-  const [kanbanChip, setKanbanChip] = useState([
-    { key: 0, label: "Angular", checked: true },
-    { key: 1, label: "jQuery", checked: true },
-    { key: 2, label: "Polymer", checked: true },
-    { key: 3, label: "Another", checked: false },
-  ]);
+  const [kanbanChip, setKanbanChip] = useState([]);
+  const initialization = useRef(null);
 
   useEffect(() => {
+    if (!initialization.current) {
+      return;
+    }
+
+    const customTags = JSON.parse(JSON.stringify(hashtags));
+    for (let i = 0; i < customTags.length; i++) {
+      const test = chipData.some((chip) => chip.label === customTags[i].label);
+      if (test) {
+        customTags[i].checked = true;
+      }
+    }
+
+    setKanbanChip(customTags);
+    initialization.current = false;
+  }, [hashtags, chipData]);
+
+  useEffect(() => {
+    //getTaskDetails
     fetchData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       false
@@ -115,6 +131,7 @@ function BasicModal({
         return arr[i];
       });
       setChipData(newChips);
+      initialization.current = true;
     });
   }, []);
 

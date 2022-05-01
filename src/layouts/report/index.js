@@ -26,6 +26,7 @@ import { addLocalStorage, getLocalStorage } from "utils/utils";
 
 function Tables() {
   const [lists, setLists] = useState([]);
+  const [tags, setTags] = useState([]);
   const submittingStatus = useRef(false);
   const submitTask = useRef(false);
   const { kanbanId } = useParams();
@@ -93,19 +94,26 @@ function Tables() {
 
   useEffect(() => {
     addLocalStorage("kanbanId", kanbanId);
-    fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`).then(
-      (listsData) => {
+    fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`, true).then(
+      ({ user, data, tags }) => {
         //sort the lists data
-        listsData.sort((a, b) => {
+        data.sort((a, b) => {
           return a.orders - b.orders;
         });
         //sort the tasks data
-        listsData.forEach(({ tasks }) => {
+        data.forEach(({ tasks }) => {
           tasks.sort((a, b) => {
             return a.orders - b.orders;
           });
         });
-        setLists(listsData);
+        setLists(data);
+
+        const newTags = tags.map((tag, i, arr) => {
+          arr[i].key = i;
+          arr[i].checked = false;
+          return arr[i];
+        });
+        setTags(newTags);
       }
     );
   }, []);
@@ -133,7 +141,13 @@ function Tables() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pt={6} pb={3}>
-        <Grid container spacing={6} wrap="nowrap" style={style} className="kanban">
+        <Grid
+          container
+          spacing={6}
+          wrap="nowrap"
+          style={style}
+          className="kanban"
+        >
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >
@@ -162,6 +176,8 @@ function Tables() {
                       tasks={tasks}
                       listIndex={index}
                       lists={lists}
+                      tags={tags}
+                      setTags={setTags}
                       setLists={setLists}
                       submitTask={submitTask}
                     />
