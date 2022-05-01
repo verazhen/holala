@@ -3,7 +3,7 @@ import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import MDButton from "components/MDButton";
 import DataTable from "examples/Tables/KanbanList";
 import projectsTableData from "layouts/report/data/projectsTableData";
-import { fetchData, fetchSetData } from "utils/fetch";
+import { fetchData, fetchSetData,fetchPutData } from "utils/fetch";
 import { v4 } from "uuid";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Item from "./Item";
@@ -28,25 +28,14 @@ const List = ({
     }
     console.log("useEffect Task");
     console.log(tasks);
-    fetchSetData(
+    fetchPutData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}`,
       tasks
     ).then((lists) => (submitTask.current = false));
   }, [tasks]);
 
-  //   delete data;
-  //   useEffect(() => {
-  //     //     預防data在網頁 第一次render時被清掉
-  //     if (!delStatus.current) {
-  //       return;
-  //     }
-  //     fetchDelData(listName, cards, listId, delStatus.current).then(
-  //       (lists) => (delStatus.current = false)
-  //     );
-  //   }, [tasks]);
 
   function addTask() {
-    //     submitTask.current = true;
     const title = "Task Untitled";
     const list = lists[listIndex];
     const newTask = { unique_id: v4(), title, checked: 0 };
@@ -55,7 +44,7 @@ const List = ({
     newList[listIndex].tasks = newTasks;
 
     setLists(newList);
-    console.log(listId);
+    console.log('hi')
     fetchSetData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/addTest`,
       newTask

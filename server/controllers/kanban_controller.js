@@ -35,10 +35,10 @@ const addCard = async (req, res) => {
   });
 };
 
-const addTask = async (req, res) => {
+const updateList = async (req, res) => {
   const { data } = req.body;
   const { listId } = req.params;
-  const response = await Kanban.addTask(data);
+  const response = await Kanban.updateList(data);
 
   return res.json({
     data: { listId, taskId: response.insertId },
@@ -94,7 +94,7 @@ const uploadImage = async (req, res) => {
 module.exports = {
   getTasks,
   addCard,
-  addTask,
+  updateList,
   getChat,
   updateChat,
   addComment,

@@ -28,20 +28,21 @@ const Item = ({
   tags,
   setTags,
 }) => {
-  const draggableId = uniqueId.toString();
+  const draggableId = `${taskOrder}-${taskName}`;
   const [open, setOpen] = useState(false);
 
   function deleteItem() {
-//     submittingStatus.current = true;
+    //     submittingStatus.current = true;
     const list = lists[listIndex];
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[listIndex].tasks[index].delete_dt = 1;
     setLists(newLists);
 
-    const data = {delete_dt : 1}
-    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,data).then(
-    res=>console.log(res)
-    )
+    const data = { delete_dt: 1 };
+    fetchPutData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
+      data
+    ).then((res) => console.log(res));
   }
   const styles = {
     fontFamily: "sans-serif",
@@ -109,7 +110,7 @@ const Item = ({
             taskId={taskId}
             task={task}
             hashtags={tags}
-                                  setTags={setTags}
+            setTags={setTags}
           />
         </div>
       )}

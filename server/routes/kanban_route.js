@@ -3,7 +3,7 @@ const router = require("express").Router();
 const {
   getTasks,
   addCard,
-  addTask,
+  updateList,
   getChat,
   addComment,
   uploadImage,
@@ -39,7 +39,7 @@ router
   //add new task/todos or update order
 router
   .route("/kanban/:kanbanId/list/:listId")
-  .post(authentication(), wrapAsync(addTask));
+  .put(authentication(), wrapAsync(updateList));
 
 //add comments
 router

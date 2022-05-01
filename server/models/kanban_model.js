@@ -142,8 +142,8 @@ const addNewTask = async (data, listId) => {
     const timestamp = Math.floor(dateTime / 1000);
     const orders = timestamp;
     const [res] = await conn.query(
-      "INSERT INTO tasks (list_id,title,unique_id,orders) VALUES (?,?,?,?)",
-      [listId, data.title, data.unique_id, orders]
+      "INSERT INTO tasks (list_id,title,orders) VALUES (?,?,?)",
+      [listId, data.title, orders]
     );
 
     await conn.query("COMMIT");
@@ -178,53 +178,19 @@ const updateTask = async (data, taskId) => {
   }
 };
 
-const addTask = async (tasks) => {
+const updateList = async (tasks) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const values = tasks.map(
-      ({
-        list_id,
-        title,
-        orders,
-        assignee,
-        due_dt,
-        checked,
-        delete_dt,
-        unique_id,
-        description,
-        parent_id,
-      }) => {
-        if (!orders) {
-          const dateTime = Date.now();
-          const timestamp = Math.floor(dateTime / 1000);
-          orders = timestamp;
-        }
-        if (!checked) {
-          checked = 0;
-        }
 
-        return [
-          list_id,
-          title,
-          orders,
-          assignee,
-          due_dt,
-          checked,
-          delete_dt,
-          unique_id,
-          description,
-          parent_id,
-        ];
-      }
-    );
+    const values = tasks.map(({ id, list_id, title, orders }) => {
+      return [id, list_id, title, orders];
+    });
 
     const [res] = await pool.query(
-      `INSERT INTO tasks (list_id,title,orders,assignee,due_dt,checked,delete_dt,unique_id,description,parent_id) VALUES ? ON
+      `INSERT INTO tasks (id,list_id,title,orders) VALUES ? ON
       DUPLICATE KEY
-       UPDATE orders =VALUES(orders),list_id =VALUES(list_id),title =VALUES(title),delete_dt =VALUES(delete_dt),
-       assignee =VALUES(assignee),due_dt =VALUES(due_dt),checked =VALUES(checked),description =VALUES(description),
-       parent_id =VALUES(parent_id)`,
+       UPDATE orders =VALUES(orders),list_id =VALUES(list_id)`,
       [values]
     );
 
@@ -295,7 +261,7 @@ const uploadImage = async (taskId) => {
 
 module.exports = {
   getTasks,
-  addTask,
+  updateList,
   addList,
   getChat,
   updateChat,
