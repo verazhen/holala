@@ -12,6 +12,15 @@ const getTasks = async (id) => {
     const [tasks] = await pool.query(
       `SELECT * FROM tasks WHERE list_id = ${id} AND parent_id IS NULL`
     );
+    for (let j = 0; j < tasks.length; j++) {
+      const [[users]] = await pool.query(
+        "SELECT name FROM users WHERE id = ?",
+        [tasks[j].assignee]
+      );
+
+      tasks[j].assignee = tasks[j].assignee ? users.name : null;
+    }
+
     data.push({ id, title, orders, tasks });
   }
 
@@ -91,7 +100,7 @@ const addTask = async (tasks) => {
           delete_dt,
           unique_id,
           description,
-          parent_id
+          parent_id,
         ];
       }
     );
