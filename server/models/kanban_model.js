@@ -42,7 +42,7 @@ const getTasks = async (id) => {
   );
 
 
-  return { data, members, tags };
+  return { data, user:members, tags };
 };
 
 const getTodos = async (taskId) => {
