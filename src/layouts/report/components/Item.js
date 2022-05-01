@@ -21,6 +21,8 @@ const Item = ({
   listIndex,
   setLists,
   deleteDt,
+  kanbanId,
+  listId,
 }) => {
   const draggableId = uniqueId.toString();
   const [open, setOpen] = useState(false);
@@ -94,6 +96,9 @@ const Item = ({
             lists={lists}
             listIndex={listIndex}
             submittingStatus={submittingStatus}
+            kanbanId={kanbanId}
+            listId={listId}
+            taskId={taskId}
           />
         </div>
       )}

@@ -43,6 +43,7 @@ const List = ({
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
 
+
   useEffect(() => {
     if (!submitTask.current) {
       return;
@@ -117,6 +118,8 @@ const List = ({
                     listIndex={listIndex}
                     setLists={setLists}
                     deleteDt={delete_dt}
+                    kanbanId={kanbanId}
+                    listId={listId}
                   />
                 );
               } else {

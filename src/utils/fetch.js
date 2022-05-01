@@ -8,11 +8,12 @@ async function fetchData(url, needUser) {
     },
   });
 
-  const { user, data } = await res.json();
-
   if (needUser) {
+    const { user, data } = await res.json();
     return { user, data };
   } else {
+    const { data } = await res.json();
+    console.log(data)
     return data;
   }
 }

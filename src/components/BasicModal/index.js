@@ -22,6 +22,7 @@ import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 import Paper from "@mui/material/Paper";
 import MDProgress from "components/MDProgress";
+import { fetchData, fetchSetData } from "utils/fetch";
 
 const ResultArea = styled.div`
   width: 100%;
@@ -40,6 +41,9 @@ function BasicModal({
   setLists,
   taskIndex,
   listIndex,
+  kanbanId,
+  listId,
+  taskId,
 }) {
   const [title, setTitle] = useState(taskName);
   const [tagInput, setTagInput] = useState("");
@@ -92,6 +96,36 @@ function BasicModal({
     );
   };
 
+  async function uploadFile(e) {
+    const url = await fetchData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/imageUrl`,
+      false
+    );
+    console.log(url);
+
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: e.target.files[0],
+    });
+
+    const imageUrl = url.split("?")[0];
+    console.log(imageUrl);
+
+    setFiles((prev) => {
+      return [
+        ...prev,
+        {
+          key: prev.length,
+          src: imageUrl,
+          name: e.target.files[0].name,
+        },
+      ];
+    });
+  }
+
   useEffect(() => {
     setProgress(
       (todos.filter((todo) => {
@@ -139,7 +173,7 @@ function BasicModal({
     >
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <Grid container spacing={3} direction="row" wrap="nowrap"  mb={3}>
+          <Grid container spacing={3} direction="row" wrap="nowrap" mb={3}>
             <Grid item xs={10}>
               <input
                 type="text"
@@ -324,7 +358,7 @@ function BasicModal({
         <Grid item>
           <label className="modal-label">To-Do List</label>
           <MDProgress value={progress} mt={1} />
-          <Grid container spacing={2} direction="column" wrap="nowrap" >
+          <Grid container spacing={2} direction="column" wrap="nowrap">
             {todos.map((data) => {
               return (
                 <Grid item>
@@ -380,22 +414,7 @@ function BasicModal({
           <label className="modal-label">Attachments</label>
           <MDButton variant="contained" component="label">
             Upload File
-            <input
-              type="file"
-              onChange={(e) => {
-                setFiles((prev) => {
-                  return [
-                    ...prev,
-                    {
-                      key: prev.length,
-                      src: URL.createObjectURL(e.target.files[0]),
-                      name: e.target.files[0].name,
-                    },
-                  ];
-                });
-              }}
-              hidden
-            />
+            <input type="file" onChange={uploadFile} hidden />
           </MDButton>
           {files.map((file) => {
             return (
