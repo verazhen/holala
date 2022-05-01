@@ -210,10 +210,11 @@ const uploadImage = async (taskId) => {
   try {
     const url = await generateUploadURL();
     await conn.query("START TRANSACTION");
+    const imageUrl = url.split("?")[0];
 
     const [res] = await pool.query(
       "INSERT INTO images (task_id,url) VALUES (?,?)",
-      [taskId, url]
+      [taskId, imageUrl]
     );
 
     await conn.query("COMMIT");
