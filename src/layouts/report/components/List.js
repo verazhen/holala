@@ -46,17 +46,20 @@ const List = ({
   //   }, [tasks]);
 
   function addTask() {
-    submitTask.current = true;
+    //     submitTask.current = true;
     const title = "Task Untitled";
     const list = lists[listIndex];
-    const newTasks = [
-      ...list.tasks,
-      { list_id: listId, unique_id: v4(), title, checked: 0 },
-    ];
+    const newTask = { unique_id: v4(), title, checked: 0 };
+    const newTasks = [...list.tasks, newTask];
     const newList = JSON.parse(JSON.stringify(lists));
     newList[listIndex].tasks = newTasks;
 
     setLists(newList);
+    console.log(listId);
+    fetchSetData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/addTest`,
+      newTask
+    );
   }
 
   return (
