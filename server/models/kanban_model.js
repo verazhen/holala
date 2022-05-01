@@ -39,6 +39,21 @@ const getTasks = async (id) => {
   return { data, members };
 };
 
+const getComment = async (user, taskId) => {
+  const [comments] = await pool.query("SELECT * FROM comments WHERE task_id = ?", [
+    taskId,
+  ]);
+
+  for (const i in comments) {
+      const [[users]] = await pool.query("SELECT name FROM users WHERE id = ?", [
+        comments[i].uid,
+      ]);
+      comments[i].name = users.name;
+    }
+
+  return comments;
+};
+
 const addList = async (id, data) => {
   const conn = await pool.getConnection();
   try {
@@ -182,4 +197,5 @@ module.exports = {
   updateChat,
   delTask,
   addComment,
+  getComment
 };

@@ -10,6 +10,16 @@ const getTasks = async (req, res) => {
   });
 };
 
+const getComment = async (req, res) => {
+  const { user } = req;
+  const { kanbanId, listId, taskId } = req.params;
+  const data  = await Kanban.getComment(user,taskId);
+
+  return res.json({
+    data
+  });
+};
+
 const addCard = async (req, res) => {
   const { data } = req.body;
   const { id } = req.params;
@@ -91,4 +101,5 @@ module.exports = {
   updateChat,
   delCard,
   addComment,
+  getComment
 };
