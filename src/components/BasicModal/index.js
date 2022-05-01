@@ -82,16 +82,8 @@ function BasicModal({
   const [members, setMembers] = useState(["Vera", "Shane", "Tony"]);
   const editor = useRef(null);
   const [assignee, setAssignee] = useState(task.name);
-  const [todos, setTodos] = useState([
-    { key: 0, label: "task 1", checked: true },
-    { key: 1, label: "task 2", checked: true },
-    { key: 2, label: "task 3", checked: false },
-  ]);
-  const [chipData, setChipData] = useState([
-    { key: 0, label: "Angular" },
-    { key: 1, label: "jQuery" },
-    { key: 2, label: "Polymer" },
-  ]);
+  const [todos, setTodos] = useState([]);
+  const [chipData, setChipData] = useState([]);
   const [kanbanChip, setKanbanChip] = useState([
     { key: 0, label: "Angular", checked: true },
     { key: 1, label: "jQuery", checked: true },
@@ -101,35 +93,28 @@ function BasicModal({
 
   useEffect(() => {
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/todos`,
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       false
-    ).then((todos) => {
+    ).then(({ todos, comments, images, tags }) => {
       const newTodos = todos.map((todo, i, arr) => {
         arr[i].key = i;
         arr[i].checked = arr[i].checked ? true : false;
         return arr[i];
       });
       setTodos(newTodos);
-    });
-
-    fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/comments`,
-      false
-    ).then((comment) => {
-      setComments(comment);
-    });
-
-    fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/images`,
-      false
-    ).then((files) => {
-      const newFiles = files.map((file, i, arr) => {
+      setComments(comments);
+      const newFiles = images.map((file, i, arr) => {
         arr[i].key = i;
         arr[i].src = file.url;
         arr[i].name = file.create_dt;
         return arr[i];
       });
       setFiles(newFiles);
+      const newChips = tags.map((tag, i, arr) => {
+        arr[i].key = i;
+        return arr[i];
+      });
+      setChipData(newChips);
     });
   }, []);
 
