@@ -72,6 +72,17 @@ const updateChat = async (req, res) => {
   });
 };
 
+const addComment = async (req, res) => {
+  const { data } = req.body;
+  const { user } = req;
+  const { kanbanId, listId, taskId } = req.params;
+  const response = await Kanban.addComment(data, user, taskId);
+
+  return res.json({
+    response,
+  });
+};
+
 module.exports = {
   getTasks,
   addCard,
@@ -79,4 +90,5 @@ module.exports = {
   getChat,
   updateChat,
   delCard,
+  addComment,
 };

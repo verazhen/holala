@@ -18,7 +18,7 @@ const getTasks = async (id) => {
         [tasks[j].assignee]
       );
 
-      tasks[j].assignee = tasks[j].assignee ? users.name : null;
+      tasks[j].name = tasks[j].assignee ? users.name : null;
     }
 
     data.push({ id, title, orders, tasks });
@@ -153,6 +153,27 @@ const updateChat = async (message) => {
   return data;
 };
 
+const addComment = async (data, user, taskId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+
+    const [res] = await pool.query(
+      "INSERT INTO comments (task_id,uid,content) VALUES (?,?,?)",
+      [taskId, user.id, data.content]
+    );
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   getTasks,
   addTask,
@@ -160,4 +181,5 @@ module.exports = {
   getChat,
   updateChat,
   delTask,
+  addComment,
 };
