@@ -86,10 +86,23 @@ const getTaskDetails = async (user, taskId) => {
     taskId,
   ]);
 
-  const [tasks] = await pool.query(`SELECT * FROM tasks WHERE parent_id = ?`, [
+  const [todos] = await pool.query(`SELECT * FROM tasks WHERE parent_id = ?`, [
     taskId,
   ]);
-  return { comments, images, tasks };
+
+  const [tags] = await pool.query(`SELECT * FROM task_tags WHERE task_id = ?`, [
+    taskId,
+  ]);
+  for (const i in tags) {
+      const [[tag]] = await pool.query("SELECT label FROM tags WHERE id = ?", [
+        tags[i].tag_id,
+      ]);
+      tags[i].label = tag.label;
+    }
+
+
+
+  return { comments, images, todos,tags };
 };
 
 //TODO: Efficiency
