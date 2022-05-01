@@ -9,7 +9,8 @@ const {
   addComment,
   getComment,
   uploadImage,
-  getTodos
+  getTodos,
+  getImages
 } = require("../controllers/kanban_controller");
 
 const { wrapAsync,authentication } = require("../../util/util");
@@ -17,8 +18,11 @@ const { wrapAsync,authentication } = require("../../util/util");
 //get all task in all list
 router.route("/task/:id").get(wrapAsync(getTasks));
 
-//get all todos in all list
+//get all todos in the task
 router.route("/kanban/:kanbanId/list/:listId/task/:taskId/todos").get(wrapAsync(getTodos));
+
+//get all images in the task
+router.route("/kanban/:kanbanId/list/:listId/task/:taskId/images").get(wrapAsync(getImages));
 
 //add new List or update order
 router.route("/task/:id").post(wrapAsync(addCard));

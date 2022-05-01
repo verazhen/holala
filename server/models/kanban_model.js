@@ -46,6 +46,13 @@ const getTodos = async (taskId) => {
   return tasks ;
 };
 
+const getImages = async (taskId) => {
+  const [images] = await pool.query(`SELECT * FROM images WHERE task_id = ?`, [
+    taskId,
+  ]);
+  return images ;
+};
+
 //TODO: Efficiency
 const getComment = async (user, taskId) => {
   const [comments] = await pool.query(
@@ -231,4 +238,5 @@ module.exports = {
   getComment,
   uploadImage,
   getTodos,
+  getImages
 };

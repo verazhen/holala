@@ -20,6 +20,16 @@ const getTodos = async (req, res) => {
   });
 };
 
+const getImages = async (req, res) => {
+  const { user } = req;
+  const { kanbanId, listId, taskId } = req.params;
+  const data = await Kanban.getImages(taskId);
+
+  return res.json({
+    data,
+  });
+};
+
 const getComment = async (req, res) => {
   const { user } = req;
   const { kanbanId, listId, taskId } = req.params;
@@ -124,4 +134,5 @@ module.exports = {
   getComment,
   uploadImage,
   getTodos,
+  getImages,
 };
