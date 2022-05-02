@@ -320,6 +320,7 @@ function BasicModal({
     <Modal
       open={open}
       onClose={onCloseModal}
+      closeIcon={<></>}
       classNames={{
         modal: "basicModal",
       }}
@@ -327,7 +328,7 @@ function BasicModal({
       <Grid container spacing={3} direction="column">
         <Grid item>
           <Grid container spacing={3} direction="row" wrap="nowrap" mb={3}>
-            <Grid item xs={10}>
+            <Grid item xs={11}>
               <input
                 type="text"
                 value={title}
