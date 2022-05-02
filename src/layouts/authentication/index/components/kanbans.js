@@ -91,10 +91,14 @@ function Projects({ setUser }) {
   function delKanban() {
     const index = Number(menu.classList[4].split("-")[1]);
     const newKanbans = JSON.parse(JSON.stringify(kanbans));
-    const kanbanId = kanbans[index].id;
+    const kanbanId = kanbans[index].kanban_id;
     const kanbanTitle = kanbans[index].title;
     newKanbans[index].delete_dt = 1;
     setKanbans(newKanbans);
+    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}`, {
+      title: newTitle,
+      delete_dt: 1,
+    });
     closeMenu();
   }
 
