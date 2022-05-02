@@ -342,7 +342,11 @@ function BasicModal({
                   <Grid item>
                     <Checkbox
                       checked={checked}
-                      sx={{ transform: "scale(1.2)" }}
+                      color="primary"
+                      sx={{
+                        transform: "scale(1.2)",
+                      }}
+                      className="checked"
                       onChange={(e) => setChecked(!checked)}
                     />
                   </Grid>{" "}
@@ -444,7 +448,12 @@ function BasicModal({
                 variant="contained"
                 color="secondary"
                 ml={5}
-                style={{ width: "8px", padding: 0 }}
+                style={{
+                  maxWidth: "65px",
+                  maxHeight: "30px",
+                  minWidth: "65px",
+                  minHeight: "30px",
+                }}
                 onClick={() => {
                   setEditStatus(true);
                   editor.current.focus();
@@ -458,8 +467,8 @@ function BasicModal({
         </Grid>
         <Grid item>
           <label className="modal-label">To-Do List</label>
-          <MDProgress value={progress} mt={1} />
-          <Grid container spacing={2} direction="column" wrap="nowrap">
+          <MDProgress value={progress} mt={1} color="secondary" />
+          <Grid container spacing={0.5} direction="column" wrap="nowrap" mt={1}>
             {todos.map((data) => {
               return (
                 <Grid item>
@@ -492,14 +501,23 @@ function BasicModal({
             })}
             <MDButton
               variant="contained"
-              color="secondary"
+              className="label-button"
+              style={{
+                marginTop: "5px",
+                marginLeft: "10px",
+                maxWidth: "80px",
+                maxHeight: "35px",
+                minWidth: "80px",
+                minHeight: "35px",
+                padding: 0,
+              }}
               onClick={() => {
                 setTodos((prev) => {
                   const newArr = [
                     ...prev,
                     {
                       key: prev.length,
-                      label: "Task ...",
+                      title: "Task ...",
                       checked: false,
                     },
                   ];
@@ -513,7 +531,17 @@ function BasicModal({
         </Grid>
         <Grid item>
           <label className="modal-label">Attachments</label>
-          <MDButton variant="contained" component="label">
+          <MDButton
+            variant="contained"
+            style={{
+              maxWidth: "100px",
+              maxHeight: "35px",
+              minWidth: "100px",
+              minHeight: "35px",
+              padding: 0,
+            }}
+            className="label-button"
+          >
             Upload File
             <input type="file" onChange={uploadFile} hidden />
           </MDButton>
@@ -574,9 +602,13 @@ function BasicModal({
                     style={{
                       height: "2.5rem",
                       width: "100%",
+                      borderRadius: "10px",
                     }}
                   >
-                    <Typography m={1} style={{ fontSize: "1rem" }}>
+                    <Typography
+                      m={1}
+                      style={{ fontSize: "1rem", color: "dimgrey" }}
+                    >
                       {comment.content}
                     </Typography>
                   </Paper>

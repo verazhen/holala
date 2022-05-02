@@ -110,10 +110,26 @@
 
 .leave-comment {
   border: 1px solid lightgray;
-  border-radius: 5px;
+  border-radius: 10px;
   height: 2.6rem;
   width: 100%;
+  padding-left: 10px;
+  font-size: 1rem;
+  color: dimgray;
 }
+
+.label-button {
+  border: 1px solid lightgray !important;
+}
+.checked:hover {
+  background-color: lightgray !important;
+}
+
+.label-button:hover {
+  color: white !important;
+  background-color: lightgray !important;
+}
+
 
 .todo,
 .file-name {
@@ -123,6 +139,7 @@
   width: 80%;
   padding: 15px 5px;
   border-radius: 5px;
+  color: dimgray;
 }
 
 .todo:focus,
