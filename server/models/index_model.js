@@ -53,7 +53,12 @@ const updateKanban = async (data, kanbanId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const { title, delete_dt } = data;
+    const { title } = data;
+    let { delete_dt } = data;
+
+    if (delete_dt === 1) {
+      delete_dt = new Date();
+    }
 
     const [kanban] = await conn.query(
       `UPDATE kanbans SET delete_dt = ?, title=? WHERE kanban_id=?`,

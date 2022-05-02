@@ -189,7 +189,6 @@ const updateListDetail = async (data, listId) => {
     if (delete_dt === 1) {
       delete_dt = new Date();
     }
-    console.log(title, delete_dt, listId);
 
     const [res] = await conn.query(
       `UPDATE lists SET delete_dt = ?, title=? WHERE id=?`,
