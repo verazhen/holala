@@ -78,16 +78,13 @@ module.exports = (server) => {
       console.log("a user join in room-", roomID);
       if (users[roomID]) {
         const length = users[roomID].length;
-        if (length === 4) {
-          socket.emit("room full");
-          return;
-        }
         users[roomID].push(socket.id);
       } else {
         users[roomID] = [socket.id];
       }
       socketToRoom[socket.id] = roomID;
       const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+      console.log(usersInThisRoom)
       socket.emit("all users", usersInThisRoom);
     });
 
@@ -112,6 +109,17 @@ module.exports = (server) => {
         room = room.filter((id) => id !== socket.id);
         users[roomID] = room;
       }
+      socket.broadcast.emit("user left", socket.id);
+    });
+
+    socket.on("leave meet", () => {
+      const roomID = socketToRoom[socket.id];
+      let room = users[roomID];
+      if (room) {
+        room = room.filter((id) => id !== socket.id);
+        users[roomID] = room;
+      }
+      socket.broadcast.emit("user left", socket.id);
     });
   });
 

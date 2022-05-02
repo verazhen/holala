@@ -10,10 +10,13 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Icon from "@mui/material/Icon";
 import VideoCallIcon from "@material-ui/icons/VideoCall";
 import AspectRatioIcon from "@material-ui/icons/AspectRatio";
+import Box from "@mui/material/Box";
+import Fab from "@mui/material/Fab";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import Sidenav from "examples/Sidechat";
@@ -61,11 +64,11 @@ const StyledVideo = styled.video`
   margin: 20px;
 `;
 
-const Video2 = (props) => {
+const Video2 = ({ peer }) => {
   const ref = useRef();
 
   useEffect(() => {
-    props.peer.on("stream", (stream) => {
+    peer.on("stream", (stream) => {
       ref.current.srcObject = stream;
     });
   }, []);
@@ -90,14 +93,16 @@ export default function App() {
   const { pathname } = useLocation();
   const [roomBtn, setRoomBtn] = useState("START MEETING");
   const [room, setRoom] = useState(false);
-  const [stream, setStream] = useState(false);
+  const [stream, setStream] = useState(true);
   const [screen, setScreen] = useState(false);
+  const [localStream, setLocalStream] = useState(null);
   const [ws, setWs] = useState(null);
   const [peers, setPeers] = useState([]);
   const socketRef = useRef();
   const userVideo = useRef();
   const peersRef = useRef([]);
   const roomRef = useRef(false);
+  const streamRef = useRef(false);
   const { status, startRecording, stopRecording, mediaBlobUrl } =
     useReactMediaRecorder({
       screen: true,
@@ -107,7 +112,7 @@ export default function App() {
         const uid = getLocalStorage("uid");
         const kanbanId = getLocalStorage("kanbanId");
         console.log(blob);
-        ws.emit("leave room", { uid, kanbanId, url: blob });
+        //         ws.emit("leave room", { uid, kanbanId, url: blob });
       },
     });
 
@@ -174,6 +179,11 @@ export default function App() {
         console.log(msg);
       });
       startRecording();
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          setLocalStream(stream);
+        });
     } else {
       if (!roomRef.current) {
         return;
@@ -181,97 +191,80 @@ export default function App() {
       console.log("停止會議");
       setRoomBtn("START MEETING");
       stopRecording();
+
+      if (localStream && localStream.getTracks()) {
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+      setLocalStream(null);
+      ws.emit("leave meet", ws.id);
+
+      ws.off("all users", (users) => {});
+
+      ws.off("user joined", (payload) => {});
+
+      ws.off("receiving returned signal", (payload) => {});
+      ws.off("user left", (payload) => {});
       roomRef.current = false;
     }
   }, [room]);
 
   useEffect(() => {
-    console.log("useEffect stream");
-    if (stream) {
-      console.log("打開視訊");
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          userVideo.current.srcObject = stream;
-          ws.emit("join room", roomID);
-          ws.on("all users", (users) => {
-            console.log(`there're: ${users} in the room now`);
-            const peers = [];
-            users.forEach((userID) => {
-              const peer = createPeer(userID, ws.id, stream);
-              peersRef.current.push({
-                peerID: userID,
-                peer,
-              });
-              peers.push(peer);
-            });
-            setPeers(peers);
-          });
-
-          ws.on("user joined", (payload) => {
-            const peer = addPeer(payload.signal, payload.callerID, stream);
-            peersRef.current.push({
-              peerID: payload.callerID,
-              peer,
-            });
-
-            setPeers((users) => [...users, peer]);
-          });
-
-          ws.on("receiving returned signal", (payload) => {
-            const item = peersRef.current.find((p) => p.peerID === payload.id);
-            item.peer.signal(payload.signal);
-          });
-        });
-    } else {
-      console.log("關閉視訊");
-    }
-  }, [stream]);
-
-  useEffect(() => {
-    console.log("useEffect screen");
-    if (screen) {
-      console.log("螢幕分享");
-      const constraints = {
-        frameRate: 15,
-        width: 640,
-        height: 360,
-      };
-      navigator.mediaDevices.getDisplayMedia(constraints).then((stream) => {
-        userVideo.current.srcObject = stream;
-        ws.emit("join room", roomID);
-        ws.on("all users", (users) => {
-          const peers = [];
-          users.forEach((userID) => {
-            const peer = createPeer(userID, ws.id, stream);
-            peersRef.current.push({
-              peerID: userID,
-              peer,
-            });
-            peers.push(peer);
-          });
-          setPeers(peers);
-        });
-
-        ws.on("user joined", (payload) => {
-          const peer = addPeer(payload.signal, payload.callerID, stream);
+    console.log(localStream);
+    if (localStream) {
+      console.log("開始串流");
+      console.log(localStream);
+      userVideo.current.srcObject = localStream;
+      ws.emit("join room", kanbanId);
+      ws.on("all users", (users) => {
+        const peers = [];
+        users.forEach((userID) => {
+          const peer = createPeer(userID, ws.id, localStream);
           peersRef.current.push({
-            peerID: payload.callerID,
+            peerID: userID,
             peer,
           });
-
-          setPeers((users) => [...users, peer]);
+          peers.push({
+            peerID: userID,
+            peer,
+          });
         });
-
-        ws.on("receiving returned signal", (payload) => {
-          const item = peersRef.current.find((p) => p.peerID === payload.id);
-          item.peer.signal(payload.signal);
-        });
+        setPeers(peers);
       });
-    } else {
-      console.log("關閉螢幕分享");
+
+      ws.on("user joined", (payload) => {
+        const peer = addPeer(payload.signal, payload.callerID, localStream);
+        peersRef.current.push({
+          peerID: payload.callerID,
+          peer,
+        });
+
+        const peerObj = {
+          peer,
+          peerID: payload.callerID,
+        };
+
+        setPeers((users) => [...users, peerObj]);
+      });
+
+      ws.on("receiving returned signal", (payload) => {
+        const item = peersRef.current.find((p) => p.peerID === payload.id);
+        item.peer.signal(payload.signal);
+      });
+
+      ws.on("user left", (id) => {
+        const peerObj = peersRef.current.find((p) => p.peerID === id);
+        if (peerObj) {
+          peerObj.peer.destroy();
+        }
+        const peers = peersRef.current.filter((p) => p.peerID !== id);
+        console.log(peers);
+        peersRef.current = peers;
+        setPeers(peers);
+      });
     }
-  }, [screen]);
+  }, [localStream]);
 
   // Open sidenav when mouse enter on mini sidenav
   const handleOnMouseEnter = () => {
@@ -383,6 +376,7 @@ export default function App() {
     } else {
       setStream(true);
     }
+    streamRef.current = true;
   }
 
   function changeScreenState() {
@@ -413,15 +407,43 @@ export default function App() {
             onMouseLeave={handleOnMouseLeave}
           />
 
-{/*           <Container2> */}
-{/*             <StyledVideo muted ref={userVideo} autoPlay playsInline /> */}
-{/*             {peers.map((peer, index) => { */}
-{/*               return <Video2 key={index} peer={peer} class="video-peer" />; */}
-{/*             })} */}
-{/*           </Container2> */}
-          <Configurator />
+          <Box sx={{ "& > :not(style)": { m: 1 } }} style={style}>
+            <Fab
+              color="primary"
+              variant="extended"
+              aria-label="add"
+              onClick={changeMeetingState}
+            >
+              <MDTypography variant="h5" color="white">
+                {roomBtn}
+              </MDTypography>
+            </Fab>
+          </Box>
+          {room ? (
+            <Container2>
+              <StyledVideo muted ref={userVideo} autoPlay playsInline />
+              {peers ? (
+                peers.map((peer) => {
+                  if (peer.peer.readable) {
+                    return (
+                      <Video2
+                        key={peer.peerID}
+                        peer={peer.peer}
+                        class="video-peer"
+                      />
+                    );
+                  }
+                })
+              ) : (
+                <></>
+              )}
+            </Container2>
+          ) : (
+            <></>
+          )}
 
-          {configsButton}
+          {/*           <Configurator /> */}
+          {/*           {configsButton} */}
           {/* <MDButton
             variant="gradient"
             color="primary"
