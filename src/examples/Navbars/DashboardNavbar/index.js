@@ -218,6 +218,22 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 color="inherit"
                 sx={navbarIconButton}
                 onClick={() => {
+                  window.location.href = "/index";
+                }}
+              >
+                <Icon sx={iconsStyle}>home</Icon>
+                <div
+                  style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
+                >
+                  Home
+                </div>
+              </IconButton>
+              <IconButton
+                size="medium"
+                disableRipple
+                color="inherit"
+                sx={navbarIconButton}
+                onClick={() => {
                   window.localStorage.removeItem("access_token");
                   window.location.href = "/authentication/sign-in";
                 }}
