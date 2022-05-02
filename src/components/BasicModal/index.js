@@ -170,9 +170,16 @@ function BasicModal({
     newLists[listIndex].tasks[taskIndex].assignee = assigneeId;
     newLists[listIndex].tasks[taskIndex].due = due;
     newLists[listIndex].tasks[taskIndex].checked = checked;
+    newLists[listIndex].tasks[taskIndex].description = markdownText;
     setLists(newLists);
 
-    const newTask = { title, assignee: assigneeId, due_dt: due, checked };
+    const newTask = {
+      title,
+      assignee: assigneeId,
+      due_dt: due,
+      checked,
+      description: markdownText,
+    };
     fetchPutData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       newTask
@@ -370,9 +377,7 @@ function BasicModal({
                 {chipData.map((data) => {
                   return (
                     <Grid item mr={1}>
-                      <Chip
-                        label={data.label}
-                      />
+                      <Chip label={data.label} />
                     </Grid>
                   );
                 })}
