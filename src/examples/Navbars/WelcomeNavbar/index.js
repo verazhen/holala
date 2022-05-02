@@ -24,6 +24,7 @@ import PropTypes from "prop-types";
 // @mui material components
 import Container from "@mui/material/Container";
 import Icon from "@mui/material/Icon";
+import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -40,14 +41,15 @@ import breakpoints from "assets/theme/base/breakpoints";
 // Material Dashboard 2 React context
 import { useMaterialUIController } from "context";
 
-function DefaultNavbar({ transparent, light, action,user }) {
+function DefaultNavbar({ transparent, light, action, user }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
 
   const [mobileNavbar, setMobileNavbar] = useState(false);
   const [mobileView, setMobileView] = useState(false);
 
-  const openMobileNavbar = ({ currentTarget }) => setMobileNavbar(currentTarget.parentNode);
+  const openMobileNavbar = ({ currentTarget }) =>
+    setMobileNavbar(currentTarget.parentNode);
   const closeMobileNavbar = () => setMobileNavbar(false);
 
   useEffect(() => {
@@ -102,17 +104,36 @@ function DefaultNavbar({ transparent, light, action,user }) {
           backdropFilter: transparent ? "none" : `saturate(200%) blur(30px)`,
         })}
       >
-        <MDBox
-          component={Link}
-          to="/"
-          py={transparent ? 1.5 : 0.75}
-          lineHeight={1}
-          pl={{ xs: 0, lg: 1 }}
+        <Grid
+          container
+          direction="row"
+          spacing={1}
+          wrap="nowrap"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <MDTypography variant="h2" fontWeight="bold" color={light ? "white" : "dark"}>
-            Hi! {user.name}
-          </MDTypography>
-        </MDBox>
+          <Grid item>
+            <MDTypography
+              variant="h2"
+              fontWeight="bold"
+              color={light ? "white" : "dark"}
+            >
+              Hi! {user.name}
+            </MDTypography>
+          </Grid>
+          <Grid item>
+            <MDButton
+              variant="gradient"
+              className="logout-btn"
+              onClick={() => {
+                window.localStorage.removeItem("access_token");
+                window.location.href = "/authentication/sign-in";
+              }}
+            >
+              log out
+            </MDButton>
+          </Grid>
+        </Grid>
         {action &&
           (action.type === "internal" ? (
             <MDBox display={{ xs: "none", lg: "inline-block" }}>
@@ -154,7 +175,9 @@ function DefaultNavbar({ transparent, light, action,user }) {
           <Icon fontSize="default">{mobileNavbar ? "close" : "menu"}</Icon>
         </MDBox>
       </MDBox>
-      {mobileView && <DefaultNavbarMobile open={mobileNavbar} close={closeMobileNavbar} />}
+      {mobileView && (
+        <DefaultNavbarMobile open={mobileNavbar} close={closeMobileNavbar} />
+      )}
     </Container>
   );
 }

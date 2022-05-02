@@ -118,18 +118,19 @@
   color: dimgray;
 }
 
-.label-button {
+.label-button,
+.logout-btn {
   border: 1px solid lightgray !important;
 }
 .checked:hover {
   background-color: lightgray !important;
 }
 
-.label-button:hover {
+.label-button:hover,
+.logout-btn:hover {
   color: white !important;
   background-color: lightgray !important;
 }
-
 
 .todo,
 .file-name {

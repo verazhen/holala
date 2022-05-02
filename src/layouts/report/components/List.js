@@ -46,7 +46,6 @@ const List = ({
     newList[listIndex].tasks = newTasks;
 
     setLists(newList);
-    console.log('hi')
     fetchSetData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/addTest`,
       newTask
