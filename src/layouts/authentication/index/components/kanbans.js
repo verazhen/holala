@@ -25,7 +25,7 @@ import KanbanMenu from "examples/Tables/KanbanMenu";
 
 // Data
 import data from "layouts/authentication/components/Projects/data";
-import { fetchData, fetchSetData } from "utils/fetch";
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 
 function Projects({ setUser }) {
   const [kanbans, setKanbans] = useState([]);
@@ -54,9 +54,17 @@ function Projects({ setUser }) {
   const closeMenu = () => setMenu(null);
 
   function addKanban() {
-    console.log(newTitle);
     //post new kanban with newtitle and get kanban id
-    //render kanban with kanban id & title
+    fetchSetData("http://localhost:5000/api/1.0/kanban", {
+      title: newTitle,
+    }).then(({ data }) => {
+      //render kanban with kanban id & title
+      setKanbans((prev) => [
+        ...prev,
+        { title: newTitle, kanban_id: data.kanban_id },
+      ]);
+    });
+
     setOpenDialog(false);
   }
 
