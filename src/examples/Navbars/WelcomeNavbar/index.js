@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect } from "react";
 
 // react-router components
@@ -25,6 +10,8 @@ import PropTypes from "prop-types";
 import Container from "@mui/material/Container";
 import Icon from "@mui/material/Icon";
 import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import { navbarIconButton } from "examples/Navbars/DashboardNavbar/styles";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -122,16 +109,23 @@ function DefaultNavbar({ transparent, light, action, user }) {
             </MDTypography>
           </Grid>
           <Grid item>
-            <MDButton
-              variant="gradient"
-              className="logout-btn"
+            <IconButton
+              size="medium"
+              disableRipple
+              color="inherit"
+              sx={navbarIconButton}
               onClick={() => {
                 window.localStorage.removeItem("access_token");
                 window.location.href = "/authentication/sign-in";
               }}
             >
-              log out
-            </MDButton>
+              <Icon >logout</Icon>
+              <div
+                style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
+              >
+                Log Out
+              </div>
+            </IconButton>
           </Grid>
         </Grid>
         {action &&
