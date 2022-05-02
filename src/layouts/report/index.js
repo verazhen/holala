@@ -54,9 +54,15 @@ function Tables() {
   function delList() {
     const delItem = Number(menu.classList[4].split("-")[1]);
     const newLists = JSON.parse(JSON.stringify(lists));
+    const listId = lists[delItem].id;
+    const listTitle = lists[delItem].title;
     newLists[delItem].delete_dt = 1;
     setLists(newLists);
     //put list api
+    fetchPutData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/detail`,
+      { delete_dt: 1, title: listTitle }
+    );
   }
 
   function editList(e, index) {
@@ -175,7 +181,8 @@ function Tables() {
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >
-            {lists.map(({ id, title, tasks, delete_dt }, index) => {
+            {lists.map((list, index) => {
+              const { id, title, tasks, delete_dt } = list;
               if (!delete_dt) {
                 return (
                   <Grid item xs={6}>
@@ -189,7 +196,6 @@ function Tables() {
                         bgColor="info"
                         borderRadius="lg"
                         coloredShadow="info"
-                        ref={(el) => (listsRef.current[index] = el)}
                       >
                         <Grid
                           container
@@ -202,7 +208,15 @@ function Tables() {
                             <input
                               type="text"
                               value={title}
+                              className="list-title"
+                              ref={(el) => (listsRef.current[index] = el)}
                               onChange={(e) => editList(e, index)}
+                              onBlur={() =>
+                                fetchPutData(
+                                  `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${id}/detail`,
+                                  { title }
+                                )
+                              }
                             />
                           </Grid>
                           <Grid item>

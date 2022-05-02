@@ -3,7 +3,7 @@ const Kanban = require("../models/kanban_model");
 const getTasks = async (req, res) => {
   const { id } = req.params;
   const { user } = req;
-  const data = await Kanban.getTasks(id,user);
+  const data = await Kanban.getTasks(id, user);
 
   return res.json(data);
 };
@@ -94,8 +94,8 @@ const updateTags = async (req, res) => {
 
 const updateTodos = async (req, res) => {
   const { data } = req.body;
-  const { taskId,listId } = req.params;
-  const response = await Kanban.updateTodos(data, taskId,listId);
+  const { taskId, listId } = req.params;
+  const response = await Kanban.updateTodos(data, taskId, listId);
 
   return res.json({
     response,
@@ -106,6 +106,16 @@ const uploadImage = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId, taskId } = req.params;
   const response = await Kanban.uploadImage(taskId);
+
+  return res.json({
+    data: response,
+  });
+};
+
+const updateListDetail = async (req, res) => {
+  const { data } = req.body;
+  const { kanbanId, listId } = req.params;
+  const response = await Kanban.updateListDetail(data, listId);
 
   return res.json({
     data: response,
@@ -124,5 +134,6 @@ module.exports = {
   addNewTask,
   updateTask,
   updateTags,
-  updateTodos
+  updateTodos,
+  updateListDetail,
 };
