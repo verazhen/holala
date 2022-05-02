@@ -34,7 +34,6 @@ const Item = ({
   const [open, setOpen] = useState(false);
 
   function deleteItem() {
-    //     submittingStatus.current = true;
     const list = lists[listIndex];
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[listIndex].tasks[index].delete_dt = 1;

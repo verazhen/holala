@@ -1,6 +1,9 @@
 /// @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -32,6 +35,10 @@ function Tables() {
   const submittingStatus = useRef(false);
   const submitTask = useRef(false);
   const { kanbanId } = useParams();
+  const [menu, setMenu] = useState(null);
+  const openMenu = ({ currentTarget }) => setMenu(currentTarget);
+  const closeMenu = () => setMenu(null);
+  const listsRef = useRef([]);
 
   function addList() {
     submittingStatus.current = true;
@@ -42,6 +49,20 @@ function Tables() {
     setLists(function (prevData) {
       return [...prevData, newList];
     });
+  }
+
+  function delList() {
+    const delItem = Number(menu.classList[4].split("-")[1]);
+    const newLists = JSON.parse(JSON.stringify(lists));
+    newLists[delItem].delete_dt = 1;
+    setLists(newLists);
+    //put list api
+  }
+
+  function editList(e, index) {
+    const newLists = JSON.parse(JSON.stringify(lists));
+    newLists[index].title = e.target.value;
+    setLists(newLists);
   }
 
   const onDragEnd = (result, columns, setColumns) => {
@@ -124,11 +145,10 @@ function Tables() {
 
   //   post data
   useEffect(() => {
+    listsRef.current = listsRef.current.slice(0, lists.length);
     if (!submittingStatus.current) {
       return;
     }
-    console.log("useEffect lists");
-    console.log(lists);
     fetchSetData(`http://localhost:5000/api/1.0/task/${kanbanId}`, lists).then(
       (lists) => {
         submittingStatus.current = false;
@@ -155,42 +175,90 @@ function Tables() {
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >
-            {lists.map(({ id, title, tasks, delete_dt }, index) => (
-              <Grid item xs={6}>
-                <Card>
-                  <MDBox
-                    mx={2}
-                    mt={-3}
-                    py={3}
-                    px={2}
-                    variant="gradient"
-                    bgColor="info"
-                    borderRadius="lg"
-                    coloredShadow="info"
-                  >
-                    <MDTypography variant="h5" color="white">
-                      {title}
-                    </MDTypography>
-                  </MDBox>
-                  <MDBox pt={3}>
-                    <List
-                      kanbanId={kanbanId}
-                      listId={id}
-                      listName={title}
-                      tasks={tasks}
-                      listIndex={index}
-                      lists={lists}
-                      tags={tags}
-                      setTags={setTags}
-                      setLists={setLists}
-                      submitTask={submitTask}
-                      members={members}
-                      user={user}
-                    />
-                  </MDBox>
-                </Card>
-              </Grid>
-            ))}
+            {lists.map(({ id, title, tasks, delete_dt }, index) => {
+              if (!delete_dt) {
+                return (
+                  <Grid item xs={6}>
+                    <Card>
+                      <MDBox
+                        mx={2}
+                        mt={-3}
+                        py={3}
+                        px={2}
+                        variant="gradient"
+                        bgColor="info"
+                        borderRadius="lg"
+                        coloredShadow="info"
+                        ref={(el) => (listsRef.current[index] = el)}
+                      >
+                        <Grid
+                          container
+                          direction="row"
+                          wrap="nowrap"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Grid item>
+                            <input
+                              type="text"
+                              value={title}
+                              onChange={(e) => editList(e, index)}
+                            />
+                          </Grid>
+                          <Grid item>
+                            <MDBox color="text" px={2}>
+                              <Icon
+                                sx={{ cursor: "pointer", fontWeight: "bold" }}
+                                fontSize="small"
+                                onClick={openMenu}
+                                className={`list-${index}`}
+                              >
+                                more_vert
+                              </Icon>
+                            </MDBox>
+                            <Menu
+                              id="simple-menu"
+                              style={{ marginTop: "10px" }}
+                              anchorEl={menu}
+                              anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "right",
+                              }}
+                              transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                              }}
+                              open={Boolean(menu)}
+                              onClose={closeMenu}
+                            >
+                              <MenuItem onClick={delList}>
+                                delete the list
+                              </MenuItem>
+                            </Menu>
+                          </Grid>
+                        </Grid>
+                      </MDBox>
+                      <MDBox pt={3}>
+                        <List
+                          kanbanId={kanbanId}
+                          listId={id}
+                          listName={title}
+                          tasks={tasks}
+                          listIndex={index}
+                          lists={lists}
+                          tags={tags}
+                          setTags={setTags}
+                          setLists={setLists}
+                          submitTask={submitTask}
+                          members={members}
+                          user={user}
+                        />
+                      </MDBox>
+                    </Card>
+                  </Grid>
+                );
+              }
+            })}
           </DragDropContext>
           <Grid item xs={3}>
             <MDButton
