@@ -210,7 +210,6 @@ const updateTags = async (data, taskId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    console.log(data);
     const values = data.map(({ id }) => {
       return [taskId, id];
     });
@@ -222,6 +221,40 @@ const updateTags = async (data, taskId) => {
     if (data.length > 0) {
       [res] = await conn.query(
         `INSERT INTO task_tags (task_id,tag_id) VALUES ? `,
+        [values]
+      );
+    }
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
+const updateTodos = async (data, taskId, listId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+
+    const values = data.map(({ title, checked }) => {
+      const dateTime = Date.now();
+      const timestamp = Math.floor(dateTime / 1000);
+      return [title, new Date(), timestamp, taskId, listId];
+    });
+    console.log(values);
+
+    await conn.query(`DELETE FROM tasks WHERE parent_id=?`, [taskId]);
+
+    let res = null;
+
+    if (data.length > 0) {
+      [res] = await conn.query(
+        `INSERT INTO tasks (title,checked,orders,parent_id,list_id) VALUES ? `,
         [values]
       );
     }
@@ -303,4 +336,5 @@ module.exports = {
   addNewTask,
   updateTask,
   updateTags,
+  updateTodos,
 };

@@ -91,6 +91,7 @@ function BasicModal({
   const [kanbanChip, setKanbanChip] = useState([]);
   const initialization = useRef(null);
   const updateChips = useRef(null);
+  const updateTodos = useRef(null);
 
   useEffect(() => {
     if (!initialization.current) {
@@ -227,6 +228,15 @@ function BasicModal({
         todos.length) *
         100
     );
+
+    if (updateTodos.current) {
+      fetchPutData(
+        `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/todo`,
+        todos
+      ).then(() => {
+        updateTodos.current = false;
+      });
+    }
   }, [todos]);
 
   useEffect(() => {
@@ -236,7 +246,9 @@ function BasicModal({
     fetchPutData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/tag`,
       chipData
-    );
+    ).then(() => {
+      updateChips.current = false;
+    });
   }, [chipData]);
 
   function updateTodoChecked(e, data) {
@@ -245,6 +257,7 @@ function BasicModal({
       newArr[data.key].checked = e.target.checked;
       return newArr;
     });
+    updateTodos.current = true;
   }
 
   function editTodo(e, data) {
@@ -253,6 +266,7 @@ function BasicModal({
       newArr[data.key].title = e.target.value;
       return newArr;
     });
+    updateTodos.current = true;
   }
 
   function addTodo() {

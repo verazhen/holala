@@ -92,6 +92,16 @@ const updateTags = async (req, res) => {
   });
 };
 
+const updateTodos = async (req, res) => {
+  const { data } = req.body;
+  const { taskId,listId } = req.params;
+  const response = await Kanban.updateTodos(data, taskId,listId);
+
+  return res.json({
+    response,
+  });
+};
+
 const uploadImage = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId, taskId } = req.params;
@@ -113,5 +123,6 @@ module.exports = {
   getTaskDetails,
   addNewTask,
   updateTask,
-  updateTags
+  updateTags,
+  updateTodos
 };
