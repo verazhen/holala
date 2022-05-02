@@ -8,7 +8,7 @@ const getTasks = async (id, user) => {
   ]);
   let data = [];
   for (let i = 0; i < lists.length; i++) {
-    const { id, title, orders } = lists[i];
+    const { id, title, orders, delete_dt } = lists[i];
     const [tasks] = await pool.query(
       `SELECT * FROM tasks WHERE list_id = ${id} AND parent_id IS NULL`
     );
@@ -21,7 +21,7 @@ const getTasks = async (id, user) => {
       tasks[j].name = tasks[j].assignee ? users.name : null;
     }
 
-    data.push({ id, title, orders, tasks });
+    data.push({ id, title, orders, tasks, delete_dt });
   }
 
   let [members] = await pool.query(
@@ -166,6 +166,34 @@ const updateTask = async (data, taskId) => {
     const [res] = await conn.query(
       `UPDATE tasks SET delete_dt = ?, title=?,assignee=?,due_dt=?,checked=?,description=? WHERE id=?`,
       [delete_dt, title, assignee, due_dt, checked, description, taskId]
+    );
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
+const updateListDetail = async (data, listId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const { title } = data;
+    let { delete_dt } = data;
+
+    if (delete_dt === 1) {
+      delete_dt = new Date();
+    }
+    console.log(title, delete_dt, listId);
+
+    const [res] = await conn.query(
+      `UPDATE lists SET delete_dt = ?, title=? WHERE id=?`,
+      [delete_dt, title, listId]
     );
 
     await conn.query("COMMIT");
@@ -337,4 +365,5 @@ module.exports = {
   updateTask,
   updateTags,
   updateTodos,
+  updateListDetail,
 };

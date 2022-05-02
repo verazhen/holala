@@ -21,6 +21,35 @@ const getKanbans = async (uid) => {
   return res;
 };
 
+const addKanban = async (id, data) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const { title } = data;
+
+    const [kanban] = await conn.query(
+      "INSERT INTO kanbans (title,owner_id) VALUES (?,?)",
+      [title, id]
+    );
+    console.log(kanban.insertId);
+
+    const [res] = await conn.query(
+      "INSERT INTO kanban_permission (uid,kanban_id,role_id) VALUES (?,?,?)",
+      [id, kanban.insertId, 1]
+    );
+
+    await conn.query("COMMIT");
+    return { kanban_id: kanban.insertId };
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   getKanbans,
+  addKanban,
 };

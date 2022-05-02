@@ -2,8 +2,8 @@ const router = require("express").Router();
 
 const {
   getKanbans,
+  addKanban,
   updateKanban,
-  delKanban,
 } = require("../controllers/index_controller");
 
 const { wrapAsync, authentication } = require("../../util/util");
@@ -11,10 +11,10 @@ const { wrapAsync, authentication } = require("../../util/util");
 //get all kanbans
 router.route("/kanbans").get(authentication(),wrapAsync(getKanbans));
 
-//create or edit a kanban
-router.route("/kanban").post(authentication(),wrapAsync(updateKanban));
+//create
+router.route("/kanban").post(authentication(),wrapAsync(addKanban));
 
-//delete a kanban
-router.route("/kanban").delete(authentication(),wrapAsync(delKanban));
+//edit or delete a kanban
+router.route("/kanban/:kanbanId").put(authentication(),wrapAsync(updateKanban));
 
 module.exports = router;
