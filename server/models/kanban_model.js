@@ -217,8 +217,10 @@ const updateTags = async (data, taskId) => {
 
     await conn.query(`DELETE FROM task_tags WHERE task_id=?`, [taskId]);
 
+    let res = null;
+
     if (data.length > 0) {
-      const [res] = await conn.query(
+      [res] = await conn.query(
         `INSERT INTO task_tags (task_id,tag_id) VALUES ? `,
         [values]
       );

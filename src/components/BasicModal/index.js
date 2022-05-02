@@ -183,12 +183,6 @@ function BasicModal({
   function handleChange(e, data, setData) {
     setData(e.target.value);
   }
-  const handleDelete = (chipToDelete) => () => {
-    setChipData((chips) =>
-      chips.filter((chip) => chip.key !== chipToDelete.key)
-    );
-    updateChips.current = true;
-  };
 
   async function uploadFile(e) {
     const url = await fetchData(
@@ -378,11 +372,6 @@ function BasicModal({
                     <Grid item mr={1}>
                       <Chip
                         label={data.label}
-                        onDelete={
-                          data.label === "React"
-                            ? undefined
-                            : handleDelete(data)
-                        }
                       />
                     </Grid>
                   );
