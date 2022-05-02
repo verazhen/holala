@@ -69,13 +69,15 @@ function Projects({ setUser }) {
   }
 
   function saveEdit() {
-    closeMenu();
     setEdit(false);
     const index = editIndex;
     const newKanbans = JSON.parse(JSON.stringify(kanbans));
-    const kanbanId = kanbans[index].id;
+    const kanbanId = kanbans[index].kanban_id;
     newKanbans[index].title = newTitle;
     setKanbans(newKanbans);
+    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}`, {
+      title: newTitle,
+    });
   }
 
   function editKanban() {
