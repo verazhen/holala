@@ -29,6 +29,7 @@ import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 
 function Projects({ setUser }) {
   const [kanbans, setKanbans] = useState([]);
+  const [kanbanNum, setKanbanNum] = useState(0);
 
   useEffect(() => {
     fetchData("http://localhost:5000/api/1.0/kanbans", true).then(
@@ -38,6 +39,13 @@ function Projects({ setUser }) {
       }
     );
   }, []);
+
+  useEffect(() => {
+    const existedKanbans = kanbans.filter((kanban) => {
+      return !kanban.delete_dt;
+    });
+    setKanbanNum(existedKanbans.length);
+  }, [kanbans]);
 
   const style = {
     borderBottom: "1px dashed lightgrey",
@@ -141,7 +149,7 @@ function Projects({ setUser }) {
                 done
               </Icon>
               <MDTypography variant="button" fontWeight="regular" color="text">
-                &nbsp;<strong>{kanbans.length} </strong> kanbans
+                &nbsp;<strong>{kanbanNum} </strong> kanbans
               </MDTypography>
             </MDBox>
           </Grid>
