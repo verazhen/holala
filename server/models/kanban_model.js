@@ -36,9 +36,7 @@ const getTasks = async (id, user) => {
     members[i].name = users.name;
   }
 
-  let [tags] = await pool.query("SELECT label FROM tags WHERE kanban_id = ?", [
-    id,
-  ]);
+  let [tags] = await pool.query("SELECT * FROM tags WHERE kanban_id = ?", [id]);
 
   return { account: user, data, user: members, tags };
 };
@@ -208,6 +206,35 @@ const updateList = async (tasks) => {
   }
 };
 
+const updateTags = async (data, taskId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    console.log(data);
+    const values = data.map(({ id }) => {
+      return [taskId, id];
+    });
+
+    await conn.query(`DELETE FROM task_tags WHERE task_id=?`, [taskId]);
+
+    if (data.length > 0) {
+      const [res] = await conn.query(
+        `INSERT INTO task_tags (task_id,tag_id) VALUES ? `,
+        [values]
+      );
+    }
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 const getChat = async () => {
   const data = await mongo.collection("chat").find({}).toArray();
   return data;
@@ -273,4 +300,5 @@ module.exports = {
   getTaskDetails,
   addNewTask,
   updateTask,
+  updateTags,
 };

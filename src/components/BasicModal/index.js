@@ -90,12 +90,12 @@ function BasicModal({
   const [chipData, setChipData] = useState([]);
   const [kanbanChip, setKanbanChip] = useState([]);
   const initialization = useRef(null);
+  const updateChips = useRef(null);
 
   useEffect(() => {
     if (!initialization.current) {
       return;
     }
-
     const customTags = JSON.parse(JSON.stringify(hashtags));
     for (let i = 0; i < customTags.length; i++) {
       const test = chipData.some((chip) => chip.label === customTags[i].label);
@@ -132,11 +132,12 @@ function BasicModal({
         return arr[i];
       });
       setFiles(newFiles);
-      const newChips = tags.map((tag, i, arr) => {
+
+      const newTags = tags.map((tag, i, arr) => {
         arr[i].key = i;
         return arr[i];
       });
-      setChipData(newChips);
+      setChipData(newTags);
       initialization.current = true;
     });
   }, []);
@@ -186,6 +187,7 @@ function BasicModal({
     setChipData((chips) =>
       chips.filter((chip) => chip.key !== chipToDelete.key)
     );
+    updateChips.current = true;
   };
 
   async function uploadFile(e) {
@@ -227,8 +229,14 @@ function BasicModal({
   }, [todos]);
 
   useEffect(() => {
-    console.log(due);
-  }, [due]);
+    if (!updateChips.current) {
+      return;
+    }
+    fetchPutData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/tag`,
+      chipData
+    );
+  }, [chipData]);
 
   function Myform({ data }) {
     return (
@@ -245,10 +253,11 @@ function BasicModal({
               });
               setChipData(() => {
                 const newChips = kanbanChip.filter((chip) => {
-                  return chip.checked === true;
+                  return chip.checked === 1 || chip.checked === true;
                 });
                 return newChips;
               });
+              updateChips.current = true;
             }}
           />
         }

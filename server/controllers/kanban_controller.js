@@ -82,6 +82,16 @@ const addComment = async (req, res) => {
   });
 };
 
+const updateTags = async (req, res) => {
+  const { data } = req.body;
+  const { taskId } = req.params;
+  const response = await Kanban.updateTags(data, taskId);
+
+  return res.json({
+    response,
+  });
+};
+
 const uploadImage = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId, taskId } = req.params;
@@ -103,4 +113,5 @@ module.exports = {
   getTaskDetails,
   addNewTask,
   updateTask,
+  updateTags
 };
