@@ -239,6 +239,41 @@ function BasicModal({
     );
   }, [chipData]);
 
+  function updateTodoChecked(e, data) {
+    setTodos((prev) => {
+      const newArr = [...prev];
+      newArr[data.key].checked = e.target.checked;
+      return newArr;
+    });
+  }
+
+  function editTodo(e, data) {
+    setTodos((prev) => {
+      const newArr = [...prev];
+      newArr[data.key].title = e.target.value;
+      return newArr;
+    });
+  }
+
+  function addTodo() {
+    const newTodo = {
+      title: "Task ...",
+      checked: false,
+      parent_id: taskId,
+    };
+
+    fetchSetData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/addTest`,
+      newTodo
+    );
+
+    setTodos((prev) => {
+      newTodo.key = prev.length;
+      const newArr = [...prev, newTodo];
+      return newArr;
+    });
+  }
+
   function Myform({ data }) {
     return (
       <FormControlLabel
@@ -478,26 +513,14 @@ function BasicModal({
                   <Checkbox
                     key={data.key}
                     checked={data.checked}
-                    onChange={(e) => {
-                      setTodos((prev) => {
-                        const newArr = [...prev];
-                        newArr[data.key].checked = e.target.checked;
-                        return newArr;
-                      });
-                    }}
+                    onChange={(e) => updateTodoChecked(e, data)}
                   />
 
                   <input
                     type="text"
                     value={data.title}
                     className="todo"
-                    onChange={(e) =>
-                      setTodos((prev) => {
-                        const newArr = [...prev];
-                        newArr[data.key].title = e.target.value;
-                        return newArr;
-                      })
-                    }
+                    onChange={(e) => editTodo(e, data)}
                   ></input>
                 </Grid>
               );
@@ -514,19 +537,7 @@ function BasicModal({
                 minHeight: "35px",
                 padding: 0,
               }}
-              onClick={() => {
-                setTodos((prev) => {
-                  const newArr = [
-                    ...prev,
-                    {
-                      key: prev.length,
-                      title: "Task ...",
-                      checked: false,
-                    },
-                  ];
-                  return newArr;
-                });
-              }}
+              onClick={addTodo}
             >
               ADD ToDo
             </MDButton>

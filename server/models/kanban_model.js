@@ -140,8 +140,8 @@ const addNewTask = async (data, listId) => {
     const timestamp = Math.floor(dateTime / 1000);
     const orders = timestamp;
     const [res] = await conn.query(
-      "INSERT INTO tasks (list_id,title,orders) VALUES (?,?,?)",
-      [listId, data.title, orders]
+      "INSERT INTO tasks (list_id,title,orders,parent_id) VALUES (?,?,?,?)",
+      [listId, data.title, orders, data.parent_id]
     );
 
     await conn.query("COMMIT");
