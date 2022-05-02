@@ -49,7 +49,30 @@ const addKanban = async (id, data) => {
   }
 };
 
+const updateKanban = async (data, kanbanId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const { title, delete_dt } = data;
+
+    const [kanban] = await conn.query(
+      `UPDATE kanbans SET delete_dt = ?, title=? WHERE kanban_id=?`,
+      [delete_dt, title, kanbanId]
+    );
+
+    await conn.query("COMMIT");
+    return kanban;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   getKanbans,
   addKanban,
+  updateKanban,
 };

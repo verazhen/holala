@@ -32,13 +32,13 @@ const addKanban = async (req, res) => {
 
 const updateKanban = async (req, res) => {
   try {
-    const { id } = req.user;
-    const data = await Kanban.getKanbans(id);
+    const { data } = req.body;
+    const { kanbanId } = req.params;
+    const response = await Kanban.updateKanban(data,kanbanId);
 
     res.status(200).send({
       status_code: 200,
-      user: req.user,
-      data,
+      data:response,
     });
   } catch (error) {
     return { error };
