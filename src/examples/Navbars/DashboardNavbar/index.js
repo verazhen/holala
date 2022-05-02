@@ -86,8 +86,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
   }, [dispatch, fixedNavbar]);
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
-  const handleConfiguratorOpen = () =>
-    setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
 
@@ -188,13 +186,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </Grid>{" "}
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <MDBox pr={1}>
-              <MDInput label="Search here" />
-            </MDBox>
             <MDBox color={light ? "white" : "inherit"}>
               <Link to="/authentication/sign-in/basic">
-                <IconButton sx={navbarIconButton} size="small" disableRipple>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
+                <IconButton sx={navbarIconButton} size="large" disableRipple>
+                  <Icon sx={iconsStyle}>group_add</Icon>
+                  <div
+                    style={{
+                      fontSize: "17px",
+                      color: "gray",
+                      marginLeft: "2px",
+                    }}
+                  >
+                    Add Member
+                  </div>
                 </IconButton>
               </Link>
               <IconButton
@@ -209,25 +213,21 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 </Icon>
               </IconButton>
               <IconButton
-                size="small"
+                size="medium"
                 disableRipple
                 color="inherit"
                 sx={navbarIconButton}
-                onClick={handleConfiguratorOpen}
+                onClick={() => {
+                  window.localStorage.removeItem("access_token");
+                  window.location.href = "/authentication/sign-in";
+                }}
               >
-                <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                aria-controls="notification-menu"
-                aria-haspopup="true"
-                variant="contained"
-                onClick={handleOpenMenu}
-              >
-                <Icon sx={iconsStyle}>notifications</Icon>
+                <Icon sx={iconsStyle}>logout</Icon>
+                <div
+                  style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
+                >
+                  Log Out
+                </div>
               </IconButton>
               {renderMenu()}
             </MDBox>
