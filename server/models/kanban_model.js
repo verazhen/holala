@@ -2,7 +2,7 @@ const { mongo } = require("./mongocon");
 const { pool } = require("./mysqlcon");
 const { generateUploadURL } = require("./s3");
 
-const getTasks = async (id) => {
+const getTasks = async (id, user) => {
   const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = ?", [
     id,
   ]);
@@ -40,7 +40,7 @@ const getTasks = async (id) => {
     id,
   ]);
 
-  return { data, user: members, tags };
+  return { account: user, data, user: members, tags };
 };
 
 const getTodos = async (taskId) => {

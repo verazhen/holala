@@ -66,6 +66,7 @@ function BasicModal({
   hashtags,
   setTags,
   memberList,
+  user,
 }) {
   const [title, setTitle] = useState(taskName);
   const [checked, setChecked] = useState(task.checked ? true : false);
@@ -112,7 +113,6 @@ function BasicModal({
   }, [memberList]);
 
   useEffect(() => {
-    console.log(memberList);
     //getTaskDetails
     fetchData(
       `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
@@ -140,6 +140,21 @@ function BasicModal({
       initialization.current = true;
     });
   }, []);
+
+  function leaveComment() {
+    const newComment = {
+      name: user.name,
+      content: myComment,
+    };
+    fetchSetData(
+      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/comment`,
+      newComment
+    );
+
+    setComments((prev) => {
+      return [newComment, ...prev];
+    });
+  }
 
   function onSaveModal() {
     let assigneeId;
@@ -541,17 +556,7 @@ function BasicModal({
               <MDButton
                 variant="contained"
                 color="secondary"
-                onClick={() =>
-                  setComments((prev) => {
-                    return [
-                      {
-                        name: "Me",
-                        content: myComment,
-                      },
-                      ...prev,
-                    ];
-                  })
-                }
+                onClick={leaveComment}
               >
                 Leave Comment
               </MDButton>

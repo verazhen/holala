@@ -18,7 +18,8 @@ const List = ({
   submitTask,
   tags,
   setTags,
-  members
+  members,
+  user
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
@@ -95,6 +96,7 @@ const List = ({
                     tags={tags}
                     setTags={setTags}
                     members={members}
+                     user={user}
                   />
                 );
               } else {

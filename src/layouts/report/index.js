@@ -27,6 +27,7 @@ import { addLocalStorage, getLocalStorage } from "utils/utils";
 function Tables() {
   const [lists, setLists] = useState([]);
   const [tags, setTags] = useState([]);
+  const [user, setUser] = useState({});
   const [members, setMembers] = useState([]);
   const submittingStatus = useRef(false);
   const submitTask = useRef(false);
@@ -96,7 +97,7 @@ function Tables() {
   useEffect(() => {
     addLocalStorage("kanbanId", kanbanId);
     fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`, true).then(
-      ({ user, data, tags }) => {
+      ({ user, data, tags, account }) => {
         //sort the lists data
         data.sort((a, b) => {
           return a.orders - b.orders;
@@ -109,6 +110,7 @@ function Tables() {
         });
         setLists(data);
         setMembers(user);
+        setUser(account);
 
         const newTags = tags.map((tag, i, arr) => {
           arr[i].key = i;
@@ -183,6 +185,7 @@ function Tables() {
                       setLists={setLists}
                       submitTask={submitTask}
                       members={members}
+                      user={user}
                     />
                   </MDBox>
                 </Card>

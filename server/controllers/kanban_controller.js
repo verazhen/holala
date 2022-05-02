@@ -2,7 +2,8 @@ const Kanban = require("../models/kanban_model");
 
 const getTasks = async (req, res) => {
   const { id } = req.params;
-  const data = await Kanban.getTasks(id);
+  const { user } = req;
+  const data = await Kanban.getTasks(id,user);
 
   return res.json(data);
 };
