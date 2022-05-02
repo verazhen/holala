@@ -35,7 +35,7 @@ const authentication = () => {
       return;
     } catch (err) {
       console.log(err);
-      res.status(403).send({ error: "Forbidden" });
+      res.status(403).send({ status_code: 403, error: "Forbidden" });
       return;
     }
   };

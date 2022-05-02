@@ -8,11 +8,17 @@ async function fetchData(url, needUser) {
     },
   });
 
+  const response = await res.json();
+  if (response.status_code === 403) {
+    window.location.href = "/authentication/sign-in";
+    return;
+  }
+
   if (needUser) {
-    const { user, data, tags, account } = await res.json();
+    const { user, data, tags, account } = response;
     return { user, data, tags, account };
   } else {
-    const { data } = await res.json();
+    const { data } = await response;
     return data;
   }
 }
