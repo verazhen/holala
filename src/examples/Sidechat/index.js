@@ -18,6 +18,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
+import Avatar from "@mui/material/Avatar";
 // import MDInput from "components/MDInput";
 import Grid from "@mui/material/Grid";
 
@@ -108,7 +109,8 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
 
   const closeSidenav = () => setMiniSidenav(dispatch, true);
   const style = {
-    height: "72%",
+    height: "1100px",
+    overflow:"auto",
   };
 
   useEffect(() => {
@@ -149,32 +151,22 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
           position="absolute"
           top={0}
           right={0}
-          p={1.625}
           onClick={closeSidenav}
           sx={{ cursor: "pointer" }}
-        >
-          <MDTypography variant="h6" color="secondary">
-            <Icon sx={{ fontWeight: "bold" }}>close</Icon>
-          </MDTypography>
-        </MDBox>
-        <MDBox component={NavLink} to="/" display="flex" alignItems="center">
-          {brand && (
-            <MDBox component="img" src={brand} alt="Brand" width="2rem" />
-          )}
-          <MDBox
-            width={!brandName && "100%"}
-            sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
-          >
-            <MDTypography
-              component="h6"
-              variant="button"
-              fontWeight="bold"
-              color={textColor}
-            >
+        ></MDBox>
+        <Grid container direction="row" alignItems="center">
+          <Grid item mr={2}>
+            <Avatar
+              src="https://avatars.dicebear.com/api/micah/shane.svg"
+              sx={{ width: 56, height: 56 }}
+            ></Avatar>
+          </Grid>
+          <Grid item>
+            <MDTypography variant="h4" fontWeight="bold" color={textColor}>
               {brandName}
             </MDTypography>
-          </MDBox>
-        </MDBox>
+          </Grid>
+        </Grid>
       </MDBox>
       <Divider
         light={
@@ -186,10 +178,18 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
         <Grid container direction="column" alignItems="space-evenly" px={3}>
           {messages.map(({ sender, message }) => {
             return (
-              <Grid item xs={6} md={6} lg={10} mt={1}>
-                <MDTypography variant="h6" color="white">
+              <Grid item mt={1} className="myMsg">
+                <div
+                  style={{
+                    display: "inline-block",
+                    whiteSpace: "pre-line",
+                    color: "white",
+                    fontSize: "1rem",
+                    width: "80%",
+                  }}
+                >
                   {sender}: {message}
-                </MDTypography>
+                </div>
               </Grid>
             );
           })}
@@ -198,7 +198,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
 
       <Grid container direction="row" justifyContent="space-evenly">
         <Grid item xs={6} md={6} lg={10} mt={1}>
-          <MDInput type="text" value={input} onChange={inputChange} />
+          <MDInput type="text" value={input} onChange={inputChange} fullWidth />
         </Grid>
         <Grid item xs={6} md={6} lg={10} mt={1}>
           <MDButton
@@ -217,18 +217,6 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
           (darkMode && !transparentSidenav && whiteSidenav)
         }
       />
-      <Grid container direction="row" justifyContent="space-evenly">
-        <Grid item xs={6} md={6} lg={4}>
-          <MDButton variant="gradient" color="dark" fullWidth>
-            Status
-          </MDButton>
-        </Grid>
-        <Grid item xs={6} md={6} lg={4}>
-          <MDButton variant="gradient" color="dark" fullWidth>
-            Chat
-          </MDButton>
-        </Grid>
-      </Grid>
     </SidenavRoot>
   );
 }
