@@ -172,7 +172,9 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
         <Grid container direction="row" alignItems="center">
           <Grid item mr={2}>
             <Avatar
-              src="https://avatars.dicebear.com/api/micah/shane.svg"
+              src={`https://avatars.dicebear.com/api/micah/${
+                user ? user.name : "default"
+              }.svg`}
               sx={{ width: 56, height: 56 }}
             ></Avatar>
           </Grid>
