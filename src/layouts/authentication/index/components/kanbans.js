@@ -103,9 +103,9 @@ function Projects({ setUser }) {
     newKanbans[index].delete_dt = 1;
     setKanbans(newKanbans);
     fetchPutData(`${API_HOST}/kanban/${kanbanId}`, {
-      title: newTitle,
+      title: kanbanTitle,
       delete_dt: 1,
-    });
+    })
     closeMenu();
   }
 

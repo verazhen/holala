@@ -60,7 +60,7 @@ const updateKanban = async (req, res) => {
   try {
     const { data } = req.body;
     const { kanbanId } = req.params;
-    const response = await Kanban.updateKanban(data, kanbanId);
+    const response = await Index.updateKanban(data, kanbanId);
 
     res.status(200).send({
       status_code: 200,
