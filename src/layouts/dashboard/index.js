@@ -281,7 +281,7 @@ function Dashboard() {
                       {
                         chartType: "bar",
                         label: "Finished Tasks",
-                        color: "dark",
+                        color: "black",
                         data: finishedTaskSet,
                       },
                       {

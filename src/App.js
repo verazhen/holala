@@ -351,23 +351,9 @@ export default function App() {
   );
 
   const style = {
-    position: "absolute",
-    marginTop: "1045px",
-    marginLeft: "1600px",
-    zIndex: 999,
-  };
-
-  const style1 = {
-    position: "absolute",
-    marginTop: "1045px",
-    marginLeft: "1750px",
-    zIndex: 999,
-  };
-
-  const style2 = {
-    position: "absolute",
-    marginTop: "1045px",
-    marginLeft: "1820px",
+    position: "fixed",
+    bottom: "40px",
+    right: "40px",
     zIndex: 999,
   };
 
@@ -423,8 +409,9 @@ export default function App() {
               variant="extended"
               aria-label="add"
               onClick={changeMeetingState}
+              style={{ width: "200px" }}
             >
-              <MDTypography variant="h5" color="white">
+              <MDTypography variant="h6" color="white">
                 {roomBtn}
               </MDTypography>
             </Fab>
