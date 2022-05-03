@@ -203,3 +203,12 @@ input[type="file"]::file-selector-button:hover {
   width: 12px;
   display: none;
 }
+
+.css-1j2zi5l {
+  top: 150px !important;
+}
+
+.kanban {
+  top: 0px !important;
+  height: 500px !important;
+}

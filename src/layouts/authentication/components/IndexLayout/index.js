@@ -17,7 +17,7 @@ import Footer from "layouts/authentication/components/Footer";
 function IndexLayout({ image, children,user }) {
   return (
     <PageLayout>
-      <WelcomeNavbar user={user} />
+      <WelcomeNavbar user={user} className="welcome"/>
       <MDBox
         position="absolute"
         width="100%"
@@ -36,7 +36,7 @@ function IndexLayout({ image, children,user }) {
       />
       <MDBox px={1} width="100%" height="100vh" mt={0}>
         <Grid container spacing={1} justifyContent="center" alignItems="center" height="100%">
-          <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+          <Grid item xs={8.5} >
             {children}
           </Grid>
         </Grid>
