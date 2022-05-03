@@ -50,6 +50,13 @@ const getTodos = async (taskId) => {
   return tasks;
 };
 
+const getKanban = async (kanbanId) => {
+  const [[kanban]] = await pool.query(`SELECT * FROM kanbans WHERE kanban_id = ?`, [
+    kanbanId,
+  ]);
+  return kanban;
+};
+
 const getImages = async (taskId) => {
   const [images] = await pool.query(`SELECT * FROM images WHERE task_id = ?`, [
     taskId,
@@ -244,7 +251,9 @@ const updateMembers = async (data, kanbanId) => {
     const values = members.map(({ uid, role_id }) => {
       return [uid, kanbanId, role_id];
     });
-    await conn.query(`DELETE FROM kanban_permission WHERE kanban_id=?`, [kanbanId]);
+    await conn.query(`DELETE FROM kanban_permission WHERE kanban_id=?`, [
+      kanbanId,
+    ]);
 
     const [res] = await conn.query(
       `INSERT INTO kanban_permission (uid, kanban_id, role_id) VALUES ? `,
@@ -395,4 +404,5 @@ module.exports = {
   updateTodos,
   updateListDetail,
   updateMembers,
+  getKanban,
 };

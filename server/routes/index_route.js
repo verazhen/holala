@@ -5,7 +5,7 @@ const {
   addKanban,
   updateKanban,
   getRoles,
-  getUsers
+  getUsers,
 } = require("../controllers/index_controller");
 
 const { wrapAsync, authentication } = require("../../util/util");

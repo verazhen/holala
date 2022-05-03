@@ -40,7 +40,7 @@ import { blue } from "@mui/material/colors";
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
-// import MDTypography from "components/MDTypography";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import Breadcrumbs from "examples/Breadcrumbs";
@@ -79,6 +79,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [members, setMembers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [kanban, setKanban] = useState("");
   const [alert, setAlert] = useState({});
   const descriptionElementRef = useRef(null);
   const [scroll, setScroll] = useState("paper");
@@ -163,9 +164,15 @@ function DashboardNavbar({ absolute, light, isMini }) {
     fetchData(`http://localhost:5000/api/1.0/roles`, false).then((data) =>
       setRoles(data)
     );
-    fetchData(`http://localhost:5000/api/1.0/users`).then((data) => {
+    fetchData(`http://localhost:5000/api/1.0/users`, false).then((data) => {
       setUsers(data);
     });
+
+    fetchData(`http://localhost:5000/api/1.0/kanban/${kanbanId}`, false).then(
+      (data) => {
+        setKanban(data.title);
+      }
+    );
   }, []);
 
   function inviteMember() {
@@ -244,12 +251,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
               mb={{ xs: 1, md: 0 }}
               sx={(theme) => navbarRow(theme, { isMini })}
             >
-              <Breadcrumbs
-                icon="home"
-                title={route[route.length - 1]}
-                route={route}
-                light={light}
-              />
+              {/*               <Breadcrumbs */}
+              {/*                 icon="home" */}
+              {/*                 title={route[route.length - 1]} */}
+              {/*                 route={route} */}
+              {/*                 light={light} */}
+              {/*               /> */}
+              <MDTypography variant="h3">{kanban}</MDTypography>
             </MDBox>
           </Grid>
           <Grid item xs={12} md={6} lg={6}>

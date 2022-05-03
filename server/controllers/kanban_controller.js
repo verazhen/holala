@@ -8,6 +8,13 @@ const getTasks = async (req, res) => {
   return res.json(data);
 };
 
+const getKanban = async (req, res) => {
+  const { kanbanId } = req.params;
+  const data = await Kanban.getKanban(kanbanId);
+
+  return res.json({ data });
+};
+
 const addNewTask = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId } = req.params;
@@ -123,7 +130,7 @@ const updateListDetail = async (req, res) => {
 };
 
 const updateMembers = async (req, res) => {
-  const {data} = req.body;
+  const { data } = req.body;
   const { kanbanId } = req.params;
   const response = await Kanban.updateMembers(data, kanbanId);
 
@@ -147,4 +154,5 @@ module.exports = {
   updateTodos,
   updateListDetail,
   updateMembers,
+  getKanban,
 };

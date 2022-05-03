@@ -14,12 +14,17 @@ const {
   updateTodos,
   updateListDetail,
   updateMembers,
+  getKanban
 } = require("../controllers/kanban_controller");
 
 const { wrapAsync, authentication } = require("../../util/util");
 
 //get all task in all list
 router.route("/task/:id").get(authentication(), wrapAsync(getTasks));
+
+
+//get kanban Detail
+router.route("/kanban/:kanbanId").get(authentication(), wrapAsync(getKanban));
 
 //get task details
 router
