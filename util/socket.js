@@ -40,16 +40,18 @@ module.exports = (server) => {
   // const subClient = Cache.duplicate();
   //
   // io.adapter(createAdapter(Cache, subClient));
-  io.listen(3400);
+  //   io.listen(3400);
 
   io.on("connection", (socket) => {
     console.log(`user ${socket.id} is connected`);
     //---------------chatroom socket
     socket.on("kanban", ({ kanbanId, uid }) => {
+      console.log(kanbanId, uid);
       socket.join(kanbanId);
       console.log(`user ${socket.id} joins in kanban: ${kanbanId}`);
       socket.on("getMessage", (message) => {
         Kanban.updateChat(message).then((res) => console.log(res));
+        console.log(message);
         io.to(kanbanId).emit("getMessage", message);
       });
     });
@@ -84,7 +86,7 @@ module.exports = (server) => {
       }
       socketToRoom[socket.id] = roomID;
       const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
-      console.log(usersInThisRoom)
+      console.log(usersInThisRoom);
       socket.emit("all users", usersInThisRoom);
     });
 

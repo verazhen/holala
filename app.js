@@ -32,6 +32,6 @@ app.use("/api/" + API_VERSION, [
   require("./server/routes/report_route"),
 ]);
 
-app.listen(port, async () => {
+server.listen(port, async () => {
   console.log(`Listening on port: ${port}`);
 });

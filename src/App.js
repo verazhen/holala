@@ -45,6 +45,7 @@ import brandDark from "assets/images/logo-ct-dark.png";
 //Peer
 import Peer from "simple-peer";
 import webSocket from "socket.io-client";
+import { SOCKET_HOST } from "utils/constants";
 import { getLocalStorage } from "utils/utils";
 import styled from "styled-components";
 const Container2 = styled.div`
@@ -153,7 +154,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    setWs(webSocket("http://localhost:3400"));
+    setWs(webSocket(`${SOCKET_HOST}`));
     const uid = 1;
     localStorage.setItem("uid", uid);
   }, []);

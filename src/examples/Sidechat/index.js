@@ -74,11 +74,14 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
       sender = "Vera";
     }
     const message = input;
+    console.log(message);
     ws.emit("getMessage", { uid, sender, message });
     setInput("");
   };
 
   useEffect(() => {
+    console.log("ws");
+    console.log(ws);
     if (ws) {
       listenMessage();
     }
