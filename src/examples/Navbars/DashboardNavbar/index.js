@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 
 // react-router components
 import { useLocation, Link } from "react-router-dom";
@@ -43,6 +44,7 @@ import MDButton from "components/MDButton";
 import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 import DefaultNavbarLink from "examples/Navbars/DefaultNavbar/DefaultNavbarLink";
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 
 // Custom styles for DashboardNavbar
 import {
@@ -73,16 +75,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [members, setMembers] = useState([
-    { name: "Vera", id: 1, role_label: "editor", role_id: 1 },
-    { name: "Vera", id: 2, role_label: "editor", role_id: 1 },
-    { name: "Vera", id: 3, role_label: "editor", role_id: 1 },
-    { name: "Vera", id: 4, role_label: "editor", role_id: 1 },
-    { name: "Vera", id: 5, role_label: "editor", role_id: 1 },
-    { name: "Vera", id: 6, role_label: "editor", role_id: 1 },
-    { name: "Vera", id: 7, role_label: "editor", role_id: 1 },
-    { name: "Vera", id: 8, role_label: "editor", role_id: 1 },
-  ]);
+  const [members, setMembers] = useState([]);
   const descriptionElementRef = useRef(null);
   const [scroll, setScroll] = useState("paper");
   const [email, setEmail] = useState("");
@@ -162,15 +155,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
     </Menu>
   );
 
+  useEffect(() => {
+    fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`, true).then(
+      ({ user }) => setMembers(users)
+    );
+  }, []);
+
   function inviteMember() {
     //send email to server and get user name
     //set members with user name
   }
 
-  function changeRole(index, e) {
-    console.log(index, e);
-    //get
-    //setMembers(index) with new role
+  function onSaveMembers() {
+    setOpenDialog(!openDialog);
   }
 
   // useEffect render get all role id,role name from server(new api)
@@ -190,8 +187,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
       return colorValue;
     },
   });
-
-  const kanbanId = getLocalStorage("kanbanId");
+  const { kanbanId } = useParams();
+  localStorage.setItem("kanbanId", kanbanId);
 
   return (
     <AppBar
@@ -336,7 +333,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                   let newMembers = JSON.parse(
                                     JSON.stringify(members)
                                   );
-                                 newMembers = newMembers.filter(newMember=>{return newMember.id !== member.id;})
+                                  newMembers = newMembers.filter(
+                                    (newMember) => {
+                                      return newMember.uid !== member.uid;
+                                    }
+                                  );
                                   setMembers(newMembers);
                                 }}
                               >
@@ -353,7 +354,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   <Button onClose={() => setOpenDialog(!openDialog)}>
                     Cancel
                   </Button>
-                  <Button>Save</Button>
+                  <Button onClick={onSaveMembers}>Save</Button>
                 </DialogActions>
               </Dialog>
               <Dialog

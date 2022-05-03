@@ -1,6 +1,7 @@
 const { mongo } = require("./mongocon");
 const { pool } = require("./mysqlcon");
 const { generateUploadURL } = require("./s3");
+const { Role } = require("./components");
 
 const getTasks = async (id, user) => {
   const [lists] = await pool.query("SELECT * FROM lists WHERE kanban_id = ?", [
@@ -34,6 +35,7 @@ const getTasks = async (id, user) => {
       members[i].uid,
     ]);
     members[i].name = users.name;
+    members[i].role_label = Role[members[i].role_id];
   }
 
   let [tags] = await pool.query("SELECT * FROM tags WHERE kanban_id = ?", [id]);
