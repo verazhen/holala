@@ -235,6 +235,33 @@ const updateList = async (tasks) => {
   }
 };
 
+const updateMembers = async (data, kanbanId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const { members } = data;
+
+    const values = members.map(({ uid, role_id }) => {
+      return [uid, kanbanId, role_id];
+    });
+    await conn.query(`DELETE FROM kanban_permission WHERE kanban_id=?`, [kanbanId]);
+
+    const [res] = await conn.query(
+      `INSERT INTO kanban_permission (uid, kanban_id, role_id) VALUES ? `,
+      [values]
+    );
+
+    await conn.query("COMMIT");
+    return res;
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  } finally {
+    await conn.release();
+  }
+};
+
 const updateTags = async (data, taskId) => {
   const conn = await pool.getConnection();
   try {
@@ -367,4 +394,5 @@ module.exports = {
   updateTags,
   updateTodos,
   updateListDetail,
+  updateMembers,
 };

@@ -122,6 +122,16 @@ const updateListDetail = async (req, res) => {
   });
 };
 
+const updateMembers = async (req, res) => {
+  const {data} = req.body;
+  const { kanbanId } = req.params;
+  const response = await Kanban.updateMembers(data, kanbanId);
+
+  return res.json({
+    data: response,
+  });
+};
+
 module.exports = {
   getTasks,
   addCard,
@@ -136,4 +146,5 @@ module.exports = {
   updateTags,
   updateTodos,
   updateListDetail,
+  updateMembers,
 };

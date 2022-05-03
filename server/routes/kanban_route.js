@@ -12,7 +12,8 @@ const {
   updateTask,
   updateTags,
   updateTodos,
-  updateListDetail
+  updateListDetail,
+  updateMembers,
 } = require("../controllers/kanban_controller");
 
 const { wrapAsync, authentication } = require("../../util/util");
@@ -67,6 +68,11 @@ router
 router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId/todo")
   .put(authentication(), wrapAsync(updateTodos));
+
+//update members
+router
+  .route("/kanban/:kanbanId/members")
+  .put(authentication(), wrapAsync(updateMembers));
 
 //get history chat
 router.route("/chat").get(wrapAsync(getChat));

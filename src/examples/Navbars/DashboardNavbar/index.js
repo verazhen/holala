@@ -202,7 +202,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   function onSaveMembers() {
     setOpenDialog(!openDialog);
-    console.log(members);
+
+    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}/members`, {
+      members,
+    });
   }
 
   // useEffect render get all role id,role name from server(new api)
@@ -294,7 +297,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                     marginLeft: "2px",
                   }}
                 >
-                  Add Member
+                  Invite
                 </div>
               </IconButton>
               <Dialog
