@@ -154,7 +154,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    setWs(webSocket(`${SOCKET_HOST}`));
+    setWs(webSocket(`${SOCKET_HOST}`, { transports: ["websocket"] }));
     const uid = 1;
     localStorage.setItem("uid", uid);
   }, []);

@@ -42,7 +42,7 @@ module.exports = (server) => {
   // io.adapter(createAdapter(Cache, subClient));
   //   io.listen(3400);
 
-  io.on("connection", (socket) => {
+  io.of("/socket").on("connection", (socket) => {
     console.log(`user ${socket.id} is connected`);
     //---------------chatroom socket
     socket.on("kanban", ({ kanbanId, uid }) => {

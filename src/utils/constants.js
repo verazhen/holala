@@ -8,5 +8,5 @@ const socket = {
   develop: "https://verazon.online",
 };
 
-export const API_HOST = `${hostname.local}/api/1.0`;
-export const SOCKET_HOST = `${socket.local}`;
+export const API_HOST = `${hostname.develop}/api/1.0`;
+export const SOCKET_HOST = `${socket.develop}/socket`;
