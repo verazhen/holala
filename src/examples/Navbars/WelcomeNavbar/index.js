@@ -105,7 +105,7 @@ function DefaultNavbar({ transparent, light, action, user }) {
               fontWeight="bold"
               color={light ? "white" : "dark"}
             >
-              Hi! {user.name}
+              Hi! {user ? user.name : ""}
             </MDTypography>
           </Grid>
           <Grid item>
@@ -119,7 +119,7 @@ function DefaultNavbar({ transparent, light, action, user }) {
                 window.location.href = "/authentication/sign-in";
               }}
             >
-              <Icon >logout</Icon>
+              <Icon>logout</Icon>
               <div
                 style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
               >

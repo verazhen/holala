@@ -40,6 +40,9 @@ function Projects({ setUser }) {
   }, []);
 
   useEffect(() => {
+    if (!kanbans) {
+      return;
+    }
     const existedKanbans = kanbans.filter((kanban) => {
       return !kanban.delete_dt;
     });
@@ -105,7 +108,7 @@ function Projects({ setUser }) {
     fetchPutData(`${API_HOST}/kanban/${kanbanId}`, {
       title: kanbanTitle,
       delete_dt: 1,
-    })
+    });
     closeMenu();
   }
 
@@ -218,32 +221,36 @@ function Projects({ setUser }) {
         </Grid>
       </MDBox>
       <MDBox>
-        {kanbans.map(({ kanban_id, title, delete_dt }, index) => {
-          if (!delete_dt) {
-            return (
-              <Grid container direction="row" alignItems="center" m={3}>
-                <Grid item xs={11} style={style}>
-                  <MDTypography variant="h5">
-                    <Link to={`/project/${kanban_id}/kanban`}>{title}</Link>
-                  </MDTypography>
+        {kanbans ? (
+          kanbans.map(({ kanban_id, title, delete_dt }, index) => {
+            if (!delete_dt) {
+              return (
+                <Grid container direction="row" alignItems="center" m={3}>
+                  <Grid item xs={11} style={style}>
+                    <MDTypography variant="h5">
+                      <Link to={`/project/${kanban_id}/kanban`}>{title}</Link>
+                    </MDTypography>
+                  </Grid>
+                  <Grid item>
+                    <MDBox color="text" px={2}>
+                      <Icon
+                        sx={{ cursor: "pointer", fontWeight: "bold" }}
+                        fontSize="small"
+                        onClick={openMenu}
+                        className={`index-${index}`}
+                      >
+                        more_vert
+                      </Icon>
+                    </MDBox>
+                    {renderMenu}
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <MDBox color="text" px={2}>
-                    <Icon
-                      sx={{ cursor: "pointer", fontWeight: "bold" }}
-                      fontSize="small"
-                      onClick={openMenu}
-                      className={`index-${index}`}
-                    >
-                      more_vert
-                    </Icon>
-                  </MDBox>
-                  {renderMenu}
-                </Grid>
-              </Grid>
-            );
-          }
-        })}
+              );
+            }
+          })
+        ) : (
+          <></>
+        )}
       </MDBox>
     </Card>
   );
