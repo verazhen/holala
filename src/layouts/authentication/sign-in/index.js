@@ -14,8 +14,10 @@ import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 
 import { fetchSetData } from "utils/fetch";
+import { API_HOST } from "utils/constants";
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
+
 
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -25,7 +27,7 @@ function Basic() {
 
   function signIn() {
     const data = { password, email };
-    fetchSetData(`http://localhost:5000/api/1.0/user/signin`, data).then(
+    fetchSetData(`${API_HOST}/user/signin`, data).then(
       ({ status_code, data, error }) => {
         if (status_code !== 200) {
           setSignInMsg({ status: "error", message: error });

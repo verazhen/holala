@@ -17,6 +17,7 @@ import MDButton from "components/MDButton";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 import { fetchSetData } from "utils/fetch";
 import { useState, useEffect, useRef } from "react";
+import { API_HOST } from "utils/constants";
 
 // Images
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
@@ -29,7 +30,7 @@ function Cover() {
 
   function signUp() {
     const data = { name, password, email };
-    fetchSetData(`http://localhost:5000/api/1.0/user/signup`, data).then(
+    fetchSetData(`${API_HOST}/api/1.0/user/signup`, data).then(
       ({ status_code, data, error }) => {
         if (status_code !== 200) {
           setSignUpMsg({status:"error",message:error})

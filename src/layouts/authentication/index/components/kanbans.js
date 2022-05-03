@@ -14,6 +14,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { API_HOST } from "utils/constants";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -32,12 +33,10 @@ function Projects({ setUser }) {
   const [kanbanNum, setKanbanNum] = useState(0);
 
   useEffect(() => {
-    fetchData("http://localhost:5000/api/1.0/kanbans", true).then(
-      ({ user, data }) => {
-        setUser(user);
-        setKanbans(data);
-      }
-    );
+    fetchData(`${API_HOST}/kanbans`, true).then(({ user, data }) => {
+      setUser(user);
+      setKanbans(data);
+    });
   }, []);
 
   useEffect(() => {
@@ -63,7 +62,7 @@ function Projects({ setUser }) {
 
   function addKanban() {
     //post new kanban with newtitle and get kanban id
-    fetchSetData("http://localhost:5000/api/1.0/kanban", {
+    fetchSetData(`${API_HOST}/kanban`, {
       title: newTitle,
     }).then(({ data }) => {
       //render kanban with kanban id & title
@@ -83,7 +82,7 @@ function Projects({ setUser }) {
     const kanbanId = kanbans[index].kanban_id;
     newKanbans[index].title = newTitle;
     setKanbans(newKanbans);
-    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}`, {
+    fetchPutData(`${API_HOST}/kanban/${kanbanId}`, {
       title: newTitle,
     });
   }
@@ -103,7 +102,7 @@ function Projects({ setUser }) {
     const kanbanTitle = kanbans[index].title;
     newKanbans[index].delete_dt = 1;
     setKanbans(newKanbans);
-    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}`, {
+    fetchPutData(`${API_HOST}/kanban/${kanbanId}`, {
       title: newTitle,
       delete_dt: 1,
     });

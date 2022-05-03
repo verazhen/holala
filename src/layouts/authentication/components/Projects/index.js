@@ -19,12 +19,13 @@ import KanbanMenu from "examples/Tables/KanbanMenu";
 import data from "layouts/authentication/components/Projects/data";
 import { useEffect } from "react";
 import { fetchData, fetchSetData } from "utils/fetch";
+import { API_HOST } from "utils/constants";
 
 function Projects() {
   const [kanbans, setKanbans] = useState([]);
   // const columns, rows ;
   useEffect(() => {
-    fetchData("http://localhost:5000/api/1.0/kanbans").then((kanbans) => {
+    fetchData(`${API_HOST}/kanbans`).then((kanbans) => {
       setKanbans(kanbans);
     });
   }, []);
