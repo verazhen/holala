@@ -16,13 +16,14 @@ import Meeting from "./components/List";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData } from "utils/fetch";
+import { API_HOST } from "utils/constants";
 
 function Tables() {
   const [meetings, setMeetings] = useState([]);
   const { kanbanId } = useParams();
 
   useEffect(() => {
-    fetchData(`http://localhost:5000/api/1.0/kanban/${kanbanId}/meeting`).then(
+    fetchData(`${API_HOST}/kanban/${kanbanId}/meeting`).then(
       (meetingList) => {
         setMeetings(meetingList);
       }

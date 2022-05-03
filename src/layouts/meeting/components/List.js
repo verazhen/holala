@@ -21,6 +21,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Icon from "@mui/material/Icon";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
+import { API_HOST } from "utils/constants";
 import { useState, useEffect, useRef } from "react";
 import {
   Container,
@@ -138,11 +139,9 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
     if (!transcript) {
       return;
     }
-    fetchData("http://localhost:5000/api/1.0/kanban/1/meeting/1650882217").then(
-      (data) => {
-        setTranscription(data);
-      }
-    );
+    fetchData(`${API_HOST}/kanban/1/meeting/1650882217`).then((data) => {
+      setTranscription(data);
+    });
   }, []);
 
   function addNote(e) {
@@ -162,10 +161,7 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
       subject: "test",
       html: emailHtml,
     };
-    fetchSetData(
-      "http://localhost:5000/api/1.0/kanban/1/meeting/1650882217/email",
-      data
-    );
+    fetchSetData(`${API_HOST}/kanban/1/meeting/1650882217/email`, data);
   }
 
   function saveNote() {
@@ -173,7 +169,7 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
       notes,
       actions,
     };
-    fetchPutData(`http://localhost:5000/api/1.0/kanban/1/meeting/${id}`, data);
+    fetchPutData(`${API_HOST}/kanban/1/meeting/${id}`, data);
   }
 
   function onEditor2StateChange(editor2State) {
