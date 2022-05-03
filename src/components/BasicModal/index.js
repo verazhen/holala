@@ -23,6 +23,7 @@ import styled from "styled-components";
 import Paper from "@mui/material/Paper";
 import MDProgress from "components/MDProgress";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
+import { API_HOST } from "utils/constants";
 
 const ResultArea = styled.div`
   width: 100%;
@@ -114,7 +115,7 @@ function BasicModal({
   useEffect(() => {
     //getTaskDetails
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       false
     ).then(({ todos, comments, images, tags }) => {
       const newTodos = todos.map((todo, i, arr) => {
@@ -147,7 +148,7 @@ function BasicModal({
       content: myComment,
     };
     fetchSetData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/comment`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}/comment`,
       newComment
     );
 
@@ -180,7 +181,7 @@ function BasicModal({
       description: markdownText,
     };
     fetchPutData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       newTask
     );
     onCloseModal();
@@ -192,7 +193,7 @@ function BasicModal({
 
   async function uploadFile(e) {
     const url = await fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/imageUrl`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}/imageUrl`,
       false
     );
 
@@ -229,7 +230,7 @@ function BasicModal({
 
     if (updateTodos.current) {
       fetchPutData(
-        `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/todo`,
+        `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}/todo`,
         todos
       ).then(() => {
         updateTodos.current = false;
@@ -242,7 +243,7 @@ function BasicModal({
       return;
     }
     fetchPutData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}/tag`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}/tag`,
       chipData
     ).then(() => {
       updateChips.current = false;
@@ -275,7 +276,7 @@ function BasicModal({
     };
 
     fetchSetData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/addTest`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/addTest`,
       newTodo
     );
 
