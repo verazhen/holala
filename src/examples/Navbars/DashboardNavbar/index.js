@@ -6,6 +6,7 @@ import { getLocalStorage } from "utils/utils";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
+import { Modal } from "react-responsive-modal";
 
 // @material-ui core components
 import AppBar from "@mui/material/AppBar";
@@ -22,6 +23,16 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Avatar from "@mui/material/Avatar";
+import Radio from "@mui/material/Radio";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import RadioGroup from "@mui/material/RadioGroup";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import PersonIcon from "@mui/icons-material/Person";
+import { blue } from "@mui/material/colors";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
@@ -63,18 +74,25 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [members, setMembers] = useState([
-    { name: "Vera" },
-    { name: "Vera" },
-    { name: "Vera" },
-    { name: "Vera" },
-    { name: "Vera" },
-    { name: "Vera" },
-    { name: "Vera" },
-    { name: "Vera" },
+    { name: "Vera", id: 1, role_label: "editor", role_id: 1 },
+    { name: "Vera", id: 2, role_label: "editor", role_id: 1 },
+    { name: "Vera", id: 3, role_label: "editor", role_id: 1 },
+    { name: "Vera", id: 4, role_label: "editor", role_id: 1 },
+    { name: "Vera", id: 5, role_label: "editor", role_id: 1 },
+    { name: "Vera", id: 6, role_label: "editor", role_id: 1 },
+    { name: "Vera", id: 7, role_label: "editor", role_id: 1 },
+    { name: "Vera", id: 8, role_label: "editor", role_id: 1 },
   ]);
   const descriptionElementRef = useRef(null);
   const [scroll, setScroll] = useState("paper");
   const [email, setEmail] = useState("");
+  const [openRoleModal, setOpenRoleModal] = useState(false);
+  const [roles, setRoles] = useState([
+    { id: 1, label: "editor" },
+    { id: 2, label: "viewer" },
+  ]);
+  const [selectedValue, setSelectedValue] = useState(null);
+
   useEffect(() => {
     if (openDialog) {
       const { current: descriptionElement } = descriptionElementRef;
@@ -144,10 +162,18 @@ function DashboardNavbar({ absolute, light, isMini }) {
     </Menu>
   );
 
-  function inviteMember(){
-  //send email to server and get user name
-  //set members with user name
+  function inviteMember() {
+    //send email to server and get user name
+    //set members with user name
   }
+
+  function changeRole(index, e) {
+    console.log(index, e);
+    //get
+    //setMembers(index) with new role
+  }
+
+  // useEffect render get all role id,role name from server(new api)
 
   // Styles for the navbar icons
   const iconsStyle = ({
@@ -245,6 +271,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 scroll={scroll}
                 fullWidth
                 maxWidth="xl"
+                style={{ zIndex: 1700 }}
               >
                 <DialogTitle>KANBAN Members</DialogTitle>
                 <DialogContent dividers={scroll === "paper"}>
@@ -268,14 +295,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
                           fullWidth
                           variant="standard"
                           value={email}
-                          onChange={e=>setEmail(e.target.value)}
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                       </Grid>
                       <Grid item>
                         <MDButton onClick={inviteMember}>Invite</MDButton>
                       </Grid>
                     </Grid>
-                    {members.map((member) => {
+                    {members.map((member, index) => {
                       return (
                         <Grid item>
                           <Grid
@@ -294,7 +321,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
                               {member.name}
                             </Grid>
                             <Grid item>
-                              <MDButton>Editor</MDButton>
+                              <MDButton
+                                onClick={() => {
+                                  setOpenRoleModal(true);
+                                  setSelectedValue(index);
+                                }}
+                              >
+                                {member.role_label}
+                              </MDButton>
                             </Grid>
                             <Grid item>
                               <MDButton>Remove</MDButton>
@@ -311,6 +345,48 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   </Button>
                   <Button>Save</Button>
                 </DialogActions>
+              </Dialog>
+              <Dialog
+                onClose={() => setOpenRoleModal(false)}
+                open={openRoleModal}
+                style={{ zIndex: 1800 }}
+                keepMounted
+                PaperProps={{
+                  style: {
+                    backgroundColor: "#E2EDE8",
+                    padding: "10px 20px",
+                  },
+                }}
+                BackdropProps={{ invisible: true }}
+              >
+                <DialogTitle>Choose the role</DialogTitle>
+                <List sx={{ pt: 0 }}>
+                  {roles.map((role) => (
+                    <ListItem
+                      button
+                      key={role.id}
+                      style={{ marginBottom: "20px" }}
+                      onClick={() => {
+                        setOpenRoleModal(false);
+                        const index = selectedValue;
+                        const newMembers = JSON.parse(JSON.stringify(members));
+                        newMembers[index].role_label = role.label;
+                        newMembers[index].role_id = role.id;
+                        setMembers(newMembers);
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar>
+                          <PersonIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={role.label}
+                        style={{ color: "grey" }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
               </Dialog>
               <IconButton
                 size="small"
