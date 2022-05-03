@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 // react-router-dom components
 import { useLocation, NavLink } from "react-router-dom";
@@ -42,6 +42,14 @@ import {
 
 function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
   const [messages, setMessages] = useState([]);
+  const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const [input, setInput] = useState(null);
   function inputChange(e) {
     setInput(e.target.value);
@@ -200,6 +208,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
               </Grid>
             );
           })}
+          <div ref={messagesEndRef}></div>
         </Grid>
       </div>
 
