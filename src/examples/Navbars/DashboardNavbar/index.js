@@ -331,7 +331,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
                               </MDButton>
                             </Grid>
                             <Grid item>
-                              <MDButton>Remove</MDButton>
+                              <MDButton
+                                onClick={() => {
+                                  let newMembers = JSON.parse(
+                                    JSON.stringify(members)
+                                  );
+                                 newMembers = newMembers.filter(newMember=>{return newMember.id !== member.id;})
+                                  setMembers(newMembers);
+                                }}
+                              >
+                                Remove
+                              </MDButton>
                             </Grid>
                           </Grid>
                         </Grid>
