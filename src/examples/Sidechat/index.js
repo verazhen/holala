@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { useParams } from "react-router-dom";
 // react-router-dom components
 import { useLocation, NavLink } from "react-router-dom";
 
@@ -40,7 +40,7 @@ import {
   setWhiteSidenav,
 } from "context";
 
-function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
+function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState(null);
   function inputChange(e) {
@@ -50,49 +50,53 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } =
     controller;
   const location = useLocation();
-  //   const collapseName = location.pathname.replace("/", "");
+//   const { kanbanId } = useParams();
+//   localStorage.setItem("kanbanId", kanbanId);
 
   const listenMessage = () => {
-    ws.emit("kanban", { kanbanId: 1, uid: localStorage.getItem("uid") });
+    ws.emit("kanban", { kanbanId:localStorage.getItem("kanbanId") , uid: localStorage.getItem("uid") });
     ws.on("getMessage", ({ uid, sender, message }) => {
+      console.log("2");
       setMessages(function (prevData) {
-        let me;
-        if (uid == 1) {
-          me = "me";
+        let myMsg;
+        if (uid == localStorage.getItem("uid")) {
+          myMsg = "myMsg";
         } else {
-          me = "notMe";
+          myMsg = "";
         }
-        return [...prevData, { uid, sender, me, message }];
+        return [...prevData, { uid, sender, message, myMsg }];
       });
     });
   };
   const sendMessage = () => {
-    const uid = localStorage.getItem("uid");
-    let sender;
-    if (uid == 1) {
-      sender = "ME";
-    } else {
-      sender = "Vera";
-    }
     const message = input;
-    console.log(message);
-    ws.emit("getMessage", { uid, sender, message });
+    ws.emit("getMessage", {
+      uid: localStorage.getItem("uid"),
+      sender: user.name,
+      message,
+    });
     setInput("");
   };
 
   useEffect(() => {
-    console.log("ws");
-    console.log(ws);
     if (ws) {
       listenMessage();
+      console.log("3");
     }
   }, [ws]);
 
   useEffect(() => {
-    fetchData(`${API_HOST}/chat`).then((messages) => setMessages(messages));
-    //       .then(() => isMyMessage());
-    //     const uid = window.prompt("userid", "1");
-    //     localStorage.setItem("uid", uid);
+    fetchData(`${API_HOST}/chat`).then((messages) => {
+      const newMessages = messages.map((message) => {
+        if (message.uid == localStorage.getItem("uid")) {
+          message.myMsg = "myMsg";
+        } else {
+          message.myMsg = "";
+        }
+        return message;
+      });
+      setMessages(newMessages);
+    });
   }, []);
 
   useEffect(() => {
@@ -110,7 +114,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
   const closeSidenav = () => setMiniSidenav(dispatch, true);
   const style = {
     height: "1100px",
-    overflow:"auto",
+    overflow: "auto",
   };
 
   useEffect(() => {
@@ -163,7 +167,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
           </Grid>
           <Grid item>
             <MDTypography variant="h4" fontWeight="bold" color={textColor}>
-              {brandName}
+              {user ? user.name : ""}
             </MDTypography>
           </Grid>
         </Grid>
@@ -176,9 +180,9 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
       />
       <div style={style}>
         <Grid container direction="column" alignItems="space-evenly" px={3}>
-          {messages.map(({ sender, message }) => {
+          {messages.map(({ uid, sender, message, myMsg }) => {
             return (
-              <Grid item mt={1} className="myMsg">
+              <Grid item mt={1} className={myMsg}>
                 <div
                   style={{
                     display: "inline-block",

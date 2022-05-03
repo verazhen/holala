@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useReactMediaRecorder } from "react-media-recorder";
-
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
+import { API_HOST } from "utils/constants";
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
@@ -104,6 +105,7 @@ export default function App() {
   const peersRef = useRef([]);
   const roomRef = useRef(false);
   const streamRef = useRef(false);
+  const [user, setUser] = useState({});
   const { status, startRecording, stopRecording, mediaBlobUrl } =
     useReactMediaRecorder({
       screen: true,
@@ -159,8 +161,10 @@ export default function App() {
         transports: ["websocket"],
       })
     );
-    const uid = 1;
-    localStorage.setItem("uid", uid);
+    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(({ account }) => {
+      setUser(account);
+      localStorage.setItem("uid", account.id);
+    });
   }, []);
 
   useEffect(() => {
@@ -399,6 +403,7 @@ export default function App() {
         <>
           <Sidenav
             ws={ws}
+            user={user}
             setWs={setWs}
             color={sidenavColor}
             brand={
