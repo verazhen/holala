@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // react-router components
 import { useLocation, Link } from "react-router-dom";
@@ -14,11 +14,18 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
 import Grid from "@mui/material/Grid";
-
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Avatar from "@mui/material/Avatar";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
-// import MDButton from "components/MDButton";
+import MDButton from "components/MDButton";
 // import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
@@ -54,6 +61,29 @@ function DashboardNavbar({ absolute, light, isMini }) {
     darkMode,
   } = controller;
   const [openMenu, setOpenMenu] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [members, setMembers] = useState([
+    { name: "Vera" },
+    { name: "Vera" },
+    { name: "Vera" },
+    { name: "Vera" },
+    { name: "Vera" },
+    { name: "Vera" },
+    { name: "Vera" },
+    { name: "Vera" },
+  ]);
+  const descriptionElementRef = useRef(null);
+  const [scroll, setScroll] = useState("paper");
+  const [email, setEmail] = useState("");
+  useEffect(() => {
+    if (openDialog) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openDialog]);
+
   const route = useLocation().pathname.split("/").slice(1);
 
   useEffect(() => {
@@ -113,6 +143,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
       />
     </Menu>
   );
+
+  function inviteMember(){
+  //send email to server and get user name
+  //set members with user name
+  }
 
   // Styles for the navbar icons
   const iconsStyle = ({
@@ -187,20 +222,96 @@ function DashboardNavbar({ absolute, light, isMini }) {
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
-                <IconButton sx={navbarIconButton} size="large" disableRipple>
-                  <Icon sx={iconsStyle}>group_add</Icon>
-                  <div
-                    style={{
-                      fontSize: "17px",
-                      color: "gray",
-                      marginLeft: "2px",
-                    }}
-                  >
-                    Add Member
-                  </div>
-                </IconButton>
-              </Link>
+              <IconButton
+                sx={navbarIconButton}
+                size="large"
+                disableRipple
+                onClick={() => setOpenDialog(!openDialog)}
+              >
+                <Icon sx={iconsStyle}>group_add</Icon>
+                <div
+                  style={{
+                    fontSize: "17px",
+                    color: "gray",
+                    marginLeft: "2px",
+                  }}
+                >
+                  Add Member
+                </div>
+              </IconButton>
+              <Dialog
+                open={openDialog}
+                onClose={() => setOpenDialog(!openDialog)}
+                scroll={scroll}
+                fullWidth
+                maxWidth="xl"
+              >
+                <DialogTitle>KANBAN Members</DialogTitle>
+                <DialogContent dividers={scroll === "paper"}>
+                  <DialogContentText>
+                    Check and invite member into this kanban
+                  </DialogContentText>
+                  <Grid container direction="column">
+                    <Grid
+                      container
+                      alignItems="center"
+                      direction="row"
+                      wrap="nowrap"
+                      mb={3}
+                    >
+                      <Grid item xs={11} mr="auto">
+                        <TextField
+                          autoFocus
+                          margin="dense"
+                          label="Email Address"
+                          type="email"
+                          fullWidth
+                          variant="standard"
+                          value={email}
+                          onChange={e=>setEmail(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <MDButton onClick={inviteMember}>Invite</MDButton>
+                      </Grid>
+                    </Grid>
+                    {members.map((member) => {
+                      return (
+                        <Grid item>
+                          <Grid
+                            container
+                            alignItems="center"
+                            direction="row"
+                            wrap="nowrap"
+                            mb={2}
+                          >
+                            <Grid item mr={2}>
+                              <Avatar>
+                                {member.name ? member.name.charAt(0) : "N"}
+                              </Avatar>
+                            </Grid>
+                            <Grid item mr="auto">
+                              {member.name}
+                            </Grid>
+                            <Grid item>
+                              <MDButton>Editor</MDButton>
+                            </Grid>
+                            <Grid item>
+                              <MDButton>Remove</MDButton>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClose={() => setOpenDialog(!openDialog)}>
+                    Cancel
+                  </Button>
+                  <Button>Save</Button>
+                </DialogActions>
+              </Dialog>
               <IconButton
                 size="small"
                 disableRipple

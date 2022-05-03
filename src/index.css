@@ -85,7 +85,7 @@
 }
 .title:focus,
 .title:hover,
-.list-title:focus{
+.list-title:focus {
   outline: 1px solid lightgray;
 }
 
