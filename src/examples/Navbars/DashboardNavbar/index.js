@@ -10,6 +10,8 @@ import PropTypes from "prop-types";
 import { Modal } from "react-responsive-modal";
 
 // @material-ui core components
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -76,6 +78,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [members, setMembers] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [alert, setAlert] = useState({});
   const descriptionElementRef = useRef(null);
   const [scroll, setScroll] = useState("paper");
   const [email, setEmail] = useState("");
@@ -159,15 +163,46 @@ function DashboardNavbar({ absolute, light, isMini }) {
     fetchData(`http://localhost:5000/api/1.0/roles`, false).then((data) =>
       setRoles(data)
     );
+    fetchData(`http://localhost:5000/api/1.0/users`).then((data) => {
+      setUsers(data);
+    });
   }, []);
 
   function inviteMember() {
     //send email to server and get user name
-    //set members with user name
+    const [invitee] = users.filter((user) => {
+      return user.email === email;
+    });
+    if (!invitee) {
+      setAlert({ status: "warning", message: "The user is not existed" });
+      setEmail("");
+      return;
+    }
+
+    //check if member is existed
+    const check = members.some((member) => {
+      return member.uid === invitee.id;
+    });
+
+    if (check) {
+      setAlert({ status: "warning", message: "The user is already existed" });
+      setEmail("");
+      return;
+    }
+    //     set members
+    invitee.uid = invitee.id;
+    invitee.role_id = 1;
+    invitee.role_label = "editor";
+    setMembers((prev) => {
+      return [...prev, invitee];
+    });
+    setEmail("");
+    setAlert({});
   }
 
   function onSaveMembers() {
     setOpenDialog(!openDialog);
+    console.log(members);
   }
 
   // useEffect render get all role id,role name from server(new api)
@@ -272,6 +307,15 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <DialogTitle>KANBAN Members</DialogTitle>
                 <DialogContent dividers={scroll === "paper"}>
+                  <MDBox position="absolute" width="100%" minHeight="10vh">
+                    <Stack sx={{ width: "50%" }} mt={-9.5} ml={73} spacing={2}>
+                      {Object.keys(alert).length !== 0 ? (
+                        <Alert severity={alert.status}>{alert.message}</Alert>
+                      ) : (
+                        <></>
+                      )}
+                    </Stack>
+                  </MDBox>
                   <DialogContentText>
                     Check and invite member into this kanban
                   </DialogContentText>
@@ -351,9 +395,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   </Grid>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClose={() => setOpenDialog(!openDialog)}>
-                    Cancel
-                  </Button>
+                  <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
                   <Button onClick={onSaveMembers}>Save</Button>
                 </DialogActions>
               </Dialog>

@@ -39,6 +39,21 @@ const getRoles = async () => {
   }
 };
 
+const getUsers = async () => {
+  try {
+    const [users] = await pool.query("SELECT * FROM users ");
+    const response = users.map((user) => {
+      delete user.password;
+      return user;
+    });
+
+    return response;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 const addKanban = async (id, data) => {
   const conn = await pool.getConnection();
   try {
@@ -99,4 +114,5 @@ module.exports = {
   addKanban,
   updateKanban,
   getRoles,
+  getUsers,
 };
