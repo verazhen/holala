@@ -16,6 +16,7 @@ import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import MixedChart from "examples/Charts/MixedChart";
+import { API_HOST } from "utils/constants";
 
 // Data
 import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
@@ -61,7 +62,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
       true
     ).then(({ data }) => {
       const newTask = JSON.parse(JSON.stringify(totalTasks));
@@ -71,7 +72,7 @@ function Dashboard() {
     });
 
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/finishedByRange?range=${range}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/finishedByRange?range=${range}`,
       true
     ).then(({ data }) => {
       const newTask = JSON.parse(JSON.stringify(finishedTasks));
@@ -81,7 +82,7 @@ function Dashboard() {
     });
 
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/unfinishedByRange?range=${range}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/unfinishedByRange?range=${range}`,
       true
     ).then(({ data }) => {
       const newTask = JSON.parse(JSON.stringify(unfinishedTasks));
@@ -91,7 +92,7 @@ function Dashboard() {
     });
 
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskChart?range=${range}&interval=${interval}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskChart?range=${range}&interval=${interval}`,
       true
     ).then(({ data }) => {
       setIntervalTags(data.intervalTags);
@@ -104,7 +105,7 @@ function Dashboard() {
   useEffect(() => {
     console.log(range);
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
       true
     ).then(({ data }) => {
       const newTask = JSON.parse(JSON.stringify(totalTasks));
@@ -114,7 +115,7 @@ function Dashboard() {
     });
 
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/finishedByRange?range=${range}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/finishedByRange?range=${range}`,
       true
     ).then(({ data }) => {
       const newTask = JSON.parse(JSON.stringify(finishedTasks));
@@ -124,7 +125,7 @@ function Dashboard() {
     });
 
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskAmount/unfinishedByRange?range=${range}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/unfinishedByRange?range=${range}`,
       true
     ).then(({ data }) => {
       const newTask = JSON.parse(JSON.stringify(unfinishedTasks));
@@ -134,7 +135,7 @@ function Dashboard() {
     });
 
     fetchData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/report/taskChart?range=${range}&interval=${interval}`,
+      `${API_HOST}/kanban/${kanbanId}/report/taskChart?range=${range}&interval=${interval}`,
       true
     ).then(({ data }) => {
       setIntervalTags(data.intervalTags);

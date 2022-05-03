@@ -41,6 +41,7 @@ import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
+import { API_HOST } from "utils/constants";
 
 // Material Dashboard 2 React example components
 import Breadcrumbs from "examples/Breadcrumbs";
@@ -158,17 +159,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   useEffect(() => {
-    fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`, true).then(
+    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(
       ({ user }) => setMembers(user)
     );
-    fetchData(`http://localhost:5000/api/1.0/roles`, false).then((data) =>
+    fetchData(`${API_HOST}/roles`, false).then((data) =>
       setRoles(data)
     );
-    fetchData(`http://localhost:5000/api/1.0/users`, false).then((data) => {
+    fetchData(`${API_HOST}/users`, false).then((data) => {
       setUsers(data);
     });
 
-    fetchData(`http://localhost:5000/api/1.0/kanban/${kanbanId}`, false).then(
+    fetchData(`${API_HOST}/kanban/${kanbanId}`, false).then(
       (data) => {
         setKanban(data.title);
       }
@@ -210,7 +211,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   function onSaveMembers() {
     setOpenDialog(!openDialog);
 
-    fetchPutData(`http://localhost:5000/api/1.0/kanban/${kanbanId}/members`, {
+    fetchPutData(`${API_HOST}/kanban/${kanbanId}/members`, {
       members,
     });
   }

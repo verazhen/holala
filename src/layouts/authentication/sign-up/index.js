@@ -30,7 +30,7 @@ function Cover() {
 
   function signUp() {
     const data = { name, password, email };
-    fetchSetData(`${API_HOST}/api/1.0/user/signup`, data).then(
+    fetchSetData(`${API_HOST}/user/signup`, data).then(
       ({ status_code, data, error }) => {
         if (status_code !== 200) {
           setSignUpMsg({status:"error",message:error})

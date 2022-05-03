@@ -29,6 +29,7 @@ import SidenavRoot from "examples/Sidenav/SidenavRoot";
 import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 
 import { fetchData, fetchSetData } from "utils/fetch";
+import { API_HOST } from "utils/constants";
 import webSocket from "socket.io-client";
 // Material Dashboard 2 React context
 import {
@@ -84,9 +85,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, ...rest }) {
   }, [ws]);
 
   useEffect(() => {
-    fetchData("http://localhost:5000/api/1.0/chat").then((messages) =>
-      setMessages(messages)
-    );
+    fetchData(`${API_HOST}/chat`).then((messages) => setMessages(messages));
     //       .then(() => isMyMessage());
     //     const uid = window.prompt("userid", "1");
     //     localStorage.setItem("uid", uid);
