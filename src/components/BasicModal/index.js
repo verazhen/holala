@@ -39,9 +39,7 @@ function getFullDate(targetDate) {
     m = D.getMonth() + 1;
     d = D.getDate();
   } else {
-    y = null;
-    m = null;
-    d = null;
+    return null;
   }
   m = m > 9 ? m : "0" + m;
   d = d > 9 ? d : "0" + d;

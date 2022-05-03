@@ -7,6 +7,7 @@ import { fetchData, fetchSetData,fetchPutData } from "utils/fetch";
 import { v4 } from "uuid";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Item from "./Item";
+import { API_HOST } from "utils/constants";
 
 const List = ({
   kanbanId,
@@ -31,7 +32,7 @@ const List = ({
     console.log("useEffect Task");
     console.log(tasks);
     fetchPutData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}`,
       tasks
     ).then((lists) => (submitTask.current = false));
   }, [tasks]);
@@ -47,7 +48,7 @@ const List = ({
 
     setLists(newList);
     fetchSetData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/addTest`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/addTest`,
       newTask
     );
   }

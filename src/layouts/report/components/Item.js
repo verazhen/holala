@@ -8,6 +8,7 @@ import BasicModal from "components/BasicModal";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
+import { API_HOST } from "utils/constants";
 
 import { Draggable } from "react-beautiful-dnd";
 const Item = ({
@@ -39,9 +40,9 @@ const Item = ({
     newLists[listIndex].tasks[index].delete_dt = 1;
     setLists(newLists);
 
-    const data = { delete_dt: 1 };
+    const data = { delete_dt: 1, title: task.title };
     fetchPutData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       data
     ).then((res) => console.log(res));
   }

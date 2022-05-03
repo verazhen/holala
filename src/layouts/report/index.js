@@ -26,6 +26,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { addLocalStorage, getLocalStorage } from "utils/utils";
+import { API_HOST } from "utils/constants";
 
 function Tables() {
   const [lists, setLists] = useState([]);
@@ -60,7 +61,7 @@ function Tables() {
     setLists(newLists);
     //put list api
     fetchPutData(
-      `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${listId}/detail`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/detail`,
       { delete_dt: 1, title: listTitle }
     );
   }
@@ -123,7 +124,7 @@ function Tables() {
 
   useEffect(() => {
     addLocalStorage("kanbanId", kanbanId);
-    fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`, true).then(
+    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(
       ({ user, data, tags, account }) => {
         //sort the lists data
         data.sort((a, b) => {
@@ -155,7 +156,7 @@ function Tables() {
     if (!submittingStatus.current) {
       return;
     }
-    fetchSetData(`http://localhost:5000/api/1.0/task/${kanbanId}`, lists).then(
+    fetchSetData(`${API_HOST}/task/${kanbanId}`, lists).then(
       (lists) => {
         submittingStatus.current = false;
       }
@@ -213,7 +214,7 @@ function Tables() {
                               onChange={(e) => editList(e, index)}
                               onBlur={() =>
                                 fetchPutData(
-                                  `http://localhost:5000/api/1.0/kanban/${kanbanId}/list/${id}/detail`,
+                                  `${API_HOST}/kanban/${kanbanId}/list/${id}/detail`,
                                   { title }
                                 )
                               }
