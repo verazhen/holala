@@ -62,7 +62,8 @@ const updateTask = async (req, res) => {
 };
 
 const getChat = async (req, res) => {
-  const data = await Kanban.getChat();
+  const { kanbanId } = req.params;
+  const data = await Kanban.getChat(kanbanId);
 
   return res.json({
     data,

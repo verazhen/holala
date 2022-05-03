@@ -346,8 +346,11 @@ const updateTodos = async (data, taskId, listId) => {
   }
 };
 
-const getChat = async () => {
-  const data = await mongo.collection("chat").find({}).toArray();
+const getChat = async (kanbanId) => {
+  const data = await mongo
+    .collection("chat")
+    .find({ kanbanId: `${kanbanId}` })
+    .toArray();
   return data;
 };
 

@@ -50,13 +50,14 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } =
     controller;
   const location = useLocation();
-//   const { kanbanId } = useParams();
-//   localStorage.setItem("kanbanId", kanbanId);
 
   const listenMessage = () => {
-    ws.emit("kanban", { kanbanId:localStorage.getItem("kanbanId") , uid: localStorage.getItem("uid") });
+    ws.emit("kanban", {
+      kanbanId: localStorage.getItem("kanbanId"),
+      uid: localStorage.getItem("uid"),
+    });
     ws.on("getMessage", ({ uid, sender, message }) => {
-      console.log("2");
+      console.log(uid, sender, message);
       setMessages(function (prevData) {
         let myMsg;
         if (uid == localStorage.getItem("uid")) {
@@ -74,6 +75,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
       uid: localStorage.getItem("uid"),
       sender: user.name,
       message,
+      kanbanId: localStorage.getItem("kanbanId"),
     });
     setInput("");
   };
@@ -81,22 +83,23 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
   useEffect(() => {
     if (ws) {
       listenMessage();
-      console.log("3");
     }
   }, [ws]);
 
   useEffect(() => {
-    fetchData(`${API_HOST}/chat`).then((messages) => {
-      const newMessages = messages.map((message) => {
-        if (message.uid == localStorage.getItem("uid")) {
-          message.myMsg = "myMsg";
-        } else {
-          message.myMsg = "";
-        }
-        return message;
-      });
-      setMessages(newMessages);
-    });
+    fetchData(`${API_HOST}/chat/${localStorage.getItem("kanbanId")}`).then(
+      (messages) => {
+        const newMessages = messages.map((message) => {
+          if (message.uid == localStorage.getItem("uid")) {
+            message.myMsg = "myMsg";
+          } else {
+            message.myMsg = "";
+          }
+          return message;
+        });
+        setMessages(newMessages);
+      }
+    );
   }, []);
 
   useEffect(() => {

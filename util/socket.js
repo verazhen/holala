@@ -45,14 +45,13 @@ module.exports = (server) => {
   io.on("connection", (socket) => {
     console.log(`user ${socket.id} is connected`);
     //---------------chatroom socket
-    socket.on("kanban", ({ kanbanId, uid }) => {
-      console.log(kanbanId, uid);
-      socket.join(kanbanId);
+    socket.on("kanban", async ({ kanbanId, uid }) => {
       console.log(`user ${socket.id} joins in kanban: ${kanbanId}`);
+      socket.join(kanbanId);
       socket.on("getMessage", (message) => {
-        Kanban.updateChat(message).then((res) => console.log(res));
         console.log(message);
         io.to(kanbanId).emit("getMessage", message);
+        Kanban.updateChat(message).then((res) => console.log(res));
       });
     });
 

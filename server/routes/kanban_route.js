@@ -80,6 +80,6 @@ router
   .put(authentication(), wrapAsync(updateMembers));
 
 //get history chat
-router.route("/chat").get(wrapAsync(getChat));
+router.route("/chat/:kanbanId").get(wrapAsync(getChat));
 
 module.exports = router;
