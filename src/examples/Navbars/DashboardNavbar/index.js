@@ -80,10 +80,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [scroll, setScroll] = useState("paper");
   const [email, setEmail] = useState("");
   const [openRoleModal, setOpenRoleModal] = useState(false);
-  const [roles, setRoles] = useState([
-    { id: 1, label: "editor" },
-    { id: 2, label: "viewer" },
-  ]);
+  const [roles, setRoles] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
 
   useEffect(() => {
@@ -157,7 +154,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   useEffect(() => {
     fetchData(`http://localhost:5000/api/1.0/task/${kanbanId}`, true).then(
-      ({ user }) => setMembers(users)
+      ({ user }) => setMembers(user)
+    );
+    fetchData(`http://localhost:5000/api/1.0/roles`, false).then((data) =>
+      setRoles(data)
     );
   }, []);
 

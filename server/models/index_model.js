@@ -21,6 +21,24 @@ const getKanbans = async (uid) => {
   return res;
 };
 
+const getRoles = async () => {
+  try {
+    const roles = Object.keys(Role);
+    for (let i = 0; i < roles.length; i++) {
+      const roleObj = {
+        id: Number(roles[i]),
+        label: Role[roles[i]],
+      };
+      roles[i] = roleObj;
+    }
+
+    return roles;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 const addKanban = async (id, data) => {
   const conn = await pool.getConnection();
   try {
@@ -80,4 +98,5 @@ module.exports = {
   getKanbans,
   addKanban,
   updateKanban,
+  getRoles,
 };
