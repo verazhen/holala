@@ -17,7 +17,7 @@ app.set("json spaces", 2);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/", express.static(__dirname + "/build"));
+
 morganBody(app);
 
 // CORS allow all

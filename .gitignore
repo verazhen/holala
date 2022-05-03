@@ -96,7 +96,12 @@ midterm*
 /coverage
 
 # production
-
+/build
+/src-old
+/build-old
+/dynamic
+/public
+/public-old
 
 # misc
 .DS_Store
