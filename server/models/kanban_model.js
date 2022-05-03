@@ -51,9 +51,10 @@ const getTodos = async (taskId) => {
 };
 
 const getKanban = async (kanbanId) => {
-  const [[kanban]] = await pool.query(`SELECT * FROM kanbans WHERE kanban_id = ?`, [
-    kanbanId,
-  ]);
+  const [[kanban]] = await pool.query(
+    `SELECT * FROM kanbans WHERE kanban_id = ?`,
+    [kanbanId]
+  );
   return kanban;
 };
 
@@ -170,9 +171,10 @@ const updateTask = async (data, taskId) => {
     await conn.query("START TRANSACTION");
     const { delete_dt, title, assignee, description } = data;
     let { due_dt, checked } = data;
-    console.log(due_dt)
 
-    if(due_dt){due_dt = `${due_dt} 00:00:00`;}
+    if (due_dt) {
+      due_dt = `${due_dt} 00:00:00`;
+    }
 
     checked = checked ? new Date() : null;
     const [res] = await conn.query(
@@ -312,7 +314,13 @@ const updateTodos = async (data, taskId, listId) => {
     const values = data.map(({ title, checked }) => {
       const dateTime = Date.now();
       const timestamp = Math.floor(dateTime / 1000);
-      return [title, new Date(), timestamp, taskId, listId];
+      if (checked) {
+        checked = new Date();
+      } else {
+        checked = null;
+      }
+
+      return [title, checked, timestamp, taskId, listId];
     });
     console.log(values);
 

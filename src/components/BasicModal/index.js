@@ -558,20 +558,7 @@ function BasicModal({
         </Grid>
         <Grid item>
           <label className="modal-label">Attachments</label>
-          <MDButton
-            variant="contained"
-            style={{
-              maxWidth: "100px",
-              maxHeight: "35px",
-              minWidth: "100px",
-              minHeight: "35px",
-              padding: 0,
-            }}
-            className="label-button"
-          >
-            Upload File
-            <input type="file" onChange={uploadFile} hidden />
-          </MDButton>
+          <input type="file" onChange={uploadFile} />
           {files.map((file) => {
             return (
               <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
