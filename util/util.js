@@ -13,13 +13,13 @@ const authentication = () => {
   return async function (req, res, next) {
     let accessToken = req.get("Authorization");
     if (!accessToken) {
-      res.status(401).send({ error: "Unauthorized" });
+      res.status(401).send({ status_code: 401, error: "Unauthorized" });
       return;
     }
 
     accessToken = accessToken.replace("Bearer ", "");
     if (accessToken == "null") {
-      res.status(401).send({ error: "Unauthorized" });
+      res.status(401).send({ status_code: 401, error: "Unauthorized" });
       return;
     }
 

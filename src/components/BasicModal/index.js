@@ -84,7 +84,7 @@ function BasicModal({
   const [openMemberModal, setOpenMemberModal] = useState(false);
   const [members, setMembers] = useState([]);
   const editor = useRef(null);
-  const [assignee, setAssignee] = useState(task.name);
+  const [assignee, setAssignee] = useState(task.name ? task.name : "");
   const [todos, setTodos] = useState([]);
   const [chipData, setChipData] = useState([]);
   const [kanbanChip, setKanbanChip] = useState([]);
@@ -378,9 +378,9 @@ function BasicModal({
                         {members.map((member) => {
                           return (
                             <FormControlLabel
-                              value={member.name}
+                              value={member.name ? member.name : ""}
                               control={<Radio />}
-                              label={member.name}
+                              label={member.name ? member.name : ""}
                             />
                           );
                         })}
@@ -569,7 +569,7 @@ function BasicModal({
                 <Grid item xs={8}>
                   <input
                     type="text"
-                    value={file.name}
+                    value={file.name ? file.name : ""}
                     className="file-name"
                     onChange={(e) =>
                       setFiles((prev) => {
@@ -609,7 +609,9 @@ function BasicModal({
             return (
               <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
                 <Grid item>
-                  <Avatar>{comment.name.charAt(0)}</Avatar>
+                  <Avatar>
+                    {comment.name ? comment.name.charAt(0) : "null"}
+                  </Avatar>
                 </Grid>
                 <Grid item xs={11}>
                   <Paper

@@ -159,21 +159,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   useEffect(() => {
-    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(
-      ({ user }) => setMembers(user)
+    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(({ user }) =>
+      setMembers(user)
     );
-    fetchData(`${API_HOST}/roles`, false).then((data) =>
-      setRoles(data)
-    );
+    fetchData(`${API_HOST}/roles`, false).then((data) => setRoles(data));
     fetchData(`${API_HOST}/users`, false).then((data) => {
       setUsers(data);
     });
 
-    fetchData(`${API_HOST}/kanban/${kanbanId}`, false).then(
-      (data) => {
-        setKanban(data.title);
-      }
-    );
+    fetchData(`${API_HOST}/kanban/${kanbanId}`, false).then((data) => {
+      setKanban(data.title);
+    });
   }, []);
 
   function inviteMember() {
@@ -371,7 +367,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                               </Avatar>
                             </Grid>
                             <Grid item mr="auto">
-                              {member.name}
+                              {member.name ? member.name : "user"}
                             </Grid>
                             <Grid item>
                               <MDButton
