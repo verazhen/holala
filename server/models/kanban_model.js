@@ -383,7 +383,7 @@ const addComment = async (data, user, taskId) => {
 const uploadImage = async (kanbanId,taskId) => {
   const conn = await pool.getConnection();
   try {
-    const url = await generateUploadURL(kanbanId,'image');
+    const url = await generateUploadURL(kanbanId,'image','jpg');
     await conn.query("START TRANSACTION");
     const imageUrl = url.split("?")[0];
 

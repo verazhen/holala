@@ -10,13 +10,13 @@ const s3 = new aws.S3({
   signatureVersion: "v4",
 });
 
-async function generateUploadURL(kanbanId,folder) {
+async function generateUploadURL(kanbanId,folder,suffix) {
   const rawBytes = await randomBytes(16);
   const imageName = rawBytes.toString("hex");
 
   const params = {
     Bucket: "verazon.online",
-    Key: `holala/${kanbanId}/${folder}/${imageName}`,
+    Key: `holala/${kanbanId}/${folder}/${imageName}.${suffix}`,
     Expires: 60,
     ACL: 'public-read'
   };

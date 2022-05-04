@@ -75,7 +75,7 @@ const leaveRoom = async ({ uid, kanbanId }) => {
     if (res.user_id == uid) {
       //if the request user is the meeting owner
       //get s3 pre-signed url
-      recordUrl = await generateUploadURL(kanbanId,'record');
+      recordUrl = await generateUploadURL(kanbanId,'record','mp4');
       const url = recordUrl.split("?")[0];
 
       const [result] = await conn.query(
