@@ -113,7 +113,7 @@ const updateTodos = async (req, res) => {
 const uploadImage = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId, taskId } = req.params;
-  const response = await Kanban.uploadImage(taskId);
+  const response = await Kanban.uploadImage(kanbanId,taskId);
 
   return res.json({
     data: response,

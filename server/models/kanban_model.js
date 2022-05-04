@@ -380,10 +380,10 @@ const addComment = async (data, user, taskId) => {
   }
 };
 
-const uploadImage = async (taskId) => {
+const uploadImage = async (kanbanId,taskId) => {
   const conn = await pool.getConnection();
   try {
-    const url = await generateUploadURL();
+    const url = await generateUploadURL(kanbanId,'image');
     await conn.query("START TRANSACTION");
     const imageUrl = url.split("?")[0];
 

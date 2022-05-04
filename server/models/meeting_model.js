@@ -71,14 +71,11 @@ const leaveRoom = async ({ uid, kanbanId }) => {
       [kanbanId]
     );
     let response;
-    console.log(uid, kanbanId);
-    console.log(res);
 
     if (res.user_id == uid) {
-      console.log("hi");
       //if the request user is the meeting owner
       //get s3 pre-signed url
-      recordUrl = await generateUploadURL();
+      recordUrl = await generateUploadURL(kanbanId,'record');
       const url = recordUrl.split("?")[0];
 
       const [result] = await conn.query(
