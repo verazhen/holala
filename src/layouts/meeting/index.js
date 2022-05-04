@@ -23,7 +23,7 @@ function Tables() {
   const { kanbanId } = useParams();
 
   useEffect(() => {
-    fetchData(`${API_HOST}/kanban/${kanbanId}/meeting`).then(
+    fetchData(`${API_HOST}/kanban/${kanbanId}/meetings`).then(
       (meetingList) => {
         setMeetings(meetingList);
       }

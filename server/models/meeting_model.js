@@ -1,12 +1,10 @@
 const { pool } = require("./mysqlcon");
 const fs = require("fs/promises");
-const {s3} = require("./s3");
+const { generateUploadURL } = require("./s3");
 const axios = require("axios").default;
 const api_key = process.env.MAILGUN_KEY;
 const domain = "verazon.online";
 const mailgun = require("mailgun-js")({ apiKey: api_key, domain: domain });
-
-
 
 const getMeetings = async (kanbanId) => {
   const [res] = await pool.query(
@@ -16,32 +14,34 @@ const getMeetings = async (kanbanId) => {
   return res;
 };
 
-const getRoom = async ({ uid, kanbanId }) => {
-  let roomId;
+const createMeeting = async ({ uid, kanbanId }) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-
-    //check if there's an ongoing kanban
+    let roomId;
+    let isNewRoom;
+    //check if there's an ongoing meeting in this kanban
     const [[res]] = await pool.query(
       `SELECT id FROM meetings WHERE kanban_id = ? AND end_dt IS NULL`,
       [kanbanId]
     );
 
     if (!res) {
+      //insert a new meeting
       const [result] = await pool.query(
         `INSERT INTO meetings (kanban_id,user_id) VALUES (?,?) `,
         [kanbanId, uid]
       );
-
       roomId = result.insertId;
+      isNewRoom = true;
     } else {
       roomId = res.id;
+      isNewRoom = false;
     }
 
     await conn.query("COMMIT");
 
-    return roomId;
+    return { roomId, isNewRoom };
   } catch (e) {
     await conn.query("ROLLBACK");
     console.log(e);
@@ -51,36 +51,44 @@ const getRoom = async ({ uid, kanbanId }) => {
   }
 };
 
-const leaveRoom = async ({ uid, kanbanId, url }) => {
-  const dateTime = Date.now();
-  const timestamp = Math.floor(dateTime / 1000);
-  const s3Path = `holala/${timestamp}.mp4`;
-  const res = await s3
-    .putObject({
-      Key: s3Path,
-      Body: url,
-      ContentType: "video/mp4",
-      ACL: "public-read",
-    })
-    .promise();
+const leaveRoom = async ({ uid, kanbanId }) => {
+  //   const s3Path = `holala/${timestamp}.mp4`;
+  //   const res = await s3
+  //     .putObject({
+  //       Key: s3Path,
+  //       Body: url,
+  //       ContentType: "video/mp4",
+  //       ACL: "public-read",
+  //     })
+  //     .promise();
 
   const conn = await pool.getConnection();
   try {
+    let recordUrl;
     await conn.query("START TRANSACTION");
     const [[res]] = await conn.query(
       `SELECT user_id,id FROM meetings WHERE kanban_id = ? AND end_dt IS NULL`,
       [kanbanId]
     );
     let response;
+    console.log(uid, kanbanId);
+    console.log(res);
 
-    if (res.user_id != uid) {
-      response = 1;
-    } else {
+    if (res.user_id == uid) {
+      console.log("hi");
+      //if the request user is the meeting owner
+      //get s3 pre-signed url
+      recordUrl = await generateUploadURL();
+      recordUrl = recordUrl.split("?")[0];
+
       const [result] = await conn.query(
         `UPDATE meetings SET end_dt=?, record=? WHERE id=? `,
-        [1, s3Path, res.id]
+        [new Date(), recordUrl, res.id]
       );
-      response = result;
+      response = recordUrl;
+    } else {
+      //if the request user is not the meeting owner
+      response = null;
     }
 
     await conn.query("COMMIT");
@@ -153,12 +161,12 @@ const sendEmail = async (kanbanId, noteId, data) => {
 const saveNote = async (meetingId, data) => {
   const conn = await pool.getConnection();
   try {
-    const { notes,actions } = data;
+    const { notes, actions } = data;
     await conn.query("START TRANSACTION");
 
     const [result] = await conn.query(
       `UPDATE meetings SET notes=?, actions=? WHERE id=?`,
-      [notes,actions, meetingId]
+      [notes, actions, meetingId]
     );
 
     await conn.query("COMMIT");
@@ -174,7 +182,7 @@ const saveNote = async (meetingId, data) => {
 };
 
 module.exports = {
-  getRoom,
+  createMeeting,
   leaveRoom,
   getMeetings,
   getNote,

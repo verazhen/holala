@@ -1,6 +1,19 @@
 require("dotenv").config();
 const Meeting = require("../models/meeting_model");
 
+const createMeeting = async (req, res) => {
+  try {
+    const { user } = req;
+    const { kanbanId } = req.params;
+    const response = await Meeting.createMeeting({ user: user.id, kanbanId });
+    return res.json({
+      data: response,
+    });
+  } catch (error) {
+    return { error };
+  }
+};
+
 const getMeetings = async (req, res) => {
   try {
     const { kanbanId } = req.params;
@@ -56,4 +69,5 @@ module.exports = {
   getNote,
   sendEmail,
   saveNote,
+  createMeeting,
 };

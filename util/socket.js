@@ -56,23 +56,26 @@ module.exports = (server) => {
     });
 
     socket.on("get room", async ({ uid, kanbanId }) => {
-      const roomId = await Meeting.getRoom({ uid, kanbanId });
-      socket.emit("get room", roomId);
+      const { roomId, isNewRoom } = await Meeting.createMeeting({
+        uid,
+        kanbanId,
+      });
+      io.to(kanbanId).emit("get room", { roomId, isNewRoom });
     });
 
-    socket.on("leave room", async ({ uid, kanbanId, url }) => {
-      const result = await Meeting.leaveRoom({ uid, kanbanId, url });
+    socket.on("leave room", async ({ uid, kanbanId }) => {
+      const result = await Meeting.leaveRoom({ uid, kanbanId });
       let message;
 
-      if (!result) {
+      if (result === null) {
+        message = `${uid} has left the room`;
+      } else if (!result) {
         message = `failed to leave room`;
-      } else if (result == 1) {
-        message = `You are not allowed to close room`;
       } else {
-        message = `Successfully to leave room`;
+        message = `${uid} has ended the room`;
       }
 
-      socket.emit("leave room", message);
+      socket.emit("leave room", { message, result });
     });
 
     socket.on("join room", (roomID) => {

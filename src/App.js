@@ -80,7 +80,6 @@ const Video2 = ({ peer }) => {
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
-  let kanbanId = 1;
   const {
     miniSidenav,
     direction,
@@ -98,6 +97,8 @@ export default function App() {
   const [stream, setStream] = useState(true);
   const [screen, setScreen] = useState(false);
   const [localStream, setLocalStream] = useState(null);
+  const [recordUrl, setRecordUrl] = useState("");
+  const [roomID, setRoomID] = useState(null);
   const [ws, setWs] = useState(null);
   const [peers, setPeers] = useState([]);
   const socketRef = useRef();
@@ -106,6 +107,7 @@ export default function App() {
   const roomRef = useRef(false);
   const streamRef = useRef(false);
   const [user, setUser] = useState({});
+  const kanbanId = getLocalStorage("kanbanId");
   const { status, startRecording, stopRecording, mediaBlobUrl } =
     useReactMediaRecorder({
       screen: true,
@@ -113,13 +115,19 @@ export default function App() {
       video: false,
       onStop: function (blobUrl, blob) {
         const uid = getLocalStorage("uid");
-        const kanbanId = getLocalStorage("kanbanId");
+        //fetch s3 bucket with pre-signed url
+        //         fetch(url, {
+        //           method: "PUT",
+        //           headers: {
+        //             "Content-Type": "multipart/form-data",
+        //           },
+        //           body: blob,
+        //         });
+
         console.log(blob);
         //         ws.emit("leave room", { uid, kanbanId, url: blob });
       },
     });
-
-  let roomID;
 
   function createPeer(userToSignal, callerID, stream) {
     const peer = new Peer({
@@ -161,11 +169,42 @@ export default function App() {
         transports: ["websocket"],
       })
     );
+    const kanbanId = getLocalStorage("kanbanId");
     fetchData(`${API_HOST}/task/${kanbanId}`, true).then(({ account }) => {
+      console.log(account);
       setUser(account);
       localStorage.setItem("uid", account.id);
     });
   }, []);
+
+  useEffect(() => {
+    if (roomID) {
+      console.log(`You've joined in meeting room: ${roomID}`);
+    }
+  }, [roomID]);
+
+  useEffect(() => {
+    if (ws) {
+      //listen while meeting is started
+      ws.on("get room", (data) => {
+        console.log(`a meeting is started: `, data.roomId);
+        setRoomID(data.roomId);
+        console.log(data);
+        if (data.isNewRoom) {
+          startRecording();
+        }
+      });
+
+      ws.on("leave room", ({ message, result }) => {
+        console.log(message);
+        if (result) {
+          console.log(result);
+
+          stopRecording();
+        }
+      });
+    }
+  }, [ws]);
 
   useEffect(() => {
     console.log("peers");
@@ -177,17 +216,9 @@ export default function App() {
       console.log("創建房間");
       setRoomBtn("LEAVE THE ROOM");
       const uid = getLocalStorage("uid");
-      const kanbanId = getLocalStorage("kanbanId");
       roomRef.current = true;
       ws.emit("get room", { uid, kanbanId });
-      ws.on("get room", (id) => {
-        roomID = id;
-        console.log(`you are inside a meeting room: `, roomID);
-      });
-      ws.on("leave room", (msg) => {
-        console.log(msg);
-      });
-      startRecording();
+
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: true })
         .then((stream) => {
@@ -199,7 +230,9 @@ export default function App() {
       }
       console.log("停止會議");
       setRoomBtn("START MEETING");
-      stopRecording();
+      //if the room is created by the user stopRecording get the presigned url and
+      const uid = getLocalStorage("uid");
+      ws.emit("leave room", { uid, kanbanId });
 
       if (localStream && localStream.getTracks()) {
         localStream.getTracks().forEach((track) => {
@@ -207,6 +240,7 @@ export default function App() {
         });
       }
       setLocalStream(null);
+
       ws.emit("leave meet", ws.id);
 
       ws.off("all users", (users) => {});
@@ -325,30 +359,6 @@ export default function App() {
 
       return null;
     });
-
-  const configsButton = (
-    <MDBox
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      width="3.25rem"
-      height="3.25rem"
-      bgColor="white"
-      shadow="sm"
-      borderRadius="50%"
-      position="fixed"
-      right="2rem"
-      bottom="2rem"
-      zIndex={99}
-      color="dark"
-      sx={{ cursor: "pointer" }}
-      onClick={handleConfiguratorOpen}
-    >
-      <Icon fontSize="small" color="inherit">
-        settings
-      </Icon>
-    </MDBox>
-  );
 
   const style = {
     position: "fixed",
