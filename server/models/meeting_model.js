@@ -79,11 +79,11 @@ const leaveRoom = async ({ uid, kanbanId }) => {
       //if the request user is the meeting owner
       //get s3 pre-signed url
       recordUrl = await generateUploadURL();
-      recordUrl = recordUrl.split("?")[0];
+      const url = recordUrl.split("?")[0];
 
       const [result] = await conn.query(
         `UPDATE meetings SET end_dt=?, record=? WHERE id=? `,
-        [new Date(), recordUrl, res.id]
+        [new Date(), url, res.id]
       );
       response = recordUrl;
     } else {

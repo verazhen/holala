@@ -18,6 +18,7 @@ async function generateUploadURL() {
     Bucket: "verazon.online",
     Key: imageName,
     Expires: 60,
+    ACL: 'public-read'
   };
 
   const uploadURL = await s3.getSignedUrlPromise("putObject", params);

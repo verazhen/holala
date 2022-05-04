@@ -97,7 +97,6 @@ export default function App() {
   const [stream, setStream] = useState(true);
   const [screen, setScreen] = useState(false);
   const [localStream, setLocalStream] = useState(null);
-  const [recordUrl, setRecordUrl] = useState("");
   const [roomID, setRoomID] = useState(null);
   const [ws, setWs] = useState(null);
   const [peers, setPeers] = useState([]);
@@ -105,6 +104,7 @@ export default function App() {
   const userVideo = useRef();
   const peersRef = useRef([]);
   const roomRef = useRef(false);
+  const recordUrlRef = useRef(null);
   const streamRef = useRef(false);
   const [user, setUser] = useState({});
   const kanbanId = getLocalStorage("kanbanId");
@@ -116,13 +116,14 @@ export default function App() {
       onStop: function (blobUrl, blob) {
         const uid = getLocalStorage("uid");
         //fetch s3 bucket with pre-signed url
-        //         fetch(url, {
-        //           method: "PUT",
-        //           headers: {
-        //             "Content-Type": "multipart/form-data",
-        //           },
-        //           body: blob,
-        //         });
+        const url = recordUrlRef.current;
+        fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "video/mp4",
+          },
+          body: blob,
+        });
 
         console.log(blob);
         //         ws.emit("leave room", { uid, kanbanId, url: blob });
@@ -198,8 +199,7 @@ export default function App() {
       ws.on("leave room", ({ message, result }) => {
         console.log(message);
         if (result) {
-          console.log(result);
-
+          recordUrlRef.current = result;
           stopRecording();
         }
       });
