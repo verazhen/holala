@@ -132,8 +132,20 @@ const getNote = async (kanbanId, noteId) => {
         text = text.concat(item.alternatives[0].content, " ");
       } else {
         const content = text.trim();
+        const startTime = Math.floor(start_time)
+        const hour =
+          Math.floor(start_time / 60 / 60) > 10
+            ? Math.floor(start_time / 60 / 60)
+            : `0${Math.floor(start_time / 60 / 60)}`;
+        const minute =
+          Math.floor(start_time / 60) > 10
+            ? Math.floor(start_time / 60)
+            : `0${Math.floor(start_time / 60)}`;
+        const second =
+          startTime % 60 > 10 ? startTime % 60 : `0${startTime % 60}`;
         textArr.push({
-          start_time,
+          start_time: `${hour}:${minute}:${second}`,
+          timestamp: start_time,
           content: content.concat(item.alternatives[0].content),
         });
         text = " ";

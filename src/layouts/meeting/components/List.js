@@ -151,6 +151,7 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
   const [searched, setSearched] = useState("");
   const [transcription, setTranscription] = useState();
   const transcriptionRef = useRef(null);
+  const videoRef = useRef(null);
 
   const requestSearch = (searchedVal) => {
     const filteredRows = transcriptionRef.current.filter((row) => {
@@ -274,7 +275,12 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
               <Grid container direction="row" wrap="nowrap">
                 <Grid item xs={8} mr={2} mb={3}>
                   <Typography style={scriptTitleStyle}>Recording</Typography>
-                  <video width="100%" controls style={{ borderRadius: "10px" }}>
+                  <video
+                    width="100%"
+                    controls
+                    ref={videoRef}
+                    style={{ borderRadius: "10px" }}
+                  >
                     <source src={record} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
@@ -300,38 +306,41 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
                   </Search>
                   <div style={scriptDivStyle} className="transcript">
                     {transcription ? (
-                      transcription.map(({ start_time, content }) => (
-                        <Grid
-                          container
-                          direction="row"
-                          wrap="nowrap"
-                          className="transcription-btn"
-                        >
-                          <Grid item>
-                            <button className="btnTimeStyle">
-                              <Typography
-                                style={scriptStyle}
-                                className="transcriptionRow"
-                              >
-                                {start_time}:
-                              </Typography>
-                            </button>
+                      transcription.map(
+                        ({ start_time, timestamp, content }) => (
+                          <Grid
+                            container
+                            direction="row"
+                            wrap="nowrap"
+                            className="transcription-btn"
+                            onClick={() => {
+                              console.log(videoRef.current.currentTime);
+                              videoRef.current.currentTime = timestamp;
+                            }}
+                          >
+                            <Grid item>
+                              <button className="btnTimeStyle">
+                                <Typography
+                                  style={scriptStyle}
+                                  className="transcriptionRow"
+                                >
+                                  {start_time}:
+                                </Typography>
+                              </button>
+                            </Grid>
+                            <Grid item>
+                              <button className="btnContentStyle">
+                                <Typography
+                                  style={scriptStyle}
+                                  className="transcriptionRow"
+                                >
+                                  {content}
+                                </Typography>
+                              </button>
+                            </Grid>
                           </Grid>
-                          <Grid item>
-                            <button
-                              className="btnContentStyle"
-                              onClick={addNote}
-                            >
-                              <Typography
-                                style={scriptStyle}
-                                className="transcriptionRow"
-                              >
-                                {content}
-                              </Typography>
-                            </button>
-                          </Grid>
-                        </Grid>
-                      ))
+                        )
+                      )
                     ) : (
                       <></>
                     )}
