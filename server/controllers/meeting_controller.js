@@ -18,9 +18,7 @@ const getMeetings = async (req, res) => {
   try {
     const { kanbanId } = req.params;
     const response = await Meeting.getMeetings(kanbanId);
-    return res.json({
-      data: response,
-    });
+    return res.json(response);
   } catch (error) {
     return { error };
   }

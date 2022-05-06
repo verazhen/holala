@@ -5,13 +5,35 @@ const axios = require("axios").default;
 const api_key = process.env.MAILGUN_KEY;
 const domain = "verazon.online";
 const mailgun = require("mailgun-js")({ apiKey: api_key, domain: domain });
+const { Role } = require("./components");
 
 const getMeetings = async (kanbanId) => {
-  const [res] = await pool.query(
-    `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
-    [kanbanId]
-  );
-  return res;
+  try {
+    const [res] = await pool.query(
+      `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
+      [kanbanId]
+    );
+    console.log(res);
+    let [members] = await pool.query(
+      "SELECT uid,role_id FROM kanban_permission WHERE kanban_id = ?",
+      [kanbanId]
+    );
+    console.log(members);
+    for (const i in members) {
+      const [[users]] = await pool.query(
+        "SELECT name FROM users WHERE id = ?",
+        [members[i].uid]
+      );
+      members[i].name = users.name;
+      members[i].role_label = Role[members[i].role_id];
+    }
+    console.log(res, members);
+    return { data: res, user: members };
+  } catch (e) {
+    await conn.query("ROLLBACK");
+    console.log(e);
+    return false;
+  }
 };
 
 const createMeeting = async ({ uid, kanbanId }) => {
@@ -52,7 +74,6 @@ const createMeeting = async ({ uid, kanbanId }) => {
 };
 
 const leaveRoom = async ({ uid, kanbanId }) => {
-
   const conn = await pool.getConnection();
   try {
     let recordUrl;
@@ -66,7 +87,7 @@ const leaveRoom = async ({ uid, kanbanId }) => {
     if (res.user_id == uid) {
       //if the request user is the meeting owner
       //get s3 pre-signed url
-      recordUrl = await generateUploadURL(kanbanId,`record/${res.id}`,'mp4');
+      recordUrl = await generateUploadURL(kanbanId, `record/${res.id}`, "mp4");
       const url = recordUrl.split("?")[0];
 
       const [result] = await conn.query(
@@ -94,13 +115,17 @@ const leaveRoom = async ({ uid, kanbanId }) => {
 //TODO: CACHE
 const getNote = async (kanbanId, noteId) => {
   try {
-    const url = `https://s3.ap-southeast-1.amazonaws.com/verazon.online/${noteId}.json`;
-    console.log(url);
+    const [[res]] = await pool.query(
+      `SELECT transcript FROM meetings WHERE id = ?`,
+      [noteId]
+    );
+    const url = res.transcript;
     const { data } = await axios.get(url);
     const { items } = data.results;
     let textArr = [];
     let text = " ";
     let start_time;
+    console.log(items);
     items.map((item) => {
       if (item.start_time) {
         start_time = start_time || item.start_time;
