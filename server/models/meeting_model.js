@@ -52,15 +52,6 @@ const createMeeting = async ({ uid, kanbanId }) => {
 };
 
 const leaveRoom = async ({ uid, kanbanId }) => {
-  //   const s3Path = `holala/${timestamp}.mp4`;
-  //   const res = await s3
-  //     .putObject({
-  //       Key: s3Path,
-  //       Body: url,
-  //       ContentType: "video/mp4",
-  //       ACL: "public-read",
-  //     })
-  //     .promise();
 
   const conn = await pool.getConnection();
   try {
@@ -75,7 +66,7 @@ const leaveRoom = async ({ uid, kanbanId }) => {
     if (res.user_id == uid) {
       //if the request user is the meeting owner
       //get s3 pre-signed url
-      recordUrl = await generateUploadURL(kanbanId,'record','mp4');
+      recordUrl = await generateUploadURL(kanbanId,`record/${res.id}`,'mp4');
       const url = recordUrl.split("?")[0];
 
       const [result] = await conn.query(
