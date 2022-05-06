@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
-import InputBase from '@mui/material/InputBase';
+import InputBase from "@mui/material/InputBase";
 import { Editor as Editor2 } from "react-draft-wysiwyg";
 import {
   Editor,
@@ -97,22 +97,21 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
       },
     },
   },
 }));
-
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -151,17 +150,13 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
   const [expanded, setExpanded] = useState(false);
   const [searched, setSearched] = useState("");
   const [transcription, setTranscription] = useState();
+  const transcriptionRef = useRef(null);
 
   const requestSearch = (searchedVal) => {
-    const filteredRows = transcription.filter((row) => {
-      return row.name.toLowerCase().includes(searchedVal.toLowerCase());
+    const filteredRows = transcriptionRef.current.filter((row) => {
+      return row.content.toLowerCase().includes(searchedVal.toLowerCase());
     });
     setTranscription(filteredRows);
-  };
-
-  const cancelSearch = () => {
-    setSearched("");
-    requestSearch(searched);
   };
 
   const [editor2State, setEditor2State] = useState(
@@ -191,6 +186,7 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
     fetchData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}`, false).then(
       (data) => {
         setTranscription(data);
+        transcriptionRef.current = data;
       }
     );
   }, []);
@@ -295,6 +291,11 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
                       placeholder="Search…"
                       inputProps={{ "aria-label": "search" }}
                       style={{ padding: 0, fontSize: "0.8rem" }}
+                      value={searched}
+                      onChange={(e) => {
+                        setSearched(e.target.value);
+                        requestSearch(e.target.value);
+                      }}
                     />
                   </Search>
                   <div style={scriptDivStyle} className="transcript">
