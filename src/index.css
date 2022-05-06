@@ -185,14 +185,14 @@ input[type="file"]::file-selector-button:hover {
 
 .MuiDrawer-paper {
   height: 100% !important;
-  width: 370px !important;
+  /*width: 300px !important;*/
   border-radius: 0 !important;
   margin: 0 !important;
 }
 
 .css-aim41u {
   /*width: 900px !important;*/
-  margin-left: 360px !important;
+  /*margin-left: 290px !important;*/
 }
 
 .myMsg {

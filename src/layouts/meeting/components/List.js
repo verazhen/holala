@@ -60,8 +60,9 @@ const boxStyle = {
 
 const scriptDivStyle = {
   overflowY: "auto",
-  height: "510px",
-  marginLeft: "20px",
+  height: "300px",
+  backgroundColor: "#f0f0f0",
+  borderRadius: "10px",
 };
 
 const scriptTitleStyle = {
@@ -219,33 +220,41 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
           </Grid>
         </AccordionSummary>
         <AccordionDetails>
-          <Grid container direction="row">
-            <Grid item xs={8}>
-              <video height="530px" controls>
-                <source src={url} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography style={scriptTitleStyle}>Transcription</Typography>
-              <div style={scriptDivStyle} className="transcript">
-                {transcription.map(({ start_time, content }) => (
-                  <Grid container direction="row" wrap="nowrap">
-                    <Grid item>
-                      <button style={btnStyle}>
-                        <Typography style={scriptStyle}>
-                          {start_time}:
-                        </Typography>
-                      </button>
-                    </Grid>
-                    <Grid item>
-                      <button style={btnStyle} onClick={addNote}>
-                        <Typography style={scriptStyle}>{content}</Typography>
-                      </button>
-                    </Grid>
-                  </Grid>
-                ))}
-              </div>
+          <Grid container direction="column">
+            <Grid item>
+              <Grid container direction="row" wrap="nowrap">
+                <Grid item xs={8} mr={2} mb={3}>
+                  <video width="100%" controls style={{ borderRadius: "10px" }}>
+                    <source src={url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </Grid>
+                <Grid xs={4} item mb={3}>
+                  <Typography style={scriptTitleStyle}>
+                    Transcription
+                  </Typography>
+                  <div style={scriptDivStyle} className="transcript">
+                    {transcription.map(({ start_time, content }) => (
+                      <Grid container direction="row" wrap="nowrap">
+                        <Grid item>
+                          <button style={btnStyle}>
+                            <Typography style={scriptStyle}>
+                              {start_time}:
+                            </Typography>
+                          </button>
+                        </Grid>
+                        <Grid item>
+                          <button style={btnStyle} onClick={addNote}>
+                            <Typography style={scriptStyle}>
+                              {content}
+                            </Typography>
+                          </button>
+                        </Grid>
+                      </Grid>
+                    ))}
+                  </div>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ width: "100%" }}>

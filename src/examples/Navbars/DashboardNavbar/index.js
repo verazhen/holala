@@ -248,12 +248,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
               mb={{ xs: 1, md: 0 }}
               sx={(theme) => navbarRow(theme, { isMini })}
             >
-              {/*               <Breadcrumbs */}
-              {/*                 icon="home" */}
-              {/*                 title={route[route.length - 1]} */}
-              {/*                 route={route} */}
-              {/*                 light={light} */}
-              {/*               /> */}
               <MDTypography variant="h3">{kanban}</MDTypography>
             </MDBox>
           </Grid>
@@ -285,218 +279,213 @@ function DashboardNavbar({ absolute, light, isMini }) {
             </MDBox>
           </Grid>
         </Grid>{" "}
-        {isMini ? null : (
-          <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <MDBox color={light ? "white" : "inherit"}>
-              <IconButton
-                sx={navbarIconButton}
-                size="large"
-                disableRipple
-                onClick={() => setOpenDialog(!openDialog)}
+        <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
+          <MDBox color={light ? "white" : "inherit"}>
+            <IconButton
+              size="small"
+              disableRipple
+              color="inherit"
+              onClick={handleMiniSidenav}
+            >
+              <Icon sx={iconsStyle} fontSize="medium">
+                {miniSidenav ? "menu_open" : "menu"}
+              </Icon>
+            </IconButton>
+            <IconButton
+              sx={navbarIconButton}
+              size="large"
+              disableRipple
+              onClick={() => setOpenDialog(!openDialog)}
+            >
+              <Icon sx={iconsStyle}>group_add</Icon>
+              <div
+                style={{
+                  fontSize: "17px",
+                  color: "gray",
+                  marginLeft: "2px",
+                }}
               >
-                <Icon sx={iconsStyle}>group_add</Icon>
-                <div
-                  style={{
-                    fontSize: "17px",
-                    color: "gray",
-                    marginLeft: "2px",
-                  }}
-                >
-                  Invite
-                </div>
-              </IconButton>
-              <Dialog
-                open={openDialog}
-                onClose={() => setOpenDialog(!openDialog)}
-                scroll={scroll}
-                fullWidth
-                maxWidth="xl"
-                style={{ zIndex: 1700 }}
-              >
-                <DialogTitle>KANBAN Members</DialogTitle>
-                <DialogContent dividers={scroll === "paper"}>
-                  <MDBox position="absolute" width="100%" minHeight="10vh">
-                    <Stack sx={{ width: "50%" }} mt={-9.5} ml={73} spacing={2}>
-                      {Object.keys(alert).length !== 0 ? (
-                        <Alert severity={alert.status}>{alert.message}</Alert>
-                      ) : (
-                        <></>
-                      )}
-                    </Stack>
-                  </MDBox>
-                  <DialogContentText>
-                    Check and invite member into this kanban
-                  </DialogContentText>
-                  <Grid container direction="column">
-                    <Grid
-                      container
-                      alignItems="center"
-                      direction="row"
-                      wrap="nowrap"
-                      mb={3}
-                    >
-                      <Grid item xs={11} mr="auto">
-                        <TextField
-                          autoFocus
-                          margin="dense"
-                          label="Email Address"
-                          type="email"
-                          fullWidth
-                          variant="standard"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <MDButton onClick={inviteMember}>Invite</MDButton>
-                      </Grid>
+                Invite
+              </div>
+            </IconButton>
+            <Dialog
+              open={openDialog}
+              onClose={() => setOpenDialog(!openDialog)}
+              scroll={scroll}
+              fullWidth
+              maxWidth="xl"
+              style={{ zIndex: 1700 }}
+            >
+              <DialogTitle>KANBAN Members</DialogTitle>
+              <DialogContent dividers={scroll === "paper"}>
+                <MDBox position="absolute" width="100%" minHeight="10vh">
+                  <Stack sx={{ width: "50%" }} mt={-9.5} ml={73} spacing={2}>
+                    {Object.keys(alert).length !== 0 ? (
+                      <Alert severity={alert.status}>{alert.message}</Alert>
+                    ) : (
+                      <></>
+                    )}
+                  </Stack>
+                </MDBox>
+                <DialogContentText>
+                  Check and invite member into this kanban
+                </DialogContentText>
+                <Grid container direction="column">
+                  <Grid
+                    container
+                    alignItems="center"
+                    direction="row"
+                    wrap="nowrap"
+                    mb={3}
+                  >
+                    <Grid item xs={11} mr="auto">
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Email Address"
+                        type="email"
+                        fullWidth
+                        variant="standard"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
                     </Grid>
-                    {members.map((member, index) => {
-                      return (
-                        <Grid item>
-                          <Grid
-                            container
-                            alignItems="center"
-                            direction="row"
-                            wrap="nowrap"
-                            mb={2}
-                          >
-                            <Grid item mr={2}>
-                              <Avatar>
-                                {member.name ? member.name.charAt(0) : "N"}
-                              </Avatar>
-                            </Grid>
-                            <Grid item mr="auto">
-                              {member.name ? member.name : "user"}
-                            </Grid>
-                            <Grid item>
-                              <MDButton
-                                onClick={() => {
-                                  setOpenRoleModal(true);
-                                  setSelectedValue(index);
-                                }}
-                              >
-                                {member.role_label}
-                              </MDButton>
-                            </Grid>
-                            <Grid item>
-                              <MDButton
-                                onClick={() => {
-                                  let newMembers = JSON.parse(
-                                    JSON.stringify(members)
-                                  );
-                                  newMembers = newMembers.filter(
-                                    (newMember) => {
-                                      return newMember.uid !== member.uid;
-                                    }
-                                  );
-                                  setMembers(newMembers);
-                                }}
-                              >
-                                Remove
-                              </MDButton>
-                            </Grid>
+                    <Grid item>
+                      <MDButton onClick={inviteMember}>Invite</MDButton>
+                    </Grid>
+                  </Grid>
+                  {members.map((member, index) => {
+                    return (
+                      <Grid item>
+                        <Grid
+                          container
+                          alignItems="center"
+                          direction="row"
+                          wrap="nowrap"
+                          mb={2}
+                        >
+                          <Grid item mr={2}>
+                            <Avatar>
+                              {member.name ? member.name.charAt(0) : "N"}
+                            </Avatar>
+                          </Grid>
+                          <Grid item mr="auto">
+                            {member.name ? member.name : "user"}
+                          </Grid>
+                          <Grid item>
+                            <MDButton
+                              onClick={() => {
+                                setOpenRoleModal(true);
+                                setSelectedValue(index);
+                              }}
+                            >
+                              {member.role_label}
+                            </MDButton>
+                          </Grid>
+                          <Grid item>
+                            <MDButton
+                              onClick={() => {
+                                let newMembers = JSON.parse(
+                                  JSON.stringify(members)
+                                );
+                                newMembers = newMembers.filter((newMember) => {
+                                  return newMember.uid !== member.uid;
+                                });
+                                setMembers(newMembers);
+                              }}
+                            >
+                              Remove
+                            </MDButton>
                           </Grid>
                         </Grid>
-                      );
-                    })}
-                  </Grid>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-                  <Button onClick={onSaveMembers}>Save</Button>
-                </DialogActions>
-              </Dialog>
-              <Dialog
-                onClose={() => setOpenRoleModal(false)}
-                open={openRoleModal}
-                style={{ zIndex: 1800 }}
-                keepMounted
-                PaperProps={{
-                  style: {
-                    backgroundColor: "#E2EDE8",
-                    padding: "10px 20px",
-                  },
-                }}
-                BackdropProps={{ invisible: true }}
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+                <Button onClick={onSaveMembers}>Save</Button>
+              </DialogActions>
+            </Dialog>
+            <Dialog
+              onClose={() => setOpenRoleModal(false)}
+              open={openRoleModal}
+              style={{ zIndex: 1800 }}
+              keepMounted
+              PaperProps={{
+                style: {
+                  backgroundColor: "#E2EDE8",
+                  padding: "10px 20px",
+                },
+              }}
+              BackdropProps={{ invisible: true }}
+            >
+              <DialogTitle>Choose the role</DialogTitle>
+              <List sx={{ pt: 0 }}>
+                {roles.map((role) => (
+                  <ListItem
+                    button
+                    key={role.id}
+                    style={{ marginBottom: "20px" }}
+                    onClick={() => {
+                      setOpenRoleModal(false);
+                      const index = selectedValue;
+                      const newMembers = JSON.parse(JSON.stringify(members));
+                      newMembers[index].role_label = role.label;
+                      newMembers[index].role_id = role.id;
+                      setMembers(newMembers);
+                    }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <PersonIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={role.label}
+                      style={{ color: "grey" }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Dialog>
+            <IconButton
+              size="medium"
+              disableRipple
+              color="inherit"
+              sx={navbarIconButton}
+              onClick={() => {
+                window.location.href = "/index";
+              }}
+            >
+              <Icon sx={iconsStyle}>home</Icon>
+              <div
+                style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
               >
-                <DialogTitle>Choose the role</DialogTitle>
-                <List sx={{ pt: 0 }}>
-                  {roles.map((role) => (
-                    <ListItem
-                      button
-                      key={role.id}
-                      style={{ marginBottom: "20px" }}
-                      onClick={() => {
-                        setOpenRoleModal(false);
-                        const index = selectedValue;
-                        const newMembers = JSON.parse(JSON.stringify(members));
-                        newMembers[index].role_label = role.label;
-                        newMembers[index].role_id = role.id;
-                        setMembers(newMembers);
-                      }}
-                    >
-                      <ListItemAvatar>
-                        <Avatar>
-                          <PersonIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={role.label}
-                        style={{ color: "grey" }}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </Dialog>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarMobileMenu}
-                onClick={handleMiniSidenav}
+                Home
+              </div>
+            </IconButton>
+            <IconButton
+              size="medium"
+              disableRipple
+              color="inherit"
+              sx={navbarIconButton}
+              onClick={() => {
+                window.localStorage.removeItem("access_token");
+                window.location.href = "/authentication/sign-in";
+              }}
+            >
+              <Icon sx={iconsStyle}>logout</Icon>
+              <div
+                style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
               >
-                <Icon sx={iconsStyle} fontSize="medium">
-                  {miniSidenav ? "menu_open" : "menu"}
-                </Icon>
-              </IconButton>
-              <IconButton
-                size="medium"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                onClick={() => {
-                  window.location.href = "/index";
-                }}
-              >
-                <Icon sx={iconsStyle}>home</Icon>
-                <div
-                  style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
-                >
-                  Home
-                </div>
-              </IconButton>
-              <IconButton
-                size="medium"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                onClick={() => {
-                  window.localStorage.removeItem("access_token");
-                  window.location.href = "/authentication/sign-in";
-                }}
-              >
-                <Icon sx={iconsStyle}>logout</Icon>
-                <div
-                  style={{ fontSize: "17px", color: "gray", marginLeft: "2px" }}
-                >
-                  Log Out
-                </div>
-              </IconButton>
-              {renderMenu()}
-            </MDBox>
+                Log Out
+              </div>
+            </IconButton>
+            {renderMenu()}
           </MDBox>
-        )}
+        </MDBox>
       </Toolbar>
     </AppBar>
   );

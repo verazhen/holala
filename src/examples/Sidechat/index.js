@@ -122,7 +122,9 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
     textColor = "inherit";
   }
 
-  const closeSidenav = () => setMiniSidenav(dispatch, true);
+  const closeSidenav = () => {
+    setMiniSidenav(dispatch, true);
+  };
   const style = {
     height: "1100px",
     overflow: "auto",
@@ -141,7 +143,6 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
         window.innerWidth < 1200 ? false : whiteSidenav
       );
     }
-
     /**
      The event listener that's calling the handleMiniSidenav function when resizing the window.
     */
@@ -160,81 +161,101 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
       variant="permanent"
       ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}
     >
-      <MDBox pt={3} pb={1} px={4} textAlign="center">
-        <MDBox
-          display={{ xs: "block", xl: "none" }}
-          position="absolute"
-          top={0}
-          right={0}
-          onClick={closeSidenav}
-          sx={{ cursor: "pointer" }}
-        ></MDBox>
-        <Grid container direction="row" alignItems="center">
-          <Grid item mr={2}>
-            <Avatar
-              src={`https://avatars.dicebear.com/api/micah/${
-                user ? user.name : "default"
-              }.svg`}
-              sx={{ width: 56, height: 56 }}
-            ></Avatar>
-          </Grid>
-          <Grid item>
-            <MDTypography variant="h4" fontWeight="bold" color={textColor}>
-              {user ? user.name : ""}
-            </MDTypography>
-          </Grid>
-        </Grid>
-      </MDBox>
-      <Divider
-        light={
-          (!darkMode && !whiteSidenav && !transparentSidenav) ||
-          (darkMode && !transparentSidenav && whiteSidenav)
-        }
-      />
-      <div style={style}>
-        <Grid container direction="column" alignItems="space-evenly" px={3}>
-          {messages.map(({ uid, sender, message, myMsg }) => {
-            return (
-              <Grid item mt={1} className={myMsg}>
-                <div
-                  style={{
-                    display: "inline-block",
-                    whiteSpace: "pre-line",
-                    color: "white",
-                    fontSize: "1rem",
-                    width: "80%",
-                  }}
-                >
-                  {sender}: {message}
-                </div>
-              </Grid>
-            );
-          })}
-          <div ref={messagesEndRef}></div>
-        </Grid>
-      </div>
-
-      <Grid container direction="row" justifyContent="space-evenly">
-        <Grid item xs={6} md={6} lg={10} mt={1}>
-          <MDInput type="text" value={input} onChange={inputChange} fullWidth />
-        </Grid>
-        <Grid item xs={6} md={6} lg={10} mt={1}>
-          <MDButton
-            variant="gradient"
-            color="info"
-            fullWidth
-            onClick={sendMessage}
+      {miniSidenav ? (
+        <>
+          <Grid
+            mt={3}
+            container
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
           >
-            Send Message
-          </MDButton>
-        </Grid>
-      </Grid>
-      <Divider
-        light={
-          (!darkMode && !whiteSidenav && !transparentSidenav) ||
-          (darkMode && !transparentSidenav && whiteSidenav)
-        }
-      />
+            <Grid item>
+              <Avatar
+                src={`https://avatars.dicebear.com/api/micah/${
+                  user ? user.name : "default"
+                }.svg`}
+                sx={{ width: 56, height: 56 }}
+              ></Avatar>
+            </Grid>
+          </Grid>
+        </>
+      ) : (
+        <>
+          <MDBox pt={3} pb={1} px={4} textAlign="center">
+            <Grid container direction="row" alignItems="center">
+              <Grid item mr={2}>
+                <Avatar
+                  src={`https://avatars.dicebear.com/api/micah/${
+                    user ? user.name : "default"
+                  }.svg`}
+                  sx={{ width: 56, height: 56 }}
+                ></Avatar>
+              </Grid>
+              <Grid item>
+                <MDTypography variant="h4" fontWeight="bold" color={textColor}>
+                  {user ? user.name : ""}
+                </MDTypography>
+              </Grid>
+            </Grid>
+          </MDBox>
+          <Divider
+            light={
+              (!darkMode && !whiteSidenav && !transparentSidenav) ||
+              (darkMode && !transparentSidenav && whiteSidenav)
+            }
+          />
+          <div style={style}>
+            <Grid container direction="column" alignItems="space-evenly" px={3}>
+              {messages.map(({ uid, sender, message, myMsg }) => {
+                return (
+                  <Grid item mt={1} className={myMsg}>
+                    <div
+                      style={{
+                        display: "inline-block",
+                        whiteSpace: "pre-line",
+                        color: "white",
+                        fontSize: "1rem",
+                        width: "80%",
+                      }}
+                    >
+                      {sender}: {message}
+                    </div>
+                  </Grid>
+                );
+              })}
+              <div ref={messagesEndRef}></div>
+            </Grid>
+          </div>
+
+          <Grid container direction="row" justifyContent="space-evenly">
+            <Grid item xs={6} md={6} lg={10} mt={1}>
+              <MDInput
+                type="text"
+                value={input}
+                onChange={inputChange}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6} md={6} lg={10} mt={1}>
+              <MDButton
+                variant="gradient"
+                color="info"
+                fullWidth
+                onClick={sendMessage}
+              >
+                Send Message
+              </MDButton>
+            </Grid>
+          </Grid>
+          <Divider
+            light={
+              (!darkMode && !whiteSidenav && !transparentSidenav) ||
+              (darkMode && !transparentSidenav && whiteSidenav)
+            }
+          />
+        </>
+      )}
     </SidenavRoot>
   );
 }
