@@ -8,7 +8,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import IconButton from "@mui/material/IconButton";
 import { Editor as Editor2 } from "react-draft-wysiwyg";
+import Skeleton from "@mui/material/Skeleton";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import { Global } from "@emotion/react";
 import {
   Editor,
   EditorState,
@@ -43,6 +49,32 @@ import MDInput from "components/MDInput";
 import MDTypography from "components/MDTypography";
 import { Link } from "react-router-dom";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
+import { grey } from "@mui/material/colors";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+
+const drawerBleeding = 56;
+
+const Root = styled("div")(({ theme }) => ({
+  height: "100%",
+  backgroundColor:
+    theme.palette.mode === "light"
+      ? grey[100]
+      : theme.palette.background.default,
+}));
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "light" ? "#fff" : grey[800],
+}));
+
+const Puller = styled(Box)(({ theme }) => ({
+  width: 30,
+  height: 6,
+  backgroundColor: theme.palette.mode === "light" ? grey[300] : grey[900],
+  borderRadius: 3,
+  position: "absolute",
+  top: 8,
+  left: "calc(50% - 15px)",
+}));
 
 const boxStyle = {
   width: "95%",
@@ -152,6 +184,12 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
   const [transcription, setTranscription] = useState();
   const transcriptionRef = useRef(null);
   const videoRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
+  // This is used only for the example
+  const container = window.document.body;
 
   const requestSearch = (searchedVal) => {
     const filteredRows = transcriptionRef.current.filter((row) => {
@@ -192,11 +230,11 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
     );
   }, []);
 
-  function addNote(e) {
+  function addNote(content) {
     if (document.activeElement !== editor.current) {
       focusEditor();
     }
-    setNotes((prev) => prev.concat("\n", e.target.innerText));
+    setNotes((prev) => prev.concat("\n", content));
   }
 
   function sendEmail() {
@@ -231,21 +269,39 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
 
   return (
     <MDBox m="auto" my={2} bgColor="transparent" style={boxStyle}>
+      <CssBaseline />
+      <Global
+        styles={{
+          ".MuiDrawer-root > .MuiPaper-root": {
+            left: "100px",
+            height: `600px`,
+            bottom: "-20px",
+            width: "900px",
+            overflow: "visible",
+          },
+        }}
+      />
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Grid container direction="row">
-            <Grid item>
-              <Grid container direction="column" alignItems="flex-start">
-                <Grid item mb={1}>
-                  <MDTypography variant="h5">
-                    會議記錄：{meetingTitle}
-                  </MDTypography>
-                </Grid>
-                <Grid item mb={1}>
+          <Grid
+            container
+            direction="column"
+            alignItems="flex-start"
+            wrap="nowrap"
+          >
+            <Grid item mb={1} xs={12}>
+              <MDTypography variant="h5">會議記錄：{meetingTitle}</MDTypography>
+            </Grid>
+            <Grid item mb={1} xs={12}>
+              <MDTypography variant="h6">開始時間：{meetingTitle}</MDTypography>
+            </Grid>
+            <Grid item xs={12} style={{ width: "100%" }}>
+              <Grid container direction="row" wrap="nowrap" alignItems="center">
+                <Grid item mr="auto">
                   <AvatarGroup total={members.length}>
                     members
                     {members.map((member) => {
@@ -261,9 +317,13 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
                   </AvatarGroup>
                 </Grid>
                 <Grid item>
-                  <MDTypography variant="h6">
-                    開始時間：{meetingTitle}
-                  </MDTypography>
+                  <button
+                    className="editor-btn"
+                    style={{ marginRight: "5px" }}
+                    onClick={toggleDrawer(true)}
+                  >
+                    Note & Email
+                  </button>
                 </Grid>
               </Grid>
             </Grid>
@@ -271,6 +331,15 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
         </AccordionSummary>
         <AccordionDetails>
           <Grid container direction="column">
+            <hr
+              style={{
+                marginTop: "-10px",
+                marginBottom: "10px",
+                height: "1px",
+                backgroundColor: "lightgrey",
+                border: "none",
+              }}
+            />
             <Grid item>
               <Grid container direction="row" wrap="nowrap">
                 <Grid item xs={8} mr={2} mb={3}>
@@ -335,6 +404,12 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
                                   className="transcriptionRow"
                                 >
                                   {content}
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => addNote(content)}
+                                  >
+                                    <AddCircleOutlineIcon />
+                                  </IconButton>
                                 </Typography>
                               </button>
                             </Grid>
@@ -348,72 +423,96 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ width: "100%" }}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <Tabs
-                    value={value}
-                    onChange={handleTabChange}
-                    textColor="secondary"
-                    indicatorColor="secondary"
-                    aria-label="secondary tabs example"
-                  >
-                    <Tab label="Note Editor" {...a11yProps(0)} />
-                    <Tab label="Send Email" {...a11yProps(1)} />
-                  </Tabs>
-                </Box>
-                <TabPanel value={value} index={0}>
-                  <Grid container direction="row" wrap="nowrap">
-                    <Grid item xs={6} mx={2}>
-                      <Typography variant="h5">Highlight</Typography>
-                      <textarea
-                        className="text-area"
-                        ref={editor}
-                        onChange={(e) => setNotes(e.target.value)}
-                        value={notes}
-                      ></textarea>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h5">Action Plan</Typography>
-                      <textarea
-                        className="text-area"
-                        label="list your action plan"
-                        value={actions}
-                        onChange={(e) => setActions(e.target.value)}
-                      ></textarea>
-                    </Grid>
-                  </Grid>
-                  <MDButton
-                    variant="gradient"
-                    color="secondary"
-                    fullWidth
-                    onClick={saveNote}
-                  >
-                    Save
-                  </MDButton>
-                </TabPanel>
-                <TabPanel value={value} index={1}>
-                  <Editor2
-                    editorState={editor2State}
-                    toolbarClassName="editorToolbar"
-                    wrapperClassName="editorWrapper"
-                    editorClassName="noteEditor"
-                    onEditorStateChange={onEditor2StateChange}
-                  />
-                  <MDButton
-                    variant="gradient"
-                    color="secondary"
-                    fullWidth
-                    onClick={sendEmail}
-                  >
-                    Send Email
-                  </MDButton>
-                </TabPanel>
-              </Box>
-            </Grid>
           </Grid>
         </AccordionDetails>
       </Accordion>
+      <SwipeableDrawer
+        container={container}
+        anchor="bottom"
+        open={open}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
+        swipeAreaWidth={drawerBleeding}
+        disableSwipeToOpen={false}
+        ModalProps={{
+          keepMounted: true,
+        }}
+      >
+        <StyledBox
+          sx={{
+            px: 2,
+            pb: 2,
+            height: "100%",
+            overflow: "auto",
+            borderTopLeftRadius: 100,
+            borderTopRightRadius: 8,
+          }}
+        >
+          <Grid item xs={12}>
+            <Box sx={{ width: "100%", paddingTop: "20px" }}>
+              <Typography variant="h5" style={{textAlign:"center"}} mb={2}>
+                {meetingTitle}
+              </Typography>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                  value={value}
+                  onChange={handleTabChange}
+                  textColor="secondary"
+                  indicatorColor="secondary"
+                  aria-label="secondary tabs example"
+                >
+                  <Tab label="Note Editor" {...a11yProps(0)} />
+                  <Tab label="Send Email" {...a11yProps(1)} />
+                </Tabs>
+              </Box>
+              <TabPanel value={value} index={0}>
+                <Grid container direction="row" wrap="nowrap">
+                  <Grid item xs={12} mx={2}>
+                    <Typography variant="h5">MEETING KEY POINT</Typography>
+                    <textarea
+                      className="text-area"
+                      ref={editor}
+                      style={{
+                        fontSize: "0.8rem",
+                        lineHeight: "1rem",
+                        color: "#495361",
+                        height: "360px",
+                      }}
+                      onChange={(e) => setNotes(e.target.value)}
+                      value={notes}
+                    ></textarea>
+                  </Grid>
+                </Grid>
+                <MDButton
+                  variant="gradient"
+                  color="secondary"
+                  fullWidth
+                  onClick={saveNote}
+                >
+                  Save
+                </MDButton>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                <Editor2
+                  editorState={editor2State}
+                  toolbarClassName="editorToolbar"
+                  wrapperClassName="editorWrapper"
+                  editorClassName="noteEditor"
+                  onEditorStateChange={onEditor2StateChange}
+                />
+                <MDButton
+                  variant="gradient"
+                  color="secondary"
+                  fullWidth
+                  onClick={sendEmail}
+                >
+                  Send Email
+                </MDButton>
+              </TabPanel>
+            </Box>
+          </Grid>
+        </StyledBox>
+      </SwipeableDrawer>
     </MDBox>
   );
 };

@@ -17,21 +17,31 @@
   border-radius: 10px;
 }
 
-.DraftEditor-editorContainer,
 .text-area,
 .text-area:focus {
   font-size: 1rem;
-  height: 500px;
   width: 100%;
   border-radius: 5px;
-  -moz-box-shadow: inset 0 0 10px lightgray;
-  -webkit-box-shadow: inset 0 0 10px lightgray;
-  box-shadow: inset 0 0 10px lightgray;
   padding: 10px;
   display: inline-block;
-  border: 0;
+  border: 1px solid lightgrey;
   outline: 0;
   resize: none;
+  margin-bottom: 10px;
+  overflow: auto;
+}
+.DraftEditor-editorContainer {
+  font-size: 1rem;
+  height: 300px !important;
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+  display: inline-block;
+  border: 1px solid lightgrey;
+  outline: 0;
+  resize: none;
+  margin-bottom: 10px;
+  overflow: auto;
 }
 .description {
   font-size: 1rem;
@@ -52,8 +62,12 @@
 }
 
 .editorToolbar {
-  background-color: #8fc1b5;
+  margin-top: 5px;
+  background-color: lightgray;
   border-radius: 5px;
+}
+.css-19kzrtu {
+  padding: 15px !important;
 }
 
 .rdw-option-wrapper,
@@ -135,11 +149,12 @@
   background-color: lightgray !important;
 }
 
+.editor-btn:hover,
 .label-button:hover,
 .logout-btn:hover,
 .upload-button:hover {
   color: white !important;
-  background-color: lightgray !important;
+  background-color: gray !important;
 }
 
 .todo,
@@ -183,7 +198,7 @@ input[type="file"]::file-selector-button:hover {
   background-color: lightgray !important;
 }
 
-.MuiDrawer-paper {
+.css-1ioqvny-MuiPaper-root-MuiDrawer-paper {
   height: 100% !important;
   /*width: 300px !important;*/
   border-radius: 0 !important;
@@ -241,4 +256,12 @@ input[type="file"]::file-selector-button:hover {
   border-radius: 10px !important;
   margin-left: 0 !important;
   margin-bottom: 10px;
+}
+
+.editor-btn {
+  border: 1px solid lightgrey;
+  border-radius: 5px !important;
+  background-color: transparent;
+  padding: 5px 10px;
+  color: dimgrey;
 }
