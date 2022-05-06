@@ -20,19 +20,18 @@ import { API_HOST } from "utils/constants";
 
 function Tables() {
   const [meetings, setMeetings] = useState([]);
+  const [members, setMembers] = useState([]);
   const { kanbanId } = useParams();
 
   useEffect(() => {
-    fetchData(`${API_HOST}/kanban/${kanbanId}/meetings`).then(
-      (meetingList) => {
-        setMeetings(meetingList);
+    fetchData(`${API_HOST}/kanban/${kanbanId}/meetings`, true).then(
+      ({ data, user }) => {
+        console.log(data, user);
+        setMembers(user);
+        setMeetings(data);
       }
     );
   }, []);
-
-  useEffect(() => {
-    console.log(meetings);
-  }, [meetings]);
 
   return (
     <DashboardLayout>
@@ -57,8 +56,12 @@ function Tables() {
               </MDBox>
               <MDBox pt={3}>
                 {meetings.map((meeting) => (
-                  <Meeting id={meeting.id} meetingTitle={meeting.start_dt} src={meeting.record} transcript={meeting
-                  .transcript}/>
+                  <Meeting
+                    id={meeting.id}
+                    meetingTitle={meeting.start_dt}
+                    record={meeting.record}
+                    members={members}
+                  />
                 ))}
               </MDBox>
             </Card>

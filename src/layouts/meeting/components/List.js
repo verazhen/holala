@@ -5,6 +5,9 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { styled, alpha } from "@mui/material/styles";
+import SearchIcon from "@mui/icons-material/Search";
+import InputBase from '@mui/material/InputBase';
 import { Editor as Editor2 } from "react-draft-wysiwyg";
 import {
   Editor,
@@ -41,15 +44,6 @@ import MDTypography from "components/MDTypography";
 import { Link } from "react-router-dom";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 
-const btnStyle = {
-  border: "0px",
-  backgroundColor: "transparent",
-  textAlign: "left",
-  marginRight: "5px",
-  boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.2)",
-  borderRadius: "3px",
-};
-
 const boxStyle = {
   width: "95%",
   margin: "0 auto 10px",
@@ -60,21 +54,65 @@ const boxStyle = {
 
 const scriptDivStyle = {
   overflowY: "auto",
-  height: "300px",
+  height: "387px",
   backgroundColor: "#f0f0f0",
   borderRadius: "10px",
 };
 
 const scriptTitleStyle = {
   fontSize: "1.2rem",
-  //   marginLeft: "20px",
+  fontWeight: "bold",
   color: "#41BFB3",
 };
 
 const scriptStyle = {
   fontSize: "0.8rem",
+  lineHeight: "1rem",
   color: "#495361",
 };
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(1),
+    width: "auto",
+  },
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '20ch',
+      },
+    },
+  },
+}));
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -109,9 +147,22 @@ function a11yProps(index) {
   };
 }
 
-const Meeting = ({ id, meetingTitle, src, transcript }) => {
+const Meeting = ({ id, meetingTitle, record, members }) => {
   const [expanded, setExpanded] = useState(false);
-  const [transcription, setTranscription] = useState([]);
+  const [searched, setSearched] = useState("");
+  const [transcription, setTranscription] = useState();
+
+  const requestSearch = (searchedVal) => {
+    const filteredRows = transcription.filter((row) => {
+      return row.name.toLowerCase().includes(searchedVal.toLowerCase());
+    });
+    setTranscription(filteredRows);
+  };
+
+  const cancelSearch = () => {
+    setSearched("");
+    requestSearch(searched);
+  };
 
   const [editor2State, setEditor2State] = useState(
     EditorState.createWithContent(ContentState.createFromText("hi"))
@@ -135,16 +186,13 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
     setExpanded(newExpanded ? panel : false);
   };
 
-  const url = `https://s3.ap-southeast-1.amazonaws.com/verazon.online/${src}`;
-
   useEffect(() => {
-    //     focusEditor();
-    if (!transcript) {
-      return;
-    }
-    fetchData(`${API_HOST}/kanban/1/meeting/1650882217`).then((data) => {
-      setTranscription(data);
-    });
+    const kanbanId = localStorage.getItem("kanbanId");
+    fetchData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}`, false).then(
+      (data) => {
+        setTranscription(data);
+      }
+    );
   }, []);
 
   function addNote(e) {
@@ -164,7 +212,11 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
       subject: "test",
       html: emailHtml,
     };
-    fetchSetData(`${API_HOST}/kanban/1/meeting/1650882217/email`, data);
+    const kanbanId = localStorage.getItem("kanbanId");
+    fetchSetData(
+      `${API_HOST}/kanban/${kanbanId}/meeting/1650882217/email`,
+      data
+    );
   }
 
   function saveNote() {
@@ -172,7 +224,8 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
       notes,
       actions,
     };
-    fetchPutData(`${API_HOST}/kanban/1/meeting/${id}`, data);
+    const kanbanId = localStorage.getItem("kanbanId");
+    fetchPutData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}`, data);
   }
 
   function onEditor2StateChange(editor2State) {
@@ -188,29 +241,29 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
           id="panel1a-header"
         >
           <Grid container direction="row">
-            <Grid item xs={6}>
-              <Grid container>
-                <Grid item xs={12}>
-                  <MDTypography variant="h4">
+            <Grid item>
+              <Grid container direction="column" alignItems="flex-start">
+                <Grid item mb={1}>
+                  <MDTypography variant="h5">
                     會議記錄：{meetingTitle}
                   </MDTypography>
                 </Grid>
-                <AvatarGroup total={24}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                  <Avatar
-                    alt="Travis Howard"
-                    src="/static/images/avatar/2.jpg"
-                  />
-                  <Avatar
-                    alt="Agnes Walker"
-                    src="/static/images/avatar/4.jpg"
-                  />
-                  <Avatar
-                    alt="Trevor Henderson"
-                    src="/static/images/avatar/5.jpg"
-                  />
-                </AvatarGroup>
-                <Grid item xs={12}>
+                <Grid item mb={1}>
+                  <AvatarGroup total={members.length}>
+                    members
+                    {members.map((member) => {
+                      return (
+                        <Avatar
+                          alt={member ? member.name : "unknown"}
+                          src={`https://avatars.dicebear.com/api/micah/${
+                            member ? member.name : "default"
+                          }.svg`}
+                        />
+                      );
+                    })}
+                  </AvatarGroup>
+                </Grid>
+                <Grid item>
                   <MDTypography variant="h6">
                     開始時間：{meetingTitle}
                   </MDTypography>
@@ -224,8 +277,9 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
             <Grid item>
               <Grid container direction="row" wrap="nowrap">
                 <Grid item xs={8} mr={2} mb={3}>
+                  <Typography style={scriptTitleStyle}>Recording</Typography>
                   <video width="100%" controls style={{ borderRadius: "10px" }}>
-                    <source src={url} type="video/mp4" />
+                    <source src={record} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 </Grid>
@@ -233,25 +287,53 @@ const Meeting = ({ id, meetingTitle, src, transcript }) => {
                   <Typography style={scriptTitleStyle}>
                     Transcription
                   </Typography>
+                  <Search className="search-transcription">
+                    <SearchIconWrapper>
+                      <SearchIcon />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                      placeholder="Search…"
+                      inputProps={{ "aria-label": "search" }}
+                      style={{ padding: 0, fontSize: "0.8rem" }}
+                    />
+                  </Search>
                   <div style={scriptDivStyle} className="transcript">
-                    {transcription.map(({ start_time, content }) => (
-                      <Grid container direction="row" wrap="nowrap">
-                        <Grid item>
-                          <button style={btnStyle}>
-                            <Typography style={scriptStyle}>
-                              {start_time}:
-                            </Typography>
-                          </button>
+                    {transcription ? (
+                      transcription.map(({ start_time, content }) => (
+                        <Grid
+                          container
+                          direction="row"
+                          wrap="nowrap"
+                          className="transcription-btn"
+                        >
+                          <Grid item>
+                            <button className="btnTimeStyle">
+                              <Typography
+                                style={scriptStyle}
+                                className="transcriptionRow"
+                              >
+                                {start_time}:
+                              </Typography>
+                            </button>
+                          </Grid>
+                          <Grid item>
+                            <button
+                              className="btnContentStyle"
+                              onClick={addNote}
+                            >
+                              <Typography
+                                style={scriptStyle}
+                                className="transcriptionRow"
+                              >
+                                {content}
+                              </Typography>
+                            </button>
+                          </Grid>
                         </Grid>
-                        <Grid item>
-                          <button style={btnStyle} onClick={addNote}>
-                            <Typography style={scriptStyle}>
-                              {content}
-                            </Typography>
-                          </button>
-                        </Grid>
-                      </Grid>
-                    ))}
+                      ))
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </Grid>
               </Grid>

@@ -212,3 +212,33 @@ input[type="file"]::file-selector-button:hover {
   top: 0px !important;
   height: 500px !important;
 }
+
+.transcription-btn:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.btnTimeStyle {
+  border: 0px;
+  background-color: transparent;
+  text-align: left;
+  margin-left: 15px;
+}
+
+.btnContentStyle {
+  border: 0px;
+  background-color: transparent;
+  text-align: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.transcription-btn:hover .transcriptionRow {
+  color: white !important;
+}
+
+.search-transcription {
+  border: 1px solid lightgrey;
+  border-radius: 10px !important;
+  margin-left: 0 !important;
+  margin-bottom: 10px;
+}
