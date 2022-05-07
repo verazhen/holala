@@ -56,7 +56,7 @@ const sendEmail = async (req, res) => {
     const { data } = req.body;
     const response = await Meeting.sendEmail(kanbanId, noteId, data, user);
     return res.json({
-      data: response,
+      status_code: 200,
     });
   } catch (error) {
     return { error };

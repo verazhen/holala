@@ -181,6 +181,8 @@ function a11yProps(index) {
 const Meeting = ({ id, meetingTitle, record, members }) => {
   const [expanded, setExpanded] = useState(false);
   const [searched, setSearched] = useState("");
+  const [sendLabel, setSendLabel] = useState("Send Email");
+  const [sendLabelColor, setSendLabelColor] = useState("secondary");
   const [transcription, setTranscription] = useState();
   const transcriptionRef = useRef(null);
   const videoRef = useRef(null);
@@ -226,7 +228,7 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
       (data) => {
         setTranscription(data.transcription);
         setNotes(data.notes);
-        transcriptionRef.current = data.transcription
+        transcriptionRef.current = data.transcription;
       }
     );
   }, []);
@@ -250,13 +252,19 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
     fetchSetData(
       `${API_HOST}/kanban/${kanbanId}/meeting/${id}/email`,
       data
-    );
+    ).then(({ status_code }) => {
+      if (status_code === 200) {
+        console.log(123);
+        setSendLabel("Successfully Send");
+        setSendLabelColor("success");
+      }
+    });
   }
 
   function saveNote() {
     const data = notes;
-    console.log(notes)
-    console.log(id)
+    console.log(notes);
+    console.log(id);
     const kanbanId = localStorage.getItem("kanbanId");
     fetchPutData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}/note`, data);
   }
@@ -500,11 +508,11 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
                 />
                 <MDButton
                   variant="gradient"
-                  color="secondary"
+                  color={sendLabelColor}
                   fullWidth
                   onClick={sendEmail}
                 >
-                  Send Email
+                  {sendLabel}
                 </MDButton>
               </TabPanel>
             </Box>
