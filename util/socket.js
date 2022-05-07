@@ -2,7 +2,6 @@ const { Server } = require("socket.io");
 const { createAdapter } = require("@socket.io/redis-adapter");
 const Kanban = require("../server/models/kanban_model");
 const Meeting = require("../server/models/meeting_model");
-const webrtc = require("wrtc");
 
 function findNowRoom(client) {
   return Object.keys(client.rooms).find((item) => {
