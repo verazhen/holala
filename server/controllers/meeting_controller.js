@@ -24,10 +24,10 @@ const getMeetings = async (req, res) => {
   }
 };
 
-const getTranscription = async (req, res) => {
+const getMeetingDetail = async (req, res) => {
   try {
     const { kanbanId, meetingId } = req.params;
-    const response = await Meeting.getTranscription(kanbanId, meetingId);
+    const response = await Meeting.getMeetingDetail(kanbanId, meetingId);
     return res.json({
       data: response,
     });
@@ -36,17 +36,6 @@ const getTranscription = async (req, res) => {
   }
 };
 
-const getNote = async (req, res) => {
-  try {
-    const { kanbanId, meetingId } = req.params;
-    const response = await Meeting.getNote(kanbanId, meetingId);
-    return res.json({
-      data: response,
-    });
-  } catch (error) {
-    return { error };
-  }
-};
 
 const saveNote = async (req, res) => {
   try {
@@ -76,8 +65,7 @@ const sendEmail = async (req, res) => {
 
 module.exports = {
   getMeetings,
-  getTranscription,
-  getNote,
+  getMeetingDetail,
   sendEmail,
   saveNote,
   createMeeting,

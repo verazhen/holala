@@ -113,10 +113,10 @@ const leaveRoom = async ({ uid, kanbanId }) => {
 };
 
 //TODO: CACHE
-const getTranscription = async (kanbanId, meetingId) => {
+const getMeetingDetail = async (kanbanId, meetingId) => {
   try {
     const [[res]] = await pool.query(
-      `SELECT transcript FROM meetings WHERE id = ?`,
+      `SELECT transcript,notes FROM meetings WHERE id = ?`,
       [meetingId]
     );
     const url = res.transcript;
@@ -152,41 +152,13 @@ const getTranscription = async (kanbanId, meetingId) => {
       }
     });
 
-    return textArr;
+    return { transcription: textArr, notes:res.notes };
   } catch (e) {
     console.log(e);
     return false;
   }
 };
 
-const getNote = async (kanbanId) => {
-  try {
-    const [res] = await pool.query(
-      `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
-      [kanbanId]
-    );
-    console.log(res);
-    let [members] = await pool.query(
-      "SELECT uid,role_id FROM kanban_permission WHERE kanban_id = ?",
-      [kanbanId]
-    );
-    console.log(members);
-    for (const i in members) {
-      const [[users]] = await pool.query(
-        "SELECT name FROM users WHERE id = ?",
-        [members[i].uid]
-      );
-      members[i].name = users.name;
-      members[i].role_label = Role[members[i].role_id];
-    }
-    console.log(res, members);
-    return { data: res, user: members };
-  } catch (e) {
-    await conn.query("ROLLBACK");
-    console.log(e);
-    return false;
-  }
-};
 
 const sendEmail = async (kanbanId, noteId, data) => {
   try {
@@ -235,10 +207,9 @@ const saveNote = async (meetingId, data) => {
 
 module.exports = {
   createMeeting,
-  getTranscription,
+  getMeetingDetail,
   leaveRoom,
   getMeetings,
-  getNote,
   sendEmail,
   saveNote,
 };

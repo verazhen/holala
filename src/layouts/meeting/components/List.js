@@ -224,8 +224,9 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
     const kanbanId = localStorage.getItem("kanbanId");
     fetchData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}`, false).then(
       (data) => {
-        setTranscription(data);
-        transcriptionRef.current = data;
+        setTranscription(data.transcription);
+        setNotes(data.notes);
+        transcriptionRef.current = data.transcription
       }
     );
   }, []);
