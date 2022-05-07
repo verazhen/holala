@@ -265,3 +265,20 @@ input[type="file"]::file-selector-button:hover {
   padding: 5px 10px;
   color: dimgrey;
 }
+
+.css-13kks1c-MuiPaper-root-MuiCard-root {
+  background-color: rgba(255, 255, 255, 0.52) !important;
+}
+
+.css-lmq8rr {
+  padding: 12px !important;
+}
+
+.css-135h7am {
+  background-color: white;
+  box-shadow: 2px 2px 8px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.MuiTypography-h6 {
+  color: dimgrey !important;
+}

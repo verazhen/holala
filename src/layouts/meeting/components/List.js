@@ -81,7 +81,6 @@ const boxStyle = {
   margin: "0 auto 10px",
   paddingBottom: "10px",
   marginTop: "10px",
-  borderRaduis: "5px",
 };
 
 const scriptDivStyle = {
@@ -263,8 +262,6 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
 
   function saveNote() {
     const data = notes;
-    console.log(notes);
-    console.log(id);
     const kanbanId = localStorage.getItem("kanbanId");
     fetchPutData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}/note`, data);
   }
@@ -274,7 +271,7 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
   }
 
   return (
-    <MDBox m="auto" my={2} bgColor="transparent" style={boxStyle}>
+    <MDBox m="auto" my={2} style={boxStyle}>
       <CssBaseline />
       <Global
         styles={{
@@ -287,7 +284,12 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
           },
         }}
       />
-      <Accordion>
+      <Accordion
+        style={{
+          borderRadius: "10px",
+          boxShadow: "2px 2px 8px 2px rgba(0, 0, 0, 0.1)",
+        }}
+      >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
