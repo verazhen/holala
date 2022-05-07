@@ -14,14 +14,14 @@ router
   .route("/kanban/:kanbanId/meeting")
   .get(authentication(), wrapAsync(createMeeting));
 
-router.route("/kanban/:kanbanId/meetings").get(wrapAsync(getMeetings));
+router.route("/kanban/:kanbanId/meetings").get(authentication(),wrapAsync(getMeetings));
 
-router.route("/kanban/:kanbanId/meeting/:meetingId").get(wrapAsync(getMeetingDetail));
+router.route("/kanban/:kanbanId/meeting/:meetingId").get(authentication(),wrapAsync(getMeetingDetail));
 
-router.route("/kanban/:kanbanId/meeting/:meetingId/note").put(wrapAsync(saveNote));
+router.route("/kanban/:kanbanId/meeting/:meetingId/note").put(authentication(),wrapAsync(saveNote));
 
 router
   .route("/kanban/:kanbanId/meeting/:noteId/email")
-  .post(wrapAsync(sendEmail));
+  .post(authentication(),wrapAsync(sendEmail));
 
 module.exports = router;

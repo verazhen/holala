@@ -243,14 +243,12 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
       convertToRaw(editor2State.getCurrentContent())
     );
     const data = {
-      from: "vera.zhen63@gmail.com",
-      to: "vera.zhen63@gmail.com",
-      subject: "test",
+      subject: `Meeting Minute: ${meetingTitle}`,
       html: emailHtml,
     };
     const kanbanId = localStorage.getItem("kanbanId");
     fetchSetData(
-      `${API_HOST}/kanban/${kanbanId}/meeting/1650882217/email`,
+      `${API_HOST}/kanban/${kanbanId}/meeting/${id}/email`,
       data
     );
   }

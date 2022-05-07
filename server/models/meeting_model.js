@@ -13,12 +13,11 @@ const getMeetings = async (kanbanId) => {
       `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
       [kanbanId]
     );
-    console.log(res);
+
     let [members] = await pool.query(
       "SELECT uid,role_id FROM kanban_permission WHERE kanban_id = ?",
       [kanbanId]
     );
-    console.log(members);
     for (const i in members) {
       const [[users]] = await pool.query(
         "SELECT name FROM users WHERE id = ?",
@@ -27,7 +26,6 @@ const getMeetings = async (kanbanId) => {
       members[i].name = users.name;
       members[i].role_label = Role[members[i].role_id];
     }
-    console.log(res, members);
     return { data: res, user: members };
   } catch (e) {
     await conn.query("ROLLBACK");
@@ -152,20 +150,37 @@ const getMeetingDetail = async (kanbanId, meetingId) => {
       }
     });
 
-    return { transcription: textArr, notes:res.notes };
+    return { transcription: textArr, notes: res.notes };
   } catch (e) {
     console.log(e);
     return false;
   }
 };
 
-
-const sendEmail = async (kanbanId, noteId, data) => {
+const sendEmail = async (kanbanId, noteId, data, user) => {
   try {
+    const [members] = await pool.query(
+      "SELECT uid FROM kanban_permission WHERE kanban_id = ?",
+      [kanbanId]
+    );
+
+    for (const i in members) {
+      const [[users]] = await pool.query(
+        "SELECT email FROM users WHERE id = ?",
+        [members[i].uid]
+      );
+      members[i].email = users.email;
+    }
+
+    const recipients = members.reduce((accu, curr) => {
+      accu.push(curr.email);
+      return accu;
+    }, []);
+
     //send Email
     const mail = {
-      from: data.from,
-      to: data.to,
+      from: user.email,
+      to: recipients,
       subject: data.subject,
       html: data.html,
     };
@@ -173,8 +188,6 @@ const sendEmail = async (kanbanId, noteId, data) => {
     mailgun.messages().send(mail, function (error, body) {
       console.log(body);
     });
-
-    //TODO: email sending record
 
     return true;
   } catch (e) {
