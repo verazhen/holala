@@ -1,8 +1,13 @@
 require("dotenv").config();
 
-const { MONGO_HOST, MONGO_USERNAME, MONGO_PASSWORD, MONGO_DATABASE } =
-  process.env;
-const uri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}?retryWrites=true&w=majority`;
+const {
+  MONGO_HOST,
+  MONGO_USERNAME,
+  MONGO_PASSWORD,
+  MONGO_DATABASE,
+  MONGO_PORT,
+} = process.env;
+const uri = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}`;
 
 const { MongoClient } = require("mongodb");
 
