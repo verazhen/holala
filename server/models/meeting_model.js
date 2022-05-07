@@ -113,11 +113,11 @@ const leaveRoom = async ({ uid, kanbanId }) => {
 };
 
 //TODO: CACHE
-const getNote = async (kanbanId, noteId) => {
+const getTranscription = async (kanbanId, meetingId) => {
   try {
     const [[res]] = await pool.query(
       `SELECT transcript FROM meetings WHERE id = ?`,
-      [noteId]
+      [meetingId]
     );
     const url = res.transcript;
     const { data } = await axios.get(url);
@@ -125,14 +125,13 @@ const getNote = async (kanbanId, noteId) => {
     let textArr = [];
     let text = " ";
     let start_time;
-    console.log(items);
     items.map((item) => {
       if (item.start_time) {
         start_time = start_time || item.start_time;
         text = text.concat(item.alternatives[0].content, " ");
       } else {
         const content = text.trim();
-        const startTime = Math.floor(start_time)
+        const startTime = Math.floor(start_time);
         const hour =
           Math.floor(start_time / 60 / 60) > 10
             ? Math.floor(start_time / 60 / 60)
@@ -155,6 +154,35 @@ const getNote = async (kanbanId, noteId) => {
 
     return textArr;
   } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+const getNote = async (kanbanId) => {
+  try {
+    const [res] = await pool.query(
+      `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
+      [kanbanId]
+    );
+    console.log(res);
+    let [members] = await pool.query(
+      "SELECT uid,role_id FROM kanban_permission WHERE kanban_id = ?",
+      [kanbanId]
+    );
+    console.log(members);
+    for (const i in members) {
+      const [[users]] = await pool.query(
+        "SELECT name FROM users WHERE id = ?",
+        [members[i].uid]
+      );
+      members[i].name = users.name;
+      members[i].role_label = Role[members[i].role_id];
+    }
+    console.log(res, members);
+    return { data: res, user: members };
+  } catch (e) {
+    await conn.query("ROLLBACK");
     console.log(e);
     return false;
   }
@@ -186,12 +214,11 @@ const sendEmail = async (kanbanId, noteId, data) => {
 const saveNote = async (meetingId, data) => {
   const conn = await pool.getConnection();
   try {
-    const { notes, actions } = data;
     await conn.query("START TRANSACTION");
 
     const [result] = await conn.query(
-      `UPDATE meetings SET notes=?, actions=? WHERE id=?`,
-      [notes, actions, meetingId]
+      `UPDATE meetings SET notes=? WHERE id=?`,
+      [data, meetingId]
     );
 
     await conn.query("COMMIT");
@@ -208,6 +235,7 @@ const saveNote = async (meetingId, data) => {
 
 module.exports = {
   createMeeting,
+  getTranscription,
   leaveRoom,
   getMeetings,
   getNote,

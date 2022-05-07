@@ -255,12 +255,11 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
   }
 
   function saveNote() {
-    const data = {
-      notes,
-      actions,
-    };
+    const data = notes;
+    console.log(notes)
+    console.log(id)
     const kanbanId = localStorage.getItem("kanbanId");
-    fetchPutData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}`, data);
+    fetchPutData(`${API_HOST}/kanban/${kanbanId}/meeting/${id}/note`, data);
   }
 
   function onEditor2StateChange(editor2State) {
@@ -450,7 +449,7 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
         >
           <Grid item xs={12}>
             <Box sx={{ width: "100%", paddingTop: "20px" }}>
-              <Typography variant="h5" style={{textAlign:"center"}} mb={2}>
+              <Typography variant="h5" style={{ textAlign: "center" }} mb={2}>
                 {meetingTitle}
               </Typography>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

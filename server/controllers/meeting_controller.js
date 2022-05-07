@@ -24,10 +24,22 @@ const getMeetings = async (req, res) => {
   }
 };
 
+const getTranscription = async (req, res) => {
+  try {
+    const { kanbanId, meetingId } = req.params;
+    const response = await Meeting.getTranscription(kanbanId, meetingId);
+    return res.json({
+      data: response,
+    });
+  } catch (error) {
+    return { error };
+  }
+};
+
 const getNote = async (req, res) => {
   try {
-    const { kanbanId, noteId } = req.params;
-    const response = await Meeting.getNote(kanbanId, noteId);
+    const { kanbanId, meetingId } = req.params;
+    const response = await Meeting.getNote(kanbanId, meetingId);
     return res.json({
       data: response,
     });
@@ -64,6 +76,7 @@ const sendEmail = async (req, res) => {
 
 module.exports = {
   getMeetings,
+  getTranscription,
   getNote,
   sendEmail,
   saveNote,
