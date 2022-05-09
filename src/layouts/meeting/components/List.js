@@ -236,7 +236,12 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
     if (document.activeElement !== editor.current) {
       focusEditor();
     }
-    setNotes((prev) => prev.concat("\n", content));
+    setNotes((prev) => {
+      if (!prev) {
+        prev = "\n";
+      }
+      return prev.concat("\n", content);
+    });
   }
 
   function sendEmail() {
@@ -253,7 +258,6 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
       data
     ).then(({ status_code }) => {
       if (status_code === 200) {
-        console.log(123);
         setSendLabel("Successfully Send");
         setSendLabelColor("success");
       }
