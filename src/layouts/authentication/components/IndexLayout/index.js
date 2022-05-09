@@ -6,24 +6,30 @@ import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import Container from "@mui/material/Container";
+import MDTypography from "components/MDTypography";
+import Icon from "@mui/material/Icon";
+import IconButton from "@mui/material/IconButton";
+import { navbarIconButton } from "examples/Navbars/DashboardNavbar/styles";
 
-// Material Dashboard 2 React example components
-import WelcomeNavbar from "examples/Navbars/WelcomeNavbar";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 
 // Authentication pages components
 import Footer from "layouts/authentication/components/Footer";
 
-function IndexLayout({ image, children,user }) {
+function IndexLayout({ image, children, user }) {
   return (
     <PageLayout>
-      <WelcomeNavbar user={user} className="welcome"/>
       <MDBox
         position="absolute"
         width="100%"
+        m={0}
         minHeight="100vh"
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
+          backgroundImage: ({
+            functions: { linearGradient, rgba },
+            palette: { gradients },
+          }) =>
             image &&
             `${linearGradient(
               rgba(gradients.dark.main, 0.6),
@@ -34,14 +40,71 @@ function IndexLayout({ image, children,user }) {
           backgroundRepeat: "no-repeat",
         }}
       />
-      <MDBox px={1} width="100%" height="100vh" mt={0}>
-        <Grid container spacing={1} justifyContent="center" alignItems="center" height="100%">
-          <Grid item xs={8.5} >
-            {children}
+      <MDBox px={1} width="100%" height="100vh" m={0}>
+        <Grid
+          container
+          spacing={1}
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <Grid item xs={8.5}>
+            <Container>
+              <MDBox
+                py={1}
+                px={{ xs: 4 }}
+                borderRadius="lg"
+                shadow={"md"}
+                color={"dark"}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                style={{ backgroundColor: "white" }}
+              >
+                <Grid
+                  container
+                  direction="row"
+                  spacing={1}
+                  wrap="nowrap"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Grid item>
+                    <MDTypography variant="h2" fontWeight="bold" color={"dark"}>
+                      Hi! {user ? user.name : ""}
+                    </MDTypography>
+                  </Grid>
+                  <Grid item>
+                    <IconButton
+                      size="medium"
+                      disableRipple
+                      color="inherit"
+                      sx={navbarIconButton}
+                      onClick={() => {
+                        window.localStorage.removeItem("access_token");
+                        window.location.href = "/authentication/sign-in";
+                      }}
+                    >
+                      <Icon>logout</Icon>
+                      <div
+                        style={{
+                          fontSize: "17px",
+                          color: "gray",
+                          marginLeft: "2px",
+                        }}
+                      >
+                        Log Out
+                      </div>
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              </MDBox>
+
+              {children}
+            </Container>
           </Grid>
         </Grid>
       </MDBox>
-      <Footer light />
     </PageLayout>
   );
 }

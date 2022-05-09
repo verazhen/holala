@@ -219,7 +219,7 @@ input[type="file"]::file-selector-button:hover {
 
 .kanban {
   top: 0px !important;
-  height: 500px !important;
+  height: 350px !important;
 }
 
 .transcription-btn:hover {
@@ -277,6 +277,6 @@ input[type="file"]::file-selector-button:hover {
   color: dimgrey !important;
 }
 
-.react-responsive-modal-container{
+.react-responsive-modal-container {
   overflow: hidden;
 }

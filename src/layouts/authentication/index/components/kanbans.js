@@ -134,7 +134,11 @@ function Projects({ setUser }) {
 
   return (
     <Card className="kanban" >
-      <MDBox display="flex" justifyContent="space-between" alignItems="center">
+      <MDBox
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Grid container direction="row" alignItems="center" m={3} wrap="nowrap">
           <Grid item xs={11}>
             <MDTypography variant="h4" gutterBottom>
@@ -225,10 +229,25 @@ function Projects({ setUser }) {
           kanbans.map(({ kanban_id, title, delete_dt }, index) => {
             if (!delete_dt) {
               return (
-                <Grid container direction="row" alignItems="center" m={3} wrap="nowrap">
+                <Grid
+                  container
+                  direction="row"
+                  alignItems="center"
+                  m={3}
+                  wrap="nowrap"
+                >
                   <Grid item xs={10.5} style={style}>
-                    <MDTypography variant="h5" color="secondary"  style={{color:"dimgray"}}>
-                      <Link to={`/project/${kanban_id}/kanban`} style={{color:"dimgray"}}>{title}</Link>
+                    <MDTypography
+                      variant="h5"
+                      color="secondary"
+                      style={{ color: "dimgray" }}
+                    >
+                      <Link
+                        to={`/project/${kanban_id}/kanban`}
+                        style={{ color: "dimgray" }}
+                      >
+                        {title}
+                      </Link>
                     </MDTypography>
                   </Grid>
                   <Grid item>

@@ -23,11 +23,17 @@ function Index() {
         <MDBox>
           <Grid container spacing={1} direction="row">
             <Grid item xs={6}>
-              <Projects setUser={setUser} />
+              <Projects
+                setUser={setUser}
+              />
             </Grid>
             <Grid item xs={6}>
-              <Card className="kanban" style={{borderRadius:"3px"}}>
-                <img src="https://cdn.dribbble.com/users/472667/screenshots/15522562/media/92eb48276be12667fcbec8c5d6105a87.gif" />
+              <Card style={{ borderRadius: "3px" }}>
+                <img
+                  className="kanban"
+                  style={{ borderRadius: "3px" }}
+                  src="https://cdn.dribbble.com/users/472667/screenshots/15522562/media/92eb48276be12667fcbec8c5d6105a87.gif"
+                />
               </Card>
             </Grid>
           </Grid>
