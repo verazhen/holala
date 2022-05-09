@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useContext } from "react";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { API_HOST } from "utils/constants";
@@ -21,8 +21,9 @@ import { useMaterialUIController, setLayout } from "context";
 
 //Peer
 import Peer from "simple-peer";
-import webSocket from "socket.io-client";
 import { SOCKET_HOST } from "utils/constants";
+import { SocketProvider } from "examples/LayoutContainers/DashboardLayout/socket_context";
+import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_context";
 import { getLocalStorage } from "utils/utils";
 import styled from "styled-components";
 const Container2 = styled.div`
@@ -73,7 +74,7 @@ function DashboardLayout({ children }) {
   const [screen, setScreen] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [roomID, setRoomID] = useState(null);
-  const [ws, setWs] = useState(null);
+  const ws = useContext(SocketContext);
   const [peers, setPeers] = useState([]);
   const socketRef = useRef();
   const userVideo = useRef();
@@ -141,11 +142,6 @@ function DashboardLayout({ children }) {
   }
 
   useEffect(() => {
-    setWs(
-      webSocket(`${SOCKET_HOST}`, {
-        transports: ["websocket"],
-      })
-    );
     const kanbanId = getLocalStorage("kanbanId");
     fetchData(`${API_HOST}/task/${kanbanId}`, true).then(({ account }) => {
       setUser(account);
@@ -311,74 +307,76 @@ function DashboardLayout({ children }) {
 
   return (
     <>
-      <Sidenav ws={ws} user={user} />
+      <SocketProvider>
+        <Sidenav ws={ws} user={user} />
 
-      <Box sx={{ "& > :not(style)": { m: 1 } }} style={style}>
-        <Fab
-          color={roomBtnColor}
-          variant="extended"
-          aria-label="add"
-          onClick={changeMeetingState}
-          style={{ width: "200px",height:"60px" }}
+        <Box sx={{ "& > :not(style)": { m: 1 } }} style={style}>
+          <Fab
+            color={roomBtnColor}
+            variant="extended"
+            aria-label="add"
+            onClick={changeMeetingState}
+            style={{ width: "200px", height: "60px" }}
+          >
+            <Grid container direction="column">
+              <Grid item>
+                <h6 style={{ fontSize: "1rem", color: "white" }}>{roomBtn}</h6>
+              </Grid>
+              <Grid item>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    textAlign: "center",
+                    color: "white",
+                  }}
+                >
+                  {roomStatus}
+                </p>
+              </Grid>
+            </Grid>
+          </Fab>
+        </Box>
+        {room ? (
+          <Container2>
+            <StyledVideo muted ref={userVideo} autoPlay playsInline />
+            {peers ? (
+              peers.map((peer) => {
+                if (peer.peer.readable) {
+                  return (
+                    <Video2
+                      key={peer.peerID}
+                      peer={peer.peer}
+                      class="video-peer"
+                    />
+                  );
+                }
+              })
+            ) : (
+              <></>
+            )}
+          </Container2>
+        ) : (
+          <></>
+        )}
+
+        <MDBox
+          sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
+            p: 3,
+            position: "relative",
+
+            [breakpoints.up("xl")]: {
+              marginLeft: miniSidenav ? pxToRem(120) : pxToRem(274),
+              transition: transitions.create(["margin-left", "margin-right"], {
+                easing: transitions.easing.easeInOut,
+                duration: transitions.duration.standard,
+              }),
+            },
+          })}
         >
-          <Grid container direction="column">
-            <Grid item>
-              <h6 style={{ fontSize: "1rem", color: "white" }}>{roomBtn}</h6>
-            </Grid>
-            <Grid item>
-              <p
-                style={{
-                  fontSize: "0.8rem",
-                  textAlign: "center",
-                  color: "white",
-                }}
-              >
-                {roomStatus}
-              </p>
-            </Grid>
-          </Grid>
-        </Fab>
-      </Box>
-      {room ? (
-        <Container2>
-          <StyledVideo muted ref={userVideo} autoPlay playsInline />
-          {peers ? (
-            peers.map((peer) => {
-              if (peer.peer.readable) {
-                return (
-                  <Video2
-                    key={peer.peerID}
-                    peer={peer.peer}
-                    class="video-peer"
-                  />
-                );
-              }
-            })
-          ) : (
-            <></>
-          )}
-        </Container2>
-      ) : (
-        <></>
-      )}
-
-      <MDBox
-        sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
-          p: 3,
-          position: "relative",
-
-          [breakpoints.up("xl")]: {
-            marginLeft: miniSidenav ? pxToRem(120) : pxToRem(274),
-            transition: transitions.create(["margin-left", "margin-right"], {
-              easing: transitions.easing.easeInOut,
-              duration: transitions.duration.standard,
-            }),
-          },
-        })}
-      >
-        <DashboardNavbar />
-        {children}
-      </MDBox>
+          <DashboardNavbar />
+          {children}
+        </MDBox>
+      </SocketProvider>
     </>
   );
 }

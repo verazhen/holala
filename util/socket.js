@@ -38,6 +38,8 @@ module.exports = (server) => {
       });
     });
 
+    //---------------videoroom socket
+
     socket.on("get room", async ({ uid, kanbanId }) => {
       const { roomId, isNewRoom } = await Meeting.createMeeting({
         uid,
@@ -108,6 +110,12 @@ module.exports = (server) => {
         users[roomID] = room;
       }
       socket.broadcast.emit("user left", socket.id);
+    });
+
+    //---------------kanban tasks socket
+    socket.on("task update", ({kanbanId,tasks}) => {
+      console.log(tasks);
+      socket.broadcast.to(kanbanId).emit("task update", tasks);
     });
   });
 };

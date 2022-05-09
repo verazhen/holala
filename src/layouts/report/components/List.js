@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import MDButton from "components/MDButton";
-import { fetchData, fetchSetData,fetchPutData } from "utils/fetch";
+import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { v4 } from "uuid";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Item from "./Item";
@@ -18,7 +18,8 @@ const List = ({
   tags,
   setTags,
   members,
-  user
+  user,
+  ws
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
@@ -29,12 +30,10 @@ const List = ({
     }
     console.log("useEffect Task");
     console.log(tasks);
-    fetchPutData(
-      `${API_HOST}/kanban/${kanbanId}/list/${listId}`,
-      tasks
-    ).then((lists) => (submitTask.current = false));
+    fetchPutData(`${API_HOST}/kanban/${kanbanId}/list/${listId}`, tasks).then(
+      (lists) => (submitTask.current = false)
+    );
   }, [tasks]);
-
 
   function addTask() {
     const title = "Task Untitled";
@@ -45,6 +44,12 @@ const List = ({
     newList[listIndex].tasks = newTasks;
 
     setLists(newList);
+
+    const tasks = {
+      kanbanId,
+      tasks: newList,
+    };
+    ws.emit("task update", tasks);
     fetchSetData(
       `${API_HOST}/kanban/${kanbanId}/list/${listId}/addTest`,
       newTask
@@ -94,7 +99,8 @@ const List = ({
                     tags={tags}
                     setTags={setTags}
                     members={members}
-                     user={user}
+                    user={user}
+                    ws={ws}
                   />
                 );
               } else {

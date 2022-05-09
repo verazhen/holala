@@ -16,13 +16,14 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import List from "./components/List";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { addLocalStorage, getLocalStorage } from "utils/utils";
 import { API_HOST } from "utils/constants";
+import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_context";
 
-function Tables() {
+function Tables(props) {
   const [lists, setLists] = useState([]);
   const [tags, setTags] = useState([]);
   const [user, setUser] = useState({});
@@ -34,6 +35,7 @@ function Tables() {
   const openMenu = ({ currentTarget }) => setMenu(currentTarget);
   const closeMenu = () => setMenu(null);
   const listsRef = useRef([]);
+  const ws = useContext(SocketContext);
 
   function addList() {
     submittingStatus.current = true;
@@ -42,7 +44,14 @@ function Tables() {
       tasks: [],
     };
     setLists(function (prevData) {
-      return [...prevData, newList];
+      const newLists = [...prevData, newList];
+
+      const tasks = {
+        kanbanId,
+        tasks: newLists,
+      };
+      ws.emit("task update", tasks);
+      return newLists;
     });
   }
 
@@ -53,17 +62,27 @@ function Tables() {
     const listTitle = lists[delItem].title;
     newLists[delItem].delete_dt = 1;
     setLists(newLists);
+    const tasks = {
+      kanbanId,
+      tasks: newLists,
+    };
+    ws.emit("task update", tasks);
     //put list api
-    fetchPutData(
-      `${API_HOST}/kanban/${kanbanId}/list/${listId}/detail`,
-      { delete_dt: 1, title: listTitle }
-    );
+    fetchPutData(`${API_HOST}/kanban/${kanbanId}/list/${listId}/detail`, {
+      delete_dt: 1,
+      title: listTitle,
+    });
   }
 
   function editList(e, index) {
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[index].title = e.target.value;
     setLists(newLists);
+    const tasks = {
+      kanbanId,
+      tasks: newLists,
+    };
+    ws.emit("task update", tasks);
   }
 
   const onDragEnd = (result, columns, setColumns) => {
@@ -97,6 +116,11 @@ function Tables() {
       newList[destination.droppableId].tasks = destItems;
       submitTask.current = true;
       setLists(newList);
+      const tasks = {
+        kanbanId,
+        tasks: newList,
+      };
+      ws.emit("task update", tasks);
     } else {
       const list = lists[source.droppableId];
       const copiedItems = [...list.tasks];
@@ -113,6 +137,11 @@ function Tables() {
       newList[source.droppableId].tasks = copiedItems;
       submitTask.current = true;
       setLists(newList);
+      const tasks = {
+        kanbanId,
+        tasks: newList,
+      };
+      ws.emit("task update", tasks);
     }
   };
 
@@ -142,6 +171,9 @@ function Tables() {
         setTags(newTags);
       }
     );
+    ws.on("task update", (tasks) => {
+      setLists(tasks);
+    });
   }, []);
 
   //   post data
@@ -150,11 +182,9 @@ function Tables() {
     if (!submittingStatus.current) {
       return;
     }
-    fetchSetData(`${API_HOST}/task/${kanbanId}`, lists).then(
-      (lists) => {
-        submittingStatus.current = false;
-      }
-    );
+    fetchSetData(`${API_HOST}/task/${kanbanId}`, lists).then((lists) => {
+      submittingStatus.current = false;
+    });
   }, [lists]);
 
   const style = {
@@ -165,13 +195,7 @@ function Tables() {
   return (
     <DashboardLayout>
       <MDBox pt={6} pb={3}>
-        <Grid
-          container
-          spacing={6}
-          wrap="nowrap"
-          style={style}
-          className="kanban-layout"
-        >
+        <Grid container spacing={6} wrap="nowrap" style={style}>
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >
@@ -260,6 +284,7 @@ function Tables() {
                           submitTask={submitTask}
                           members={members}
                           user={user}
+                          ws={ws}
                         />
                       </MDBox>
                     </Card>

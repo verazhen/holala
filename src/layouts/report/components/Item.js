@@ -30,6 +30,7 @@ const Item = ({
   setTags,
   members,
   user,
+  ws
 }) => {
   const draggableId = `${taskOrder}-${taskName}`;
   const [open, setOpen] = useState(false);
@@ -39,6 +40,11 @@ const Item = ({
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[listIndex].tasks[index].delete_dt = 1;
     setLists(newLists);
+    const tasks = {
+      kanbanId,
+      tasks: newLists,
+    };
+    ws.emit("task update", tasks);
 
     const data = { delete_dt: 1, title: task.title };
     fetchPutData(
