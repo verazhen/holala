@@ -586,25 +586,6 @@ function BasicModal({
         </Grid>
         <Grid item>
           <label className="modal-label">Comment</label>
-          <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
-            <Grid item xs={9.3}>
-              <input
-                type="text"
-                value={myComment}
-                className="leave-comment"
-                onChange={(e) => setMyComment(e.target.value)}
-              ></input>
-            </Grid>
-            <Grid item>
-              <MDButton
-                variant="contained"
-                color="secondary"
-                onClick={leaveComment}
-              >
-                Leave Comment
-              </MDButton>
-            </Grid>
-          </Grid>
           {comments.map((comment) => {
             return (
               <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
@@ -633,6 +614,25 @@ function BasicModal({
               </Grid>
             );
           })}
+          <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
+            <Grid item xs={9.3}>
+              <input
+                type="text"
+                value={myComment}
+                className="leave-comment"
+                onChange={(e) => setMyComment(e.target.value)}
+              ></input>
+            </Grid>
+            <Grid item>
+              <MDButton
+                variant="contained"
+                color="secondary"
+                onClick={leaveComment}
+              >
+                Leave Comment
+              </MDButton>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </Modal>

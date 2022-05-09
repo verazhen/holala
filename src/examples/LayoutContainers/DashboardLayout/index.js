@@ -54,7 +54,6 @@ const Video2 = ({ peer }) => {
   return <StyledVideo playsInline autoPlay ref={ref} />;
 };
 
-
 const style = {
   position: "fixed",
   bottom: "40px",
@@ -293,7 +292,6 @@ function DashboardLayout({ children }) {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-
   const style = {
     position: "fixed",
     bottom: "40px",
@@ -380,6 +378,7 @@ function DashboardLayout({ children }) {
           },
         })}
       >
+        <DashboardNavbar />
         {children}
       </MDBox>
     </>

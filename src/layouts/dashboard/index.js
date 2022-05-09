@@ -10,7 +10,6 @@ import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
@@ -159,7 +158,6 @@ function Dashboard() {
 
   return (
     <DashboardLayout>
-      <DashboardNavbar />
       <MDBox py={3}>
         <MDBox mb={3}>
           <Grid container spacing={3} wrap="nowrap" direction="row">

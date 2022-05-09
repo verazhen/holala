@@ -120,8 +120,8 @@
   background-color: aliceblue;
 }
 .basicModal {
-  top: -280px;
-  height: 85vh;
+  top: -150px;
+  height: 80vh;
 }
 
 .modal-label {
@@ -200,14 +200,8 @@ input[type="file"]::file-selector-button:hover {
 
 .css-1ioqvny-MuiPaper-root-MuiDrawer-paper {
   height: 100% !important;
-  /*width: 300px !important;*/
   border-radius: 0 !important;
   margin: 0 !important;
-}
-
-.css-aim41u {
-  /*width: 900px !important;*/
-  /*margin-left: 290px !important;*/
 }
 
 .myMsg {
@@ -275,7 +269,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .css-135h7am {
-  background-color: white;
+  background-color: white !important;
   box-shadow: 2px 2px 8px 2px rgba(0, 0, 0, 0.1) !important;
 }
 

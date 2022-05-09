@@ -242,7 +242,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
     >
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <Grid container lg={8}>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item >
             <MDBox
               color="inherit"
               mb={{ xs: 1, md: 0 }}
@@ -251,7 +251,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
               <MDTypography variant="h3">{kanban}</MDTypography>
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid item>
             <MDBox
               color="inherit"
               display={{ xs: "none", lg: "flex" }}
@@ -259,19 +259,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
               p={0}
             >
               <DefaultNavbarLink
-                icon="donut_large"
+                icon="task_alt"
                 name="KANBAN"
                 route={`/project/${kanbanId}/kanban`}
                 light={light}
               />
               <DefaultNavbarLink
-                icon="person"
+                icon="groups"
                 name="MEETING MINUTE"
                 route={`/project/${kanbanId}/meeting-minute`}
                 light={light}
               />
               <DefaultNavbarLink
-                icon="account_circle"
+                icon="assessment"
                 name="REPORT"
                 route={`/project/${kanbanId}/report`}
                 light={light}
