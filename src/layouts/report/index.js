@@ -170,7 +170,7 @@ function Tables() {
           spacing={6}
           wrap="nowrap"
           style={style}
-          className="kanban"
+          className="kanban-layout"
         >
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
