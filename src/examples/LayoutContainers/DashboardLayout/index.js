@@ -15,7 +15,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Box from "@mui/material/Box";
 import Fab from "@mui/material/Fab";
 import MDTypography from "components/MDTypography";
-
+import Grid from "@mui/material/Grid";
 // Material Dashboard 2 React context
 import { useMaterialUIController, setLayout } from "context";
 
@@ -67,6 +67,7 @@ function DashboardLayout({ children }) {
   const { pathname } = useLocation();
   const [roomBtn, setRoomBtn] = useState("START MEETING");
   const [roomBtnColor, setRoomBtnColor] = useState("primary");
+  const [roomStatus, setRoomStatus] = useState(null);
   const [room, setRoom] = useState(false);
   const [stream, setStream] = useState(true);
   const [screen, setScreen] = useState(false);
@@ -157,6 +158,7 @@ function DashboardLayout({ children }) {
       //listen while meeting is started
       ws.on("get room", (data) => {
         console.log(`a meeting is started: `, data.roomId);
+        setRoomStatus("(Meeting is created)");
         setRoomID(data.roomId);
         if (data.isNewRoom) {
           startRecording();
@@ -164,7 +166,7 @@ function DashboardLayout({ children }) {
       });
 
       ws.on("leave room", ({ message, result }) => {
-        console.log(message);
+        setRoomStatus("");
         if (result) {
           recordUrlRef.current = result;
           stopRecording();
@@ -219,7 +221,7 @@ function DashboardLayout({ children }) {
       ws.emit("join room", kanbanId);
       console.log(`you've joined a meeting room`);
       setRoomBtn("LEAVE THE ROOM");
-      setRoomBtnColor("success");
+      setRoomBtnColor("dark");
       ws.on("all users", (users) => {
         const peers = [];
         users.forEach((userID) => {
@@ -286,7 +288,7 @@ function DashboardLayout({ children }) {
       setRoom(false);
     } else {
       setRoom(true);
-      setRoomBtn("Connecting...")
+      setRoomBtn("Connecting...");
     }
   }
 
@@ -317,9 +319,24 @@ function DashboardLayout({ children }) {
           variant="extended"
           aria-label="add"
           onClick={changeMeetingState}
-          style={{ width: "200px" }}
+          style={{ width: "200px",height:"60px" }}
         >
-          <h6 style={{ fontSize: "1rem", color: "white" }}>{roomBtn}</h6>
+          <Grid container direction="column">
+            <Grid item>
+              <h6 style={{ fontSize: "1rem", color: "white" }}>{roomBtn}</h6>
+            </Grid>
+            <Grid item>
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                {roomStatus}
+              </p>
+            </Grid>
+          </Grid>
         </Fab>
       </Box>
       {room ? (

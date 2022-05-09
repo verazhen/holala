@@ -57,8 +57,9 @@ module.exports = (server) => {
       } else {
         message = `${uid} has ended the room`;
       }
+      console.log(message, result);
 
-      socket.emit("leave room", { message, result });
+      io.to(kanbanId).emit("leave room", { message, result });
     });
 
     socket.on("join room", (roomID) => {
