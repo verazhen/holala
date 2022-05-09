@@ -12,22 +12,22 @@ import Footer from "examples/Footer";
 
 // Dashboard components
 import Projects from "layouts/authentication/index/components/kanbans";
-// import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+
 
 function Index() {
   const [user, setUser] = useState({ name: "" });
 
   return (
-    <IndexLayout user={user}>
+    <IndexLayout user={user} >
       <MDBox py={3}>
         <MDBox>
-          <Grid container spacing={1} direction="row">
-            <Grid item xs={6}>
+          <Grid container spacing={1} direction="row" wrap="nowrap">
+            <Grid item xs={8} mr="auto">
               <Projects
                 setUser={setUser}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item >
               <Card style={{ borderRadius: "3px" }}>
                 <img
                   className="kanban"

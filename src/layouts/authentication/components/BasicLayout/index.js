@@ -19,15 +19,6 @@ import Footer from "layouts/authentication/components/Footer";
 function BasicLayout({ image, children, notification }) {
   return (
     <PageLayout>
-      {/*       <DefaultNavbar */}
-      {/*         action={{ */}
-      {/*           type: "external", */}
-      {/*           route: "https://creative-tim.com/product/material-dashboard-react", */}
-      {/*           label: "free download", */}
-      {/*           color: "dark", */}
-      {/*         }} */}
-      {/*       /> */}
-
       <MDBox
         position="absolute"
         width="100%"
@@ -50,7 +41,7 @@ function BasicLayout({ image, children, notification }) {
       <MDBox position="absolute" width="100%" minHeight="10vh">
         <Stack
           sx={{ width: "50%" }}
-          mt={25}
+          mt={10}
           mx="auto"
           spacing={2}
         >

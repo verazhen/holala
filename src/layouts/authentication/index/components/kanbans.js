@@ -133,7 +133,7 @@ function Projects({ setUser }) {
   );
 
   return (
-    <Card className="kanban" >
+    <Card className="kanban">
       <MDBox
         display="flex"
         justifyContent="space-between"

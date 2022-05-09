@@ -11,9 +11,9 @@ import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
 import IconButton from "@mui/material/IconButton";
 import { navbarIconButton } from "examples/Navbars/DashboardNavbar/styles";
+import bgImage from "assets/images/group.png";
 
 import PageLayout from "examples/LayoutContainers/PageLayout";
-
 // Authentication pages components
 import Footer from "layouts/authentication/components/Footer";
 
@@ -40,7 +40,8 @@ function IndexLayout({ image, children, user }) {
           backgroundRepeat: "no-repeat",
         }}
       />
-      <MDBox px={1} width="100%" height="100vh" m={0}>
+      <img src={bgImage} style={{ width: "100vw", top: "-2800px" }} />
+      <MDBox px={1} width="85%" height="75vh" m="auto">
         <Grid
           container
           spacing={1}
