@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import MDButton from "components/MDButton";
-import DataTable from "examples/Tables/KanbanList";
-import projectsTableData from "layouts/report/data/projectsTableData";
 import { fetchData, fetchSetData,fetchPutData } from "utils/fetch";
 import { v4 } from "uuid";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";

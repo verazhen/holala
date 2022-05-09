@@ -13,15 +13,9 @@ import MDButton from "components/MDButton";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 
-// import Footer from "examples/Footer";
-import DataTable from "examples/Tables/KanbanList";
-
 import List from "./components/List";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
-// Data
-// import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/report/data/projectsTableData";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";

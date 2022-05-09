@@ -66,6 +66,7 @@ function DashboardLayout({ children }) {
   const { miniSidenav } = controller;
   const { pathname } = useLocation();
   const [roomBtn, setRoomBtn] = useState("START MEETING");
+  const [roomBtnColor, setRoomBtnColor] = useState("primary");
   const [room, setRoom] = useState(false);
   const [stream, setStream] = useState(true);
   const [screen, setScreen] = useState(false);
@@ -97,9 +98,6 @@ function DashboardLayout({ children }) {
           },
           body: blob,
         });
-
-        console.log(blob);
-        //         ws.emit("leave room", { uid, kanbanId, url: blob });
       },
     });
 
@@ -149,17 +147,10 @@ function DashboardLayout({ children }) {
     );
     const kanbanId = getLocalStorage("kanbanId");
     fetchData(`${API_HOST}/task/${kanbanId}`, true).then(({ account }) => {
-      console.log(account);
       setUser(account);
       localStorage.setItem("uid", account.id);
     });
   }, []);
-
-  useEffect(() => {
-    if (roomID) {
-      console.log(`You've joined in meeting room: ${roomID}`);
-    }
-  }, [roomID]);
 
   useEffect(() => {
     if (ws) {
@@ -167,7 +158,6 @@ function DashboardLayout({ children }) {
       ws.on("get room", (data) => {
         console.log(`a meeting is started: `, data.roomId);
         setRoomID(data.roomId);
-        console.log(data);
         if (data.isNewRoom) {
           startRecording();
         }
@@ -184,14 +174,7 @@ function DashboardLayout({ children }) {
   }, [ws]);
 
   useEffect(() => {
-    console.log("peers");
-    console.log(peers);
-  }, [peers]);
-
-  useEffect(() => {
     if (room) {
-      console.log("創建房間");
-      setRoomBtn("LEAVE THE ROOM");
       const uid = getLocalStorage("uid");
       roomRef.current = true;
       ws.emit("get room", { uid, kanbanId });
@@ -205,8 +188,8 @@ function DashboardLayout({ children }) {
       if (!roomRef.current) {
         return;
       }
-      console.log("停止會議");
       setRoomBtn("START MEETING");
+      setRoomBtnColor("primary");
       //if the room is created by the user stopRecording get the presigned url and
       const uid = getLocalStorage("uid");
       ws.emit("leave room", { uid, kanbanId });
@@ -231,12 +214,12 @@ function DashboardLayout({ children }) {
   }, [room]);
 
   useEffect(() => {
-    console.log(localStream);
     if (localStream) {
-      console.log("開始串流");
-      console.log(localStream);
       userVideo.current.srcObject = localStream;
       ws.emit("join room", kanbanId);
+      console.log(`you've joined a meeting room`);
+      setRoomBtn("LEAVE THE ROOM");
+      setRoomBtnColor("success");
       ws.on("all users", (users) => {
         const peers = [];
         users.forEach((userID) => {
@@ -279,7 +262,6 @@ function DashboardLayout({ children }) {
           peerObj.peer.destroy();
         }
         const peers = peersRef.current.filter((p) => p.peerID !== id);
-        console.log(peers);
         peersRef.current = peers;
         setPeers(peers);
       });
@@ -304,6 +286,7 @@ function DashboardLayout({ children }) {
       setRoom(false);
     } else {
       setRoom(true);
+      setRoomBtn("Connecting...")
     }
   }
 
@@ -330,15 +313,13 @@ function DashboardLayout({ children }) {
 
       <Box sx={{ "& > :not(style)": { m: 1 } }} style={style}>
         <Fab
-          color="primary"
+          color={roomBtnColor}
           variant="extended"
           aria-label="add"
           onClick={changeMeetingState}
           style={{ width: "200px" }}
         >
-          <MDTypography variant="h6" color="white">
-            {roomBtn}
-          </MDTypography>
+          <h6 style={{ fontSize: "1rem", color: "white" }}>{roomBtn}</h6>
         </Fab>
       </Box>
       {room ? (

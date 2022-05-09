@@ -9,7 +9,7 @@ async function fetchData(url, needUser) {
   });
 
   const response = await res.json();
-  if (response.status_code === 403/*  || response.status_code === 401 */) {
+  if (response.status_code === 403 || response.status_code === 401) {
     window.location.href = "/authentication/sign-in";
     return;
   }
