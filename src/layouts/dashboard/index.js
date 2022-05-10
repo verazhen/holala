@@ -48,19 +48,12 @@ function Dashboard() {
   const [range, setRange] = useState(7);
   const [interval, setInterval] = useState(1);
   const { kanbanId } = useParams();
-  const [intervalTags, setIntervalTags] = useState([
-    "d1",
-    "d2",
-    "d3",
-    "d4",
-    "d5",
-  ]);
-  const [finishedTaskSet, setFinishedTaskSet] = useState([1, 2, 3, 5, 5]);
-  const [remainingTaskSet, setRemainingTaskSet] = useState([5, 5, 5, 3, 2, 1]);
-  const [idealTaskSet, setIdealTaskSet] = useState([5, 5, 4, 3, 2, 1]);
+  const [intervalTags, setIntervalTags] = useState([]);
+  const [finishedTaskSet, setFinishedTaskSet] = useState([]);
+  const [remainingTaskSet, setRemainingTaskSet] = useState([]);
+  const [idealTaskSet, setIdealTaskSet] = useState([]);
   const [meetings, setMeetings] = useState(null);
   const [members, setMembers] = useState({});
-
 
   useEffect(() => {
     fetchData(
@@ -291,7 +284,7 @@ function Dashboard() {
               <MDBox mb={3}>
                 <MixedChart
                   icon={{ color: "info", component: "leaderboard" }}
-                  title="Members Process"
+                  title="Members' Loading"
                   description="Tasks finished by members"
                   chart={{
                     labels: members.name,

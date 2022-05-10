@@ -29,6 +29,10 @@ const getTasksAmount = async (kanbanId, status, range) => {
       return accu;
     }, []);
 
+    if (listIds.length <= 0) {
+      return { taskAmount: 0, taskAmountCompared: 0 };
+    }
+
     let tasks;
     let tasksCompared;
     const timestamp = Date.now();
@@ -89,11 +93,11 @@ const getMeetings = async (kanbanId, range) => {
 
 const getTasksChart = async (kanbanId, range, interval) => {
   try {
-    const [lists] = await pool.query(
+    let [lists] = await pool.query(
       `SELECT id FROM lists WHERE kanban_id = ?`,
       [kanbanId]
     );
-    const listIds = lists.reduce((accu, curr) => {
+    lists = lists.reduce((accu, curr) => {
       accu.push(curr.id);
       return accu;
     }, []);
@@ -102,9 +106,18 @@ const getTasksChart = async (kanbanId, range, interval) => {
     const rangeEnd = new Date(timestamp);
     const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
 
+    if (lists.length <= 0) {
+      return {
+        intervalTags: [],
+        finishedTaskSet: [],
+        remainingTaskSet: [],
+        idealTaskSet: [],
+      };
+    }
+
     const [tasks] = await pool.query(
       `SELECT checked,create_dt FROM tasks WHERE list_id in (?)`,
-      [listIds]
+      [lists]
     );
 
     const intervalTags = [];
@@ -186,6 +199,15 @@ const getLoading = async (kanbanId, range) => {
       `SELECT uid FROM kanban_permission WHERE kanban_id = ?`,
       [kanbanId]
     );
+
+    let [lists] = await pool.query(`SELECT id FROM lists WHERE kanban_id = ?`, [
+      kanbanId,
+    ]);
+
+    lists = lists.reduce((accu, curr) => {
+      accu.push(curr.id);
+      return accu;
+    }, []);
     const res = {};
     res.name = [];
     res.finished = [];
@@ -198,17 +220,19 @@ const getLoading = async (kanbanId, range) => {
       );
       res.name.push(users.name);
 
-      const [tasks] = await pool.query(
-        "SELECT id FROM tasks WHERE assignee = ? AND checked > ?",
-        [members[i].uid, rangeStart]
-      );
-      res.finished.push(tasks.length);
+      if (lists.length > 0) {
+        const [tasks] = await pool.query(
+          "SELECT id FROM tasks WHERE assignee = ? AND checked > ? AND list_id in (?)",
+          [members[i].uid, rangeStart, lists]
+        );
+        res.finished.push(tasks.length);
 
-      const [tasks2] = await pool.query(
-        "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL",
-        [members[i].uid, rangeStart]
-      );
-      res.unfinished.push(tasks2.length);
+        const [tasks2] = await pool.query(
+          "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL AND list_id IN (?)",
+          [members[i].uid, rangeStart, lists]
+        );
+        res.unfinished.push(tasks2.length);
+      }
     }
 
     return res;
