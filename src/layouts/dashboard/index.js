@@ -58,6 +58,7 @@ function Dashboard() {
   const [finishedTaskSet, setFinishedTaskSet] = useState([1, 2, 3, 5, 5]);
   const [remainingTaskSet, setRemainingTaskSet] = useState([5, 5, 5, 3, 2, 1]);
   const [idealTaskSet, setIdealTaskSet] = useState([5, 5, 4, 3, 2, 1]);
+  const [meetings, setMeetings] = useState(null);
 
   useEffect(() => {
     fetchData(
@@ -141,6 +142,13 @@ function Dashboard() {
       setRemainingTaskSet(data.remainingTaskSet);
       setIdealTaskSet(data.idealTaskSet);
     });
+
+    fetchData(
+      `${API_HOST}/kanban/${kanbanId}/report/meetings?range=${range}`,
+      true
+    ).then(({ data }) => {
+      setMeetings(data);
+    });
   }, [range, interval]);
 
   const handleChange = (event) => {
@@ -170,12 +178,11 @@ function Dashboard() {
                     Range:{" "}
                   </MDTypography>
                 </Grid>
-                <Grid item xs={10.5} >
+                <Grid item xs={10.5}>
                   <Form.Select
                     style={inputStyle}
                     className="no-outline"
                     onChange={(e) => setRange(e.target.value)}
-
                   >
                     <option value={7}>Last 7 Days</option>
                     <option value={30}>Last 30 Days</option>
@@ -194,7 +201,7 @@ function Dashboard() {
                     Interval:{" "}
                   </MDTypography>
                 </Grid>
-                <Grid item  xs={10.5}>
+                <Grid item xs={10.5}>
                   <Form.Select
                     style={inputStyle}
                     className="no-outline"
@@ -215,7 +222,7 @@ function Dashboard() {
               <ComplexStatisticsCard
                 color="dark"
                 icon="assignment"
-                title="Total Tasks Accumulated"
+                title="Total Tasks (Accu)"
                 count={totalTasks.taskAmount}
                 percentage={{
                   color: "success",
@@ -232,7 +239,7 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 icon="check_circle"
-                title="Finished Tasks by Range"
+                title="Finished Tasks"
                 count={finishedTasks.taskAmount}
                 percentage={{
                   color: "success",
@@ -250,7 +257,7 @@ function Dashboard() {
               <ComplexStatisticsCard
                 color="success"
                 icon="check_circle_outline"
-                title="Unfinished Tasks by Range"
+                title="Unfinished Tasks"
                 count={unfinishedTasks.taskAmount}
                 percentage={{
                   color: "success",
@@ -269,11 +276,11 @@ function Dashboard() {
                 color="primary"
                 icon="groups"
                 title="Meetings"
-                count="+91"
+                count={meetings}
                 percentage={{
                   color: "success",
                   amount: "",
-                  label: "Just updated",
+                  label: `last ${range} days`,
                 }}
               />
             </MDBox>
