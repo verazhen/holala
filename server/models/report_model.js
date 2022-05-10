@@ -176,8 +176,51 @@ const getTasksChart = async (kanbanId, range, interval) => {
   }
 };
 
+const getLoading = async (kanbanId, range) => {
+  try {
+    const timestamp = Date.now();
+    const rangeEnd = new Date(timestamp);
+    const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
+
+    const [members] = await pool.query(
+      `SELECT uid FROM kanban_permission WHERE kanban_id = ?`,
+      [kanbanId]
+    );
+    const res = {};
+    res.name = [];
+    res.finished = [];
+    res.unfinished = [];
+
+    for (const i in members) {
+      const [[users]] = await pool.query(
+        "SELECT name FROM users WHERE id = ?",
+        [members[i].uid]
+      );
+      res.name.push(users.name);
+
+      const [tasks] = await pool.query(
+        "SELECT id FROM tasks WHERE assignee = ? AND checked > ?",
+        [members[i].uid, rangeStart]
+      );
+      res.finished.push(tasks.length);
+
+      const [tasks2] = await pool.query(
+        "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL",
+        [members[i].uid, rangeStart]
+      );
+      res.unfinished.push(tasks2.length);
+    }
+
+    return res;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 module.exports = {
   getTasksAmount,
   getTasksChart,
   getMeetings,
+  getLoading,
 };

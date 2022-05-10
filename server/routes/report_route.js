@@ -5,7 +5,8 @@ const { wrapAsync, authentication } = require("../../util/util");
 const {
   getTasksAmount,
   getTasksChart,
-  getMeetings
+  getMeetings,
+  getLoading
 } = require("../controllers/report_controller");
 
 router
@@ -19,5 +20,9 @@ router
 router
   .route("/kanban/:kanbanId/report/meetings")
   .get(authentication(), wrapAsync(getMeetings));
+
+router
+  .route("/kanban/:kanbanId/report/loading")
+  .get(authentication(), wrapAsync(getLoading));
 
 module.exports = router;

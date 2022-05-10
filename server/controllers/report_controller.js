@@ -48,8 +48,23 @@ const getTasksChart = async (req, res) => {
   }
 };
 
+
+const getLoading = async (req, res) => {
+  try {
+    const { kanbanId } = req.params;
+    let { range } = req.query;
+    if (!range) range = 7;
+    const response = await Report.getLoading(kanbanId, range);
+    return res.json({ data: response });
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
+};
+
 module.exports = {
   getTasksAmount,
   getTasksChart,
-  getMeetings
+  getMeetings,
+  getLoading
 };
