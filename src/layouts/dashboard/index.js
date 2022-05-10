@@ -102,7 +102,6 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    console.log(range);
     fetchData(
       `${API_HOST}/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
       true
@@ -161,37 +160,52 @@ function Dashboard() {
       <MDBox py={3}>
         <MDBox mb={3}>
           <Grid container spacing={3} wrap="nowrap" direction="row">
-            <Grid item alignSelf="center">
-              <MDTypography variant="h6" style={{ verticalAlign: "middle" }}>
-                Range:{" "}
-              </MDTypography>
+            <Grid item xs={6}>
+              <Grid container wrap="nowrap" direction="row">
+                <Grid item alignSelf="center" mr="auto">
+                  <MDTypography
+                    variant="h6"
+                    style={{ verticalAlign: "middle" }}
+                  >
+                    Range:{" "}
+                  </MDTypography>
+                </Grid>
+                <Grid item xs={10.5} >
+                  <Form.Select
+                    style={inputStyle}
+                    className="no-outline"
+                    onChange={(e) => setRange(e.target.value)}
+
+                  >
+                    <option value={7}>Last 7 Days</option>
+                    <option value={30}>Last 30 Days</option>
+                    <option value={365}>Last Year</option>
+                  </Form.Select>
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item xs={5}>
-              <Form.Select
-                style={inputStyle}
-                className="no-outline"
-                onChange={(e) => setRange(e.target.value)}
-              >
-                <option value={7}>Last 7 Days</option>
-                <option value={30}>Last 30 Days</option>
-                <option value={365}>Last Year</option>
-              </Form.Select>
-            </Grid>
-            <Grid item alignSelf="center">
-              <MDTypography variant="h6" style={{ verticalAlign: "middle" }}>
-                Interval:{" "}
-              </MDTypography>
-            </Grid>
-            <Grid item xs={5}>
-              <Form.Select
-                style={inputStyle}
-                className="no-outline"
-                onChange={(e) => setInterval(e.target.value)}
-              >
-                <option value={1}>Daily</option>
-                <option value={7}>Weekly</option>
-                <option value={30}>Monthly</option>
-              </Form.Select>
+            <Grid item xs={6}>
+              <Grid container wrap="nowrap" direction="row">
+                <Grid item alignSelf="center" mr="auto">
+                  <MDTypography
+                    variant="h6"
+                    style={{ verticalAlign: "middle" }}
+                  >
+                    Interval:{" "}
+                  </MDTypography>
+                </Grid>
+                <Grid item  xs={10.5}>
+                  <Form.Select
+                    style={inputStyle}
+                    className="no-outline"
+                    onChange={(e) => setInterval(e.target.value)}
+                  >
+                    <option value={1}>Daily</option>
+                    <option value={7}>Weekly</option>
+                    <option value={30}>Monthly</option>
+                  </Form.Select>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </MDBox>
