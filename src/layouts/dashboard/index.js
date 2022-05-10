@@ -59,48 +59,8 @@ function Dashboard() {
   const [remainingTaskSet, setRemainingTaskSet] = useState([5, 5, 5, 3, 2, 1]);
   const [idealTaskSet, setIdealTaskSet] = useState([5, 5, 4, 3, 2, 1]);
   const [meetings, setMeetings] = useState(null);
+  const [members, setMembers] = useState({});
 
-  useEffect(() => {
-    fetchData(
-      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/all?range=${range}`,
-      true
-    ).then(({ data }) => {
-      const newTask = JSON.parse(JSON.stringify(totalTasks));
-      newTask.taskAmount = data.taskAmount;
-      newTask.taskAmountCompared = data.taskAmountCompared;
-      setTotalTasks(newTask);
-    });
-
-    fetchData(
-      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/finishedByRange?range=${range}`,
-      true
-    ).then(({ data }) => {
-      const newTask = JSON.parse(JSON.stringify(finishedTasks));
-      newTask.taskAmount = data.taskAmount;
-      newTask.taskAmountCompared = data.taskAmountCompared;
-      setFinishedTasks(newTask);
-    });
-
-    fetchData(
-      `${API_HOST}/kanban/${kanbanId}/report/taskAmount/unfinishedByRange?range=${range}`,
-      true
-    ).then(({ data }) => {
-      const newTask = JSON.parse(JSON.stringify(unfinishedTasks));
-      newTask.taskAmount = data.taskAmount;
-      newTask.taskAmountCompared = data.taskAmountCompared;
-      setUnfinishedTasks(newTask);
-    });
-
-    fetchData(
-      `${API_HOST}/kanban/${kanbanId}/report/taskChart?range=${range}&interval=${interval}`,
-      true
-    ).then(({ data }) => {
-      setIntervalTags(data.intervalTags);
-      setFinishedTaskSet(data.finishedTaskSet);
-      setRemainingTaskSet(data.remainingTaskSet);
-      setIdealTaskSet(data.idealTaskSet);
-    });
-  }, []);
 
   useEffect(() => {
     fetchData(
@@ -148,6 +108,13 @@ function Dashboard() {
       true
     ).then(({ data }) => {
       setMeetings(data);
+    });
+
+    fetchData(
+      `${API_HOST}/kanban/${kanbanId}/report/loading?range=${range}`,
+      true
+    ).then(({ data }) => {
+      setMembers(data);
     });
   }, [range, interval]);
 
@@ -220,7 +187,7 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                color="dark"
+                color="secondary"
                 icon="assignment"
                 title="Total Tasks (Accu)"
                 count={totalTasks.taskAmount}
@@ -255,7 +222,7 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                color="success"
+                color="dark"
                 icon="check_circle_outline"
                 title="Unfinished Tasks"
                 count={unfinishedTasks.taskAmount}
@@ -300,13 +267,13 @@ function Dashboard() {
                       {
                         chartType: "bar",
                         label: "Finished Tasks",
-                        color: "black",
+                        color: "secondary",
                         data: finishedTaskSet,
                       },
                       {
                         chartType: "gradient-line",
                         label: "Remaining Tasks",
-                        color: "secondary",
+                        color: "black",
                         data: remainingTaskSet,
                       },
                       {
@@ -324,28 +291,22 @@ function Dashboard() {
               <MDBox mb={3}>
                 <MixedChart
                   icon={{ color: "info", component: "leaderboard" }}
-                  title="Tasks Status"
-                  description="Tasks finished/unfinished by members"
+                  title="Members Process"
+                  description="Tasks finished by members"
                   chart={{
-                    labels: [
-                      "Member1",
-                      "Member2",
-                      "Member3",
-                      "Member4",
-                      "Member5",
-                    ],
+                    labels: members.name,
                     datasets: [
                       {
                         chartType: "bar",
                         label: "Finished Tasks",
-                        color: "primary",
-                        data: [60, 30, 300, 220, 500],
+                        color: "secondary",
+                        data: members.finished,
                       },
                       {
                         chartType: "thin-bar",
                         label: "unFinished Tasks",
-                        color: "primary",
-                        data: [60, 30, 300, 220, 500],
+                        color: "light",
+                        data: members.unfinished,
                       },
                     ],
                   }}

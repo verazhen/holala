@@ -75,8 +75,8 @@ const colors = {
   },
 
   light: {
-    main: "#f0f2f5",
-    focus: "#f0f2f5",
+    main: "#ced4da",
+    focus: "#ced4da",
   },
 
   dark: {
@@ -133,8 +133,8 @@ const colors = {
     },
 
     dark: {
-      main: "#42424a",
-      state: "#191919",
+      main: "#adb5bd",
+      state: "#adb5bd",
     },
   },
 
