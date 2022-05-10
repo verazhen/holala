@@ -33,7 +33,9 @@ const getTasksAmount = async (kanbanId, status, range) => {
     let tasksCompared;
     const timestamp = Date.now();
     const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
-    const rangeStartCompared = new Date(timestamp - 1000 * 60 * 60 * 24 * (range*2 - 1));
+    const rangeStartCompared = new Date(
+      timestamp - 1000 * 60 * 60 * 24 * (range * 2 - 1)
+    );
 
     const tasksSql = {
       all: `SELECT count(*) FROM tasks WHERE list_id in (?) `,
@@ -47,7 +49,6 @@ const getTasksAmount = async (kanbanId, status, range) => {
       unfinishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND (checked IS NULL OR checked >= ?)`,
     };
 
-
     [[tasks]] = await pool.query(tasksSql[status], [listIds, rangeStart]);
 
     [[tasksCompared]] = await pool.query(tasksComparedSql[status], [
@@ -60,6 +61,26 @@ const getTasksAmount = async (kanbanId, status, range) => {
     const taskAmountCompared = tasksCompared["count(*)"];
 
     return { taskAmount, taskAmountCompared };
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+const getMeetings = async (kanbanId, range) => {
+  try {
+    const timestamp = Date.now();
+    const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
+    const rangeStartCompared = new Date(
+      timestamp - 1000 * 60 * 60 * 24 * (range * 2 - 1)
+    );
+
+    const [[meetings]] = await pool.query(
+      `SELECT count(*) FROM meetings WHERE kanban_id = ? AND end_dt > ? `,
+      [kanbanId, rangeStart]
+    );
+
+    return meetings["count(*)"];
   } catch (e) {
     console.log(e);
     return null;
@@ -158,4 +179,5 @@ const getTasksChart = async (kanbanId, range, interval) => {
 module.exports = {
   getTasksAmount,
   getTasksChart,
+  getMeetings,
 };
