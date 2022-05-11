@@ -227,7 +227,8 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
                         fontSize: "1rem",
                       }}
                     >
-                      {sender}: {message}
+                      {myMsg ? `` : `${sender}: `}
+                      {message}
                     </div>
                   </Grid>
                 );
@@ -250,6 +251,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
               <MDButton
                 variant="gradient"
                 color="info"
+                style={{ fontSize: "1rem" }}
                 fullWidth
                 onClick={sendMessage}
               >
