@@ -158,7 +158,65 @@ function BasicModal({
   }
 
   function onSaveModal() {
+    let assigneeId;
+    for (let i = 0; i < memberList.length; i++) {
+      if (memberList[i].name === assignee) {
+        assigneeId = memberList[i].uid;
+        break;
+      }
+    }
+    const newLists = JSON.parse(JSON.stringify(lists));
+    newLists[listIndex].tasks[taskIndex].title = title;
+    newLists[listIndex].tasks[taskIndex].assignee = assigneeId;
+    newLists[listIndex].tasks[taskIndex].due = due;
+    newLists[listIndex].tasks[taskIndex].checked = checked;
+    newLists[listIndex].tasks[taskIndex].description = markdownText;
+    setLists(newLists);
+
+    const newTask = {
+      title,
+      assignee: assigneeId,
+      due_dt: due,
+      checked,
+      description: markdownText,
+    };
+    fetchPutData(
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
+      newTask
+    );
     onCloseModal();
+  }
+
+  function handleChange(e, data, setData) {
+    setData(e.target.value);
+  }
+
+  async function uploadFile(e) {
+    const url = await fetchData(
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}/imageUrl`,
+      false
+    );
+
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: e.target.files[0],
+    });
+
+    const imageUrl = url.split("?")[0];
+
+    setFiles((prev) => {
+      return [
+        ...prev,
+        {
+          key: prev.length,
+          src: imageUrl,
+          name: e.target.files[0].name,
+        },
+      ];
+    });
   }
 
   useEffect(() => {
@@ -180,6 +238,83 @@ function BasicModal({
     }
   }, [todos]);
 
+  useEffect(() => {
+    if (!updateChips.current) {
+      return;
+    }
+    fetchPutData(
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}/tag`,
+      chipData
+    ).then(() => {
+      updateChips.current = false;
+    });
+  }, [chipData]);
+
+  function updateTodoChecked(e, data) {
+    setTodos((prev) => {
+      const newArr = [...prev];
+      newArr[data.key].checked = e.target.checked;
+      return newArr;
+    });
+    updateTodos.current = true;
+  }
+
+  function editTodo(e, data) {
+    setTodos((prev) => {
+      const newArr = [...prev];
+      newArr[data.key].title = e.target.value;
+      return newArr;
+    });
+    updateTodos.current = true;
+  }
+
+  function addTodo() {
+    const newTodo = {
+      title: "Task ...",
+      checked: false,
+      parent_id: taskId,
+    };
+
+    fetchSetData(
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/addTest`,
+      newTodo
+    );
+
+    setTodos((prev) => {
+      newTodo.key = prev.length;
+      const newArr = [...prev, newTodo];
+      return newArr;
+    });
+  }
+
+  function Myform({ data }) {
+    return (
+      <FormControlLabel
+        control={
+          <Checkbox
+            key={data.key}
+            checked={data.checked}
+            onChange={(e) => {
+              setKanbanChip((prev) => {
+                const newArr = [...prev];
+                newArr[data.key].checked = e.target.checked;
+                return newArr;
+              });
+              setChipData(() => {
+                const newChips = kanbanChip.filter((chip) => {
+                  return chip.checked === 1 || chip.checked === true;
+                });
+                return newChips;
+              });
+              updateChips.current = true;
+            }}
+          />
+        }
+        label={data.label}
+      />
+    );
+  }
+
   return (
     <Modal
       open={open}
@@ -193,10 +328,15 @@ function BasicModal({
         <Grid item>
           <Grid container spacing={3} direction="row" wrap="nowrap" mb={3}>
             <Grid item xs={11}>
-              <input type="text" value={title} className="title"></input>
+              <input
+                type="text"
+                value={title}
+                className="title"
+                onChange={(e) => setTitle(e.target.value)}
+              ></input>
             </Grid>
             <Grid item>
-              <MDButton onClick={onSaveModal}>Close</MDButton>
+              <MDButton onClick={onSaveModal}>Save</MDButton>
             </Grid>
           </Grid>
           <Grid item>
@@ -213,7 +353,40 @@ function BasicModal({
                   <Grid item>
                     <Avatar>{assignee ? assignee.charAt(0) : "null"}</Avatar>
                   </Grid>
-                  <Grid item></Grid>
+                  <Grid item>
+                    <MDButton onClick={() => setOpenMemberModal(true)}>
+                      Change
+                    </MDButton>
+                    <Modal
+                      open={openMemberModal}
+                      onClose={() => setOpenMemberModal(false)}
+                      classNames={{
+                        overlay: "customOverlay",
+                        modal: "customModal",
+                      }}
+                    >
+                      <Typography variant="h5">Choose a Member</Typography>
+                      <hr style={{ margin: "5px 0", color: "lightgrey" }} />
+                      <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        defaultValue="female"
+                        name="radio-buttons-group"
+                        onChange={(e) => {
+                          setAssignee(e.target.value);
+                        }}
+                      >
+                        {members.map((member) => {
+                          return (
+                            <FormControlLabel
+                              value={member.name ? member.name : ""}
+                              control={<Radio />}
+                              label={member.name ? member.name : ""}
+                            />
+                          );
+                        })}
+                      </RadioGroup>
+                    </Modal>
+                  </Grid>
                 </Grid>
               </Grid>
               <Grid item>
@@ -233,6 +406,7 @@ function BasicModal({
                         transform: "scale(1.2)",
                       }}
                       className="checked"
+                      onChange={(e) => setChecked(!checked)}
                     />
                   </Grid>{" "}
                   <Grid item>
@@ -240,6 +414,7 @@ function BasicModal({
                       type="date"
                       value={due}
                       style={{ width: "100%" }}
+                      onChange={(e) => setDue(e.target.value)}
                     />
                   </Grid>
                 </Grid>
@@ -255,7 +430,51 @@ function BasicModal({
                     </Grid>
                   );
                 })}
+                <Chip label="Add Tag" onClick={() => setOpenTagModal(true)} />
               </Grid>
+              <Modal
+                open={openTagModal}
+                onClose={() => setOpenTagModal(false)}
+                classNames={{
+                  overlay: "customOverlay",
+                  modal: "customTagModal",
+                }}
+              >
+                <Grid container spacing={2} direction="row" wrap="nowrap">
+                  <Grid item>
+                    <TextField
+                      variant="outlined"
+                      placeholder="Enter a tag name"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <MDButton
+                      variant="contained"
+                      color="secondary"
+                      onClick={() =>
+                        setKanbanChip((prev) => {
+                          const newArr = [
+                            ...prev,
+                            {
+                              key: prev.length,
+                              label: tagInput,
+                              checked: false,
+                            },
+                          ];
+                          return newArr;
+                        })
+                      }
+                    >
+                      ADD Tag
+                    </MDButton>
+                  </Grid>
+                </Grid>
+                {kanbanChip.map((data) => {
+                  return <Myform data={data} />;
+                })}
+              </Modal>
             </Grid>
           </Grid>
         </Grid>
@@ -268,11 +487,32 @@ function BasicModal({
               className="description"
               ref={editor}
               value={notes}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                setMarkdownText(e.currentTarget.value);
+              }}
               style={{ height: "200px" }}
               onBlur={() => setEditStatus(false)}
             ></textarea>
           ) : (
             <>
+              <MDButton
+                variant="contained"
+                color="secondary"
+                ml={5}
+                style={{
+                  maxWidth: "65px",
+                  maxHeight: "30px",
+                  minWidth: "65px",
+                  minHeight: "30px",
+                }}
+                onClick={() => {
+                  setEditStatus(true);
+                  editor.current.focus();
+                }}
+              >
+                Edit
+              </MDButton>
               <ReactMarkdown>{markdownText}</ReactMarkdown>
             </>
           )}
@@ -284,19 +524,42 @@ function BasicModal({
             {todos.map((data) => {
               return (
                 <Grid item>
-                  <Checkbox key={data.key} checked={data.checked} />
+                  <Checkbox
+                    key={data.key}
+                    checked={data.checked}
+                    onChange={(e) => updateTodoChecked(e, data)}
+                  />
+
                   <input
                     type="text"
                     value={data.title}
                     className="todo"
+                    onChange={(e) => editTodo(e, data)}
                   ></input>
                 </Grid>
               );
             })}
+            <MDButton
+              variant="contained"
+              className="label-button"
+              style={{
+                marginTop: "5px",
+                marginLeft: "10px",
+                maxWidth: "80px",
+                maxHeight: "35px",
+                minWidth: "80px",
+                minHeight: "35px",
+                padding: 0,
+              }}
+              onClick={addTodo}
+            >
+              ADD ToDo
+            </MDButton>
           </Grid>
         </Grid>
         <Grid item>
           <label className="modal-label">Attachments</label>
+          <input type="file" onChange={uploadFile} />
           {files.map((file) => {
             return (
               <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
@@ -304,11 +567,18 @@ function BasicModal({
                   <img src={file.src} width="80px" />
                 </Grid>
                 <Grid item xs={8}>
-                  <div
+                  <input
                     type="text"
                     value={file.name ? file.name : ""}
                     className="file-name"
-                  ></div>
+                    onChange={(e) =>
+                      setFiles((prev) => {
+                        const newArr = [...prev];
+                        newArr[file.key].name = e.target.value;
+                        return newArr;
+                      })
+                    }
+                  ></input>
                 </Grid>
               </Grid>
             );

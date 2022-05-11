@@ -5,6 +5,7 @@ import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 import BasicModal from "components/BasicModal";
+import BasicModalEditor from "components/BasicModalEditor";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
@@ -107,25 +108,47 @@ const Item = ({
               )}
             </Grid>
           </MDBox>
-          <BasicModal
-            open={open}
-            setOpen={setOpen}
-            onCloseModal={onCloseModal}
-            taskName={taskName}
-            taskIndex={index}
-            setLists={setLists}
-            lists={lists}
-            listIndex={listIndex}
-            submittingStatus={submittingStatus}
-            kanbanId={kanbanId}
-            listId={listId}
-            taskId={taskId}
-            task={task}
-            hashtags={tags}
-            setTags={setTags}
-            memberList={members}
-            user={user}
-          />
+          {user.role_id > 1 ? (
+            <BasicModal
+              open={open}
+              setOpen={setOpen}
+              onCloseModal={onCloseModal}
+              taskName={taskName}
+              taskIndex={index}
+              setLists={setLists}
+              lists={lists}
+              listIndex={listIndex}
+              submittingStatus={submittingStatus}
+              kanbanId={kanbanId}
+              listId={listId}
+              taskId={taskId}
+              task={task}
+              hashtags={tags}
+              setTags={setTags}
+              memberList={members}
+              user={user}
+            />
+          ) : (
+            <BasicModalEditor
+              open={open}
+              setOpen={setOpen}
+              onCloseModal={onCloseModal}
+              taskName={taskName}
+              taskIndex={index}
+              setLists={setLists}
+              lists={lists}
+              listIndex={listIndex}
+              submittingStatus={submittingStatus}
+              kanbanId={kanbanId}
+              listId={listId}
+              taskId={taskId}
+              task={task}
+              hashtags={tags}
+              setTags={setTags}
+              memberList={members}
+              user={user}
+            />
+          )}
         </div>
       )}
     </Draggable>
