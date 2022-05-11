@@ -300,7 +300,11 @@ input[type="file"]::file-selector-button:hover {
   font-size: 1rem;
 }
 
+.chat-input:focus {
+  outline: 0;
+}
+
 .chat-body {
   height: 1100px;
-  overflow-y: scroll;
+  overflow: auto;
 }

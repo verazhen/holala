@@ -88,6 +88,12 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
     setInput("");
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+  };
+
   useEffect(() => {
     if (ws) {
       listenMessage();
@@ -236,6 +242,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
                 type="text"
                 value={input}
                 onChange={inputChange}
+                onKeyDown={handleKeyDown}
                 className="chat-input"
               />
             </Grid>
