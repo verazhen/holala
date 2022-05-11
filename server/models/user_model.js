@@ -4,6 +4,7 @@ const { pool } = require("./mysqlcon");
 const salt = parseInt(process.env.BCRYPT_SALT);
 const { TOKEN_EXPIRE, TOKEN_SECRET } = process.env; // 30 days by seconds
 const { jwt, bcrypt } = require("../../util/authTool");
+const { Role } = require("./components");
 
 const signUp = async (name, email, password) => {
   const conn = await pool.getConnection();
@@ -61,13 +62,17 @@ const nativeSignIn = async (email, password) => {
       email,
     ]);
 
+    if (!user) {
+      await conn.query("COMMIT");
+      return { status_code: 4030, error: "Email or password is wrong" };
+    }
+
     const hashedPwd = await bcrypt.compareAsync(password, user.password);
 
     if (!hashedPwd) {
       await conn.query("COMMIT");
-      return { error: "Password is wrong" };
+      return { status_code: 4030, error: "Email or password is wrong" };
     }
-
     const loginDt = new Date();
 
     await conn.query("UPDATE users SET login_dt = ? WHERE id = ?", [
@@ -93,21 +98,45 @@ const nativeSignIn = async (email, password) => {
   } catch (error) {
     console.log(error);
     await conn.query("ROLLBACK");
-    return { error };
+    return { status_code: 4030, error };
   } finally {
     await conn.release();
   }
 };
 
-const getUserDetail = async (id) => {
+const getUserDetail = async (id, kanbanId, roleId) => {
   try {
-    const [[user]] = await pool.query(
-      "SELECT * FROM users WHERE id = ?",
-      [id]
-    );
-    return user;
+    if (roleId && kanbanId) {
+      const [[permission]] = await pool.query(
+        "SELECT role_id FROM kanban_permission WHERE uid = ? AND kanban_id = ?",
+        [id, kanbanId]
+      );
+
+      if (!permission.role_id) {
+        return null;
+      }
+
+      if (permission.role_id > roleId) {
+        return { error: permission.role_id };
+      }
+
+      const [[user]] = await pool.query(
+        "SELECT email FROM users WHERE id = ?",
+        [id]
+      );
+
+      user.role_id = permission.role_id;
+      user.role_label = Role[permission.role_id];
+      return user;
+    } else {
+      const [[user]] = await pool.query(
+        "SELECT email FROM users WHERE id = ?",
+        [id]
+      );
+      return user;
+    }
   } catch (e) {
-  console.log(e)
+    console.log(e);
     return null;
   }
 };

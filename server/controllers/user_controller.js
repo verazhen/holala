@@ -9,12 +9,10 @@ const signUp = async (req, res) => {
   const { email, password } = data;
 
   if (!name || !email || !password) {
-    res
-      .status(400)
-      .send({
-        status_code: 400,
-        error: "Request Error: name, email and password are required.",
-      });
+    res.status(400).send({
+      status_code: 400,
+      error: "Request Error: name, email and password are required.",
+    });
     return;
   }
 
@@ -78,7 +76,7 @@ const signIn = async (req, res) => {
 
   if (result.error) {
     const status_code = result.status ? result.status : 403;
-    res.status(status_code).send({ status_code: 403, error: result.error });
+    res.status(status_code).send({ status_code: 4030, error: result.error });
     return;
   }
 
