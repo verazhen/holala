@@ -25,6 +25,7 @@ import { API_HOST } from "utils/constants";
 import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_context";
 
 function Tables(props) {
+  const [blockTasks, setBlockTasks] = useState([]);
   const [lists, setLists] = useState([]);
   const [tags, setTags] = useState([]);
   const [user, setUser] = useState({});
@@ -41,7 +42,7 @@ function Tables(props) {
   function addList() {
     submittingStatus.current = true;
     const newList = {
-      title: "List untitled",
+      title: "untitled",
       tasks: [],
     };
     setLists(function (prevData) {
@@ -182,6 +183,9 @@ function Tables(props) {
     ws.on("task update", (tasks) => {
       setLists(tasks);
     });
+    ws.on("task block", (tasks) => {
+      setBlockTasks(tasks);
+    });
   }, []);
 
   //   post data
@@ -213,7 +217,7 @@ function Tables(props) {
               const { id, title, tasks, delete_dt } = list;
               if (!delete_dt) {
                 return (
-                  <Grid item xs={6} style={{ minWidth: "18vw" }}>
+                  <Grid item xs={6} style={{ minWidth: "19vw" }}>
                     <Card>
                       <MDBox
                         mx={2}
@@ -305,6 +309,7 @@ function Tables(props) {
                           members={members}
                           user={user}
                           ws={ws}
+                          blockTasks={blockTasks[id] ? blockTasks[id] : []}
                         />
                       </MDBox>
                     </Card>
@@ -316,7 +321,7 @@ function Tables(props) {
           {user.role_id > 1 ? (
             <></>
           ) : (
-            <Grid item xs={3} style={{ minWidth: "18vw" }}>
+            <Grid item xs={3} style={{ minWidth: "20vw" }}>
               <MDButton
                 variant="gradient"
                 color="secondary"

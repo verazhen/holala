@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
-import ClearIcon from '@mui/icons-material/Clear';
+import ClearIcon from "@mui/icons-material/Clear";
 import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 import BasicModal from "components/BasicModal";
@@ -33,11 +33,17 @@ const Item = ({
   members,
   user,
   ws,
+  blocked,
 }) => {
   const draggableId = `${taskOrder}-${taskName}`;
   const [open, setOpen] = useState(false);
 
   function deleteItem() {
+    if (blocked) {
+      alert("the item is blocked");
+      return;
+    }
+
     const list = lists[listIndex];
     const newLists = JSON.parse(JSON.stringify(lists));
     newLists[listIndex].tasks[index].delete_dt = 1;
@@ -61,15 +67,33 @@ const Item = ({
   };
 
   function onOpenModal(e) {
-    if (e.target.nodeName == "BUTTON") {
+    console.log(e.target.nodeName);
+    if (e.target.nodeName == "BUTTON" || e.target.nodeName == "svg" || e.target.nodeName == "path") {
       return;
     }
     setOpen(true);
   }
 
+  function startEdit(e) {
+    onOpenModal(e);
+    if (user.role_id > 1) {
+      return;
+    }
+    //emit to block the task
+    ws.emit("task block", taskId);
+  }
+
   function onCloseModal() {
     setOpen(false);
+    if (user.role_id > 1) {
+      return;
+    }
+    ws.emit("task unblock", taskId);
   }
+
+  useEffect(() => {
+    console.log(taskId, blocked);
+  }, [blocked]);
 
   return (
     <Draggable key={taskId} draggableId={draggableId} index={index}>
@@ -79,7 +103,7 @@ const Item = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           id="task"
-          onClick={(e) => onOpenModal(e)}
+          onClick={(e) => startEdit(e)}
         >
           <MDBox m="auto" my={2} bgColor="secondary" className="item">
             <Grid

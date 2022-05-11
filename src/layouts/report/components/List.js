@@ -20,6 +20,7 @@ const List = ({
   members,
   user,
   ws,
+  blockTasks,
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
@@ -56,6 +57,10 @@ const List = ({
     );
   }
 
+  useEffect(() => {
+    console.log(blockTasks);
+  }, [blockTasks]);
+
   return (
     <div className="list">
       {user.role_id > 1 ? (
@@ -73,10 +78,7 @@ const List = ({
 
       <Droppable droppableId={droppableId} index={listIndex}>
         {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
+          <div {...provided.droppableProps} ref={provided.innerRef}>
             {tasks.map((task, index) => {
               if (!task.delete_dt) {
                 return (
@@ -101,6 +103,9 @@ const List = ({
                     members={members}
                     user={user}
                     ws={ws}
+                    blocked={blockTasks.some((block) => {
+                      return block === task.id;
+                    })}
                   />
                 );
               } else {
