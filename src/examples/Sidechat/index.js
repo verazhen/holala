@@ -125,10 +125,6 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
   const closeSidenav = () => {
     setMiniSidenav(dispatch, true);
   };
-  const style = {
-    height: "1100px",
-    overflow: "auto",
-  };
 
   useEffect(() => {
     // A function that sets the mini state of the sidenav.
@@ -205,18 +201,24 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
               (darkMode && !transparentSidenav && whiteSidenav)
             }
           />
-          <div style={style}>
-            <Grid container direction="column" alignItems="space-evenly" px={3}>
+          <div className="chat-body">
+            <Grid
+              container
+              direction="column"
+              alignItems="space-evenly"
+              style={{ width: "100%" }}
+              px={2}
+            >
               {messages.map(({ uid, sender, message, myMsg }) => {
                 return (
-                  <Grid item mt={1} className={myMsg}>
+                  <Grid item mt={1} className={myMsg} style={{ width: "100%" }}>
                     <div
+                      className="url-break"
                       style={{
                         display: "inline-block",
                         whiteSpace: "pre-line",
                         color: "white",
                         fontSize: "1rem",
-                        width: "80%",
                       }}
                     >
                       {sender}: {message}
@@ -229,12 +231,12 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
           </div>
 
           <Grid container direction="row" justifyContent="space-evenly">
-            <Grid item xs={6} md={6} lg={10} mt={1}>
-              <MDInput
+            <Grid item xs={6} md={6} lg={10} mt={3} mx={0}>
+              <input
                 type="text"
                 value={input}
                 onChange={inputChange}
-                fullWidth
+                className="chat-input"
               />
             </Grid>
             <Grid item xs={6} md={6} lg={10} mt={1}>

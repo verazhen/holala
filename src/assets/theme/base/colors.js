@@ -128,13 +128,13 @@ const colors = {
     },
 
     light: {
-      main: "#EBEFF4",
-      state: "#CED4DA",
+      main: "#adb5bd",
+      state: "#adb5bd",
     },
 
     dark: {
-      main: "#adb5bd",
-      state: "#adb5bd",
+      main: "#42424a",
+      state: "#191919",
     },
   },
 

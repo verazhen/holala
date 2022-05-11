@@ -280,3 +280,27 @@ input[type="file"]::file-selector-button:hover {
 .react-responsive-modal-container {
   overflow: hidden;
 }
+
+.url-break {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  word-break: break-word;
+}
+
+.chat-input {
+  color: white;
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid white;
+  box-shadow: 0;
+  border-radius: 5px;
+  height: 40px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.chat-body {
+  height: 1100px;
+  overflow-y: scroll;
+}
