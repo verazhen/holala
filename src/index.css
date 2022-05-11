@@ -5,10 +5,20 @@
 .item {
   height: 70px;
   width: 90%;
-  font-size: 1em;
   letter-spacing: 2px;
   padding: 10px;
   border-radius: 10px;
+}
+
+.item-text {
+  font-size: 0.7em;
+  font-weight: normal;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+.item:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
 .react-responsive-modal-modal {

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
+import ClearIcon from '@mui/icons-material/Clear';
 import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 import BasicModal from "components/BasicModal";
@@ -88,9 +89,7 @@ const Item = ({
               wrap="nowrap"
             >
               <Grid item xs={9}>
-                <MDTypography variant="h6" color="white">
-                  {taskName}
-                </MDTypography>
+                <div className="item-text">{taskName}</div>
               </Grid>
               {user.role_id > 1 ? (
                 <></>
@@ -100,9 +99,10 @@ const Item = ({
                     variant="primary"
                     color="secondary"
                     size="small"
+                    style={{ width: "100%", padding: "5px" }}
                     onClick={deleteItem}
                   >
-                    x
+                    <ClearIcon />
                   </MDButton>
                 </Grid>
               )}

@@ -4,6 +4,7 @@ import Card from "@mui/material/Card";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Icon from "@mui/material/Icon";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -56,6 +57,7 @@ function Tables(props) {
   }
 
   function delList() {
+    closeMenu();
     const delItem = Number(menu.classList[4].split("-")[1]);
     const newLists = JSON.parse(JSON.stringify(lists));
     const listId = lists[delItem].id;
@@ -168,7 +170,6 @@ function Tables(props) {
         setLists(data);
         setMembers(user);
         setUser(account);
-        console.log(account);
 
         const newTags = tags.map((tag, i, arr) => {
           arr[i].key = i;
@@ -275,7 +276,13 @@ function Tables(props) {
                                 open={Boolean(menu)}
                                 onClose={closeMenu}
                               >
-                                <MenuItem onClick={delList}>
+                                <MenuItem
+                                  onClick={delList}
+                                  style={{ padding: "0px" }}
+                                >
+                                  <DeleteOutlineIcon
+                                    style={{ marginRight: "7px" }}
+                                  />{" "}
                                   delete the list
                                 </MenuItem>
                               </Menu>
