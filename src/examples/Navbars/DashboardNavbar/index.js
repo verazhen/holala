@@ -78,6 +78,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const [account, setAccount] = useState({});
   const [members, setMembers] = useState([]);
   const [users, setUsers] = useState([]);
   const [kanban, setKanban] = useState("");
@@ -159,8 +160,12 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   useEffect(() => {
-    fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(({ user }) =>
-      setMembers(user)
+    console.log("data123");
+    fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(
+      ({ user, account }) => {
+        setAccount(account);
+        setMembers(user);
+      }
     );
     fetchData(`${API_HOST}/roles`, false).then((data) => setRoles(data));
     fetchData(`${API_HOST}/users`, false).then((data) => {
@@ -242,7 +247,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
     >
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <Grid container lg={8}>
-          <Grid item >
+          <Grid item>
             <MDBox
               color="inherit"
               mb={{ xs: 1, md: 0 }}
@@ -327,36 +332,46 @@ function DashboardNavbar({ absolute, light, isMini }) {
                     )}
                   </Stack>
                 </MDBox>
-                <DialogContentText>
-                  Check and invite member into this kanban
-                </DialogContentText>
+
+                {account.role_id > 1 ? (
+                  <></>
+                ) : (
+                  <DialogContentText>
+                    Check and invite member into this kanban
+                  </DialogContentText>
+                )}
+
                 <Grid container direction="column">
-                  <Grid
-                    container
-                    alignItems="center"
-                    direction="row"
-                    wrap="nowrap"
-                    mb={3}
-                  >
-                    <Grid item xs={11} mr="auto">
-                      <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        variant="standard"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
+                  {account.role_id > 1 ? (
+                    <></>
+                  ) : (
+                    <Grid
+                      container
+                      alignItems="center"
+                      direction="row"
+                      wrap="nowrap"
+                    >
+                      <Grid item xs={11} mr="auto">
+                        <TextField
+                          autoFocus
+                          margin="dense"
+                          label="Email Address"
+                          type="email"
+                          fullWidth
+                          variant="standard"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <MDButton onClick={inviteMember}>Invite</MDButton>
+                      </Grid>
                     </Grid>
-                    <Grid item>
-                      <MDButton onClick={inviteMember}>Invite</MDButton>
-                    </Grid>
-                  </Grid>
+                  )}
+
                   {members.map((member, index) => {
                     return (
-                      <Grid item>
+                      <Grid item mt={3}>
                         <Grid
                           container
                           alignItems="center"
@@ -373,30 +388,40 @@ function DashboardNavbar({ absolute, light, isMini }) {
                             {member.name ? member.name : "user"}
                           </Grid>
                           <Grid item>
-                            <MDButton
-                              onClick={() => {
-                                setOpenRoleModal(true);
-                                setSelectedValue(index);
-                              }}
-                            >
-                              {member.role_label}
-                            </MDButton>
+                            {account.role_id > 1 ? (
+                              <MDButton>{member.role_label}</MDButton>
+                            ) : (
+                              <MDButton
+                                onClick={() => {
+                                  setOpenRoleModal(true);
+                                  setSelectedValue(index);
+                                }}
+                              >
+                                {member.role_label}
+                              </MDButton>
+                            )}
                           </Grid>
-                          <Grid item>
-                            <MDButton
-                              onClick={() => {
-                                let newMembers = JSON.parse(
-                                  JSON.stringify(members)
-                                );
-                                newMembers = newMembers.filter((newMember) => {
-                                  return newMember.uid !== member.uid;
-                                });
-                                setMembers(newMembers);
-                              }}
-                            >
-                              Remove
-                            </MDButton>
-                          </Grid>
+                          {account.role_id > 1 ? (
+                            <></>
+                          ) : (
+                            <Grid item>
+                              <MDButton
+                                onClick={() => {
+                                  let newMembers = JSON.parse(
+                                    JSON.stringify(members)
+                                  );
+                                  newMembers = newMembers.filter(
+                                    (newMember) => {
+                                      return newMember.uid !== member.uid;
+                                    }
+                                  );
+                                  setMembers(newMembers);
+                                }}
+                              >
+                                Remove
+                              </MDButton>
+                            </Grid>
+                          )}
                         </Grid>
                       </Grid>
                     );
@@ -404,8 +429,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 </Grid>
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-                <Button onClick={onSaveMembers}>Save</Button>
+                {account.role_id > 1 ? (
+                  <Button onClick={() => setOpenDialog(false)}>Close</Button>
+                ) : (
+                  <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+                )}
+
+                {account.role_id > 1 ? (
+                  <></>
+                ) : (
+                  <Button onClick={onSaveMembers}>Save</Button>
+                )}
               </DialogActions>
             </Dialog>
             <Dialog

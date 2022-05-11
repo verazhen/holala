@@ -41,13 +41,13 @@ const getRoles = async () => {
 
 const getUsers = async () => {
   try {
-    const [users] = await pool.query("SELECT * FROM users ");
-    const response = users.map((user) => {
+    let [users] = await pool.query("SELECT * FROM users ");
+    users = users.map((user) => {
       delete user.password;
       return user;
     });
 
-    return response;
+    return users;
   } catch (e) {
     console.log(e);
     return false;

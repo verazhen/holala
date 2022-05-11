@@ -30,11 +30,11 @@ const getRoles = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const data = await Index.getUsers();
+    const res = await Index.getUsers();
 
     res.status(200).send({
       status_code: 200,
-      data,
+      data: res,
     });
   } catch (error) {
     return { error };
