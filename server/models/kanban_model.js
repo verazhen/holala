@@ -47,6 +47,14 @@ const getTasks = async (id, user) => {
   return { account: user, data, user: members, tags };
 };
 
+const getTask = async (taskId) => {
+  const [[task]] = await pool.query("SELECT * FROM tasks WHERE id = ?", [
+    taskId,
+  ]);
+
+  return task;
+};
+
 const getTodos = async (taskId) => {
   const [tasks] = await pool.query(`SELECT * FROM tasks WHERE parent_id = ?`, [
     taskId,
@@ -159,7 +167,7 @@ const addNewTask = async (data, listId) => {
     );
 
     await conn.query("COMMIT");
-    return res;
+    return res.insertId;
   } catch (e) {
     await conn.query("ROLLBACK");
     console.log(e);
@@ -326,7 +334,6 @@ const updateTodos = async (data, taskId, listId) => {
 
       return [title, checked, timestamp, taskId, listId];
     });
-    console.log(values);
 
     await conn.query(`DELETE FROM tasks WHERE parent_id=?`, [taskId]);
 
@@ -423,4 +430,5 @@ module.exports = {
   updateListDetail,
   updateMembers,
   getKanban,
+  getTask
 };

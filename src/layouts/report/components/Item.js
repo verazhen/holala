@@ -68,19 +68,23 @@ const Item = ({
 
   function onOpenModal(e) {
     console.log(e.target.nodeName);
-    if (e.target.nodeName == "BUTTON" || e.target.nodeName == "svg" || e.target.nodeName == "path") {
+    if (
+      e.target.nodeName == "BUTTON" ||
+      e.target.nodeName == "svg" ||
+      e.target.nodeName == "path"
+    ) {
       return;
     }
     setOpen(true);
-  }
-
-  function startEdit(e) {
-    onOpenModal(e);
     if (user.role_id > 1) {
       return;
     }
     //emit to block the task
     ws.emit("task block", taskId);
+  }
+
+  function startEdit(e) {
+    onOpenModal(e);
   }
 
   function onCloseModal() {

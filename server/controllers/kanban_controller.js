@@ -20,7 +20,7 @@ const addNewTask = async (req, res) => {
   const { kanbanId, listId } = req.params;
   const response = await Kanban.addNewTask(data, listId);
 
-  return res.json(response);
+  return res.json({ id: response });
 };
 
 const getTaskDetails = async (req, res) => {

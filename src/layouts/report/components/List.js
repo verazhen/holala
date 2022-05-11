@@ -40,21 +40,23 @@ const List = ({
     const title = "Task Untitled";
     const list = lists[listIndex];
     const newTask = { unique_id: v4(), title, checked: 0 };
-    const newTasks = [...list.tasks, newTask];
-    const newList = JSON.parse(JSON.stringify(lists));
-    newList[listIndex].tasks = newTasks;
-
-    setLists(newList);
-
-    const tasks = {
-      kanbanId,
-      tasks: newList,
-    };
-    ws.emit("task update", tasks);
     fetchSetData(
       `${API_HOST}/kanban/${kanbanId}/list/${listId}/addTest`,
       newTask
-    );
+    ).then(({ id }) => {
+      newTask.id = id;
+      const newTasks = [...list.tasks, newTask];
+      const newList = JSON.parse(JSON.stringify(lists));
+      newList[listIndex].tasks = newTasks;
+
+      setLists(newList);
+
+      const tasks = {
+        kanbanId,
+        tasks: newList,
+      };
+      ws.emit("task update", tasks);
+    });
   }
 
   useEffect(() => {
