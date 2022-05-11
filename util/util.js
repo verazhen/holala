@@ -33,7 +33,9 @@ const authentication = (roleId) => {
         req.user.email = userDetail.email;
         next();
         if (!userDetail) {
-          res.status(403).send({ status_code: 4030, error: "Forbidden" });
+          return res
+            .status(403)
+            .send({ status_code: 4030, error: "Forbidden" });
         }
       } else {
         if (roleId == 1 || roleId == 2) {
@@ -43,11 +45,15 @@ const authentication = (roleId) => {
         }
         if (!userDetail) {
           //cannot view
-          res.status(403).send({ status_code: 4031, error: "View Forbidden" });
+          return res
+            .status(403)
+            .send({ status_code: 4031, error: "View Forbidden" });
         } else if (userDetail.error) {
           if (userDetail.error == 2) {
             //cannot edit
-            res.status(403).send({ status_code: 4032, error: "Edit Forbidden" });
+            return res
+              .status(403)
+              .send({ status_code: 4032, error: "Edit Forbidden" });
           }
           next();
         } else {
