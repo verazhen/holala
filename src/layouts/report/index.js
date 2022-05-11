@@ -198,13 +198,13 @@ function Tables(props) {
 
   const style = {
     overflowY: "hidden",
-    overflow: "scroll",
-    height: "90vh",
+    overflowX: "scroll",
+    height: "85vh",
   };
   return (
     <DashboardLayout>
-      <MDBox pt={6} pb={3}>
-        <Grid container spacing={6} wrap="nowrap" style={style}>
+      <MDBox pt={6} pb={3} style={style}>
+        <Grid container spacing={6} wrap="nowrap" >
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >
@@ -283,7 +283,7 @@ function Tables(props) {
                           )}
                         </Grid>
                       </MDBox>
-                      <MDBox pt={3}>
+                      <MDBox pt={3} >
                         <List
                           kanbanId={kanbanId}
                           listId={id}
@@ -298,6 +298,7 @@ function Tables(props) {
                           members={members}
                           user={user}
                           ws={ws}
+
                         />
                       </MDBox>
                     </Card>

@@ -57,7 +57,7 @@ const List = ({
   }
 
   return (
-    <div>
+    <div className="list">
       {user.role_id > 1 ? (
         <></>
       ) : (
@@ -74,7 +74,6 @@ const List = ({
       <Droppable droppableId={droppableId} index={listIndex}>
         {(provided) => (
           <div
-            className="list"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
