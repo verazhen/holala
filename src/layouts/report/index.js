@@ -147,7 +147,7 @@ function Tables(props) {
 
   useEffect(() => {
     addLocalStorage("kanbanId", kanbanId);
-    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(
+    fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(
       ({ user, data, tags, account }) => {
         //sort the lists data
         data.sort((a, b) => {
@@ -162,6 +162,7 @@ function Tables(props) {
         setLists(data);
         setMembers(user);
         setUser(account);
+        console.log(account);
 
         const newTags = tags.map((tag, i, arr) => {
           arr[i].key = i;
@@ -182,9 +183,11 @@ function Tables(props) {
     if (!submittingStatus.current) {
       return;
     }
-    fetchSetData(`${API_HOST}/task/${kanbanId}`, lists).then((lists) => {
-      submittingStatus.current = false;
-    });
+    fetchSetData(`${API_HOST}/kanban/${kanbanId}/tasks`, lists).then(
+      (lists) => {
+        submittingStatus.current = false;
+      }
+    );
   }, [lists]);
 
   const style = {
@@ -237,37 +240,41 @@ function Tables(props) {
                               }
                             />
                           </Grid>
-                          <Grid item>
-                            <MDBox color="text" px={2}>
-                              <Icon
-                                sx={{ cursor: "pointer", fontWeight: "bold" }}
-                                fontSize="small"
-                                onClick={openMenu}
-                                className={`list-${index}`}
+                          {user.role_id > 1 ? (
+                            <></>
+                          ) : (
+                            <Grid item>
+                              <MDBox color="text" px={2}>
+                                <Icon
+                                  sx={{ cursor: "pointer", fontWeight: "bold" }}
+                                  fontSize="small"
+                                  onClick={openMenu}
+                                  className={`list-${index}`}
+                                >
+                                  more_vert
+                                </Icon>
+                              </MDBox>
+                              <Menu
+                                id="simple-menu"
+                                style={{ marginTop: "10px" }}
+                                anchorEl={menu}
+                                anchorOrigin={{
+                                  vertical: "bottom",
+                                  horizontal: "right",
+                                }}
+                                transformOrigin={{
+                                  vertical: "top",
+                                  horizontal: "right",
+                                }}
+                                open={Boolean(menu)}
+                                onClose={closeMenu}
                               >
-                                more_vert
-                              </Icon>
-                            </MDBox>
-                            <Menu
-                              id="simple-menu"
-                              style={{ marginTop: "10px" }}
-                              anchorEl={menu}
-                              anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "right",
-                              }}
-                              transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                              }}
-                              open={Boolean(menu)}
-                              onClose={closeMenu}
-                            >
-                              <MenuItem onClick={delList}>
-                                delete the list
-                              </MenuItem>
-                            </Menu>
-                          </Grid>
+                                <MenuItem onClick={delList}>
+                                  delete the list
+                                </MenuItem>
+                              </Menu>
+                            </Grid>
+                          )}
                         </Grid>
                       </MDBox>
                       <MDBox pt={3}>
@@ -293,19 +300,23 @@ function Tables(props) {
               }
             })}
           </DragDropContext>
-          <Grid item xs={3}>
-            <MDButton
-              //               component={Link}
-              //               to={action.route}
-              variant="gradient"
-              color="secondary"
-              fullWidth
-              onClick={addList}
-              //               color={action.color}
-            >
-              Add List
-            </MDButton>
-          </Grid>
+          {user.role_id > 1 ? (
+            <></>
+          ) : (
+            <Grid item xs={3}>
+              <MDButton
+                //               component={Link}
+                //               to={action.route}
+                variant="gradient"
+                color="secondary"
+                fullWidth
+                onClick={addList}
+                //               color={action.color}
+              >
+                Add List
+              </MDButton>
+            </Grid>
+          )}
         </Grid>
       </MDBox>
     </DashboardLayout>

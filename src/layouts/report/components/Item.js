@@ -30,7 +30,7 @@ const Item = ({
   setTags,
   members,
   user,
-  ws
+  ws,
 }) => {
   const draggableId = `${taskOrder}-${taskName}`;
   const [open, setOpen] = useState(false);
@@ -91,16 +91,20 @@ const Item = ({
                   {taskName}
                 </MDTypography>
               </Grid>
-              <Grid item xs={3}>
-                <MDButton
-                  variant="primary"
-                  color="secondary"
-                  size="small"
-                  onClick={deleteItem}
-                >
-                  x
-                </MDButton>
-              </Grid>
+              {user.role_id > 1 ? (
+                <></>
+              ) : (
+                <Grid item xs={3}>
+                  <MDButton
+                    variant="primary"
+                    color="secondary"
+                    size="small"
+                    onClick={deleteItem}
+                  >
+                    x
+                  </MDButton>
+                </Grid>
+              )}
             </Grid>
           </MDBox>
           <BasicModal

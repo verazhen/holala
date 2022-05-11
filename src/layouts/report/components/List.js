@@ -19,7 +19,7 @@ const List = ({
   setTags,
   members,
   user,
-  ws
+  ws,
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
@@ -58,17 +58,18 @@ const List = ({
 
   return (
     <div>
-      <MDButton
-        //               component={Link}
-        //               to={action.route}
-        variant="primary"
-        color="secondary"
-        fullWidth
-        onClick={addTask}
-        //               color={action.color}
-      >
-        Add Task
-      </MDButton>
+      {user.role_id > 1 ? (
+        <></>
+      ) : (
+        <MDButton
+          variant="primary"
+          color="secondary"
+          fullWidth
+          onClick={addTask}
+        >
+          Add Task
+        </MDButton>
+      )}
 
       <Droppable droppableId={droppableId} index={listIndex}>
         {(provided) => (
