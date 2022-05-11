@@ -143,7 +143,7 @@ function DashboardLayout({ children }) {
 
   useEffect(() => {
     const kanbanId = getLocalStorage("kanbanId");
-    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(({ account }) => {
+    fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(({ account }) => {
       setUser(account);
       localStorage.setItem("uid", account.id);
     });

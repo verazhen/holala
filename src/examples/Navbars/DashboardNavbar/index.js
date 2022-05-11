@@ -159,7 +159,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   useEffect(() => {
-    fetchData(`${API_HOST}/task/${kanbanId}`, true).then(({ user }) =>
+    fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(({ user }) =>
       setMembers(user)
     );
     fetchData(`${API_HOST}/roles`, false).then((data) => setRoles(data));
