@@ -204,7 +204,7 @@ function Tables(props) {
   return (
     <DashboardLayout>
       <MDBox pt={6} pb={3} style={style}>
-        <Grid container spacing={6} wrap="nowrap" >
+        <Grid container spacing={6} wrap="nowrap">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}
           >
@@ -212,7 +212,7 @@ function Tables(props) {
               const { id, title, tasks, delete_dt } = list;
               if (!delete_dt) {
                 return (
-                  <Grid item xs={6}>
+                  <Grid item xs={6} style={{ minWidth: "18vw" }}>
                     <Card>
                       <MDBox
                         mx={2}
@@ -283,7 +283,7 @@ function Tables(props) {
                           )}
                         </Grid>
                       </MDBox>
-                      <MDBox pt={3} >
+                      <MDBox pt={3}>
                         <List
                           kanbanId={kanbanId}
                           listId={id}
@@ -298,7 +298,6 @@ function Tables(props) {
                           members={members}
                           user={user}
                           ws={ws}
-
                         />
                       </MDBox>
                     </Card>
@@ -310,15 +309,12 @@ function Tables(props) {
           {user.role_id > 1 ? (
             <></>
           ) : (
-            <Grid item xs={3}>
+            <Grid item xs={3} style={{ minWidth: "18vw" }}>
               <MDButton
-                //               component={Link}
-                //               to={action.route}
                 variant="gradient"
                 color="secondary"
                 fullWidth
                 onClick={addList}
-                //               color={action.color}
               >
                 Add List
               </MDButton>
