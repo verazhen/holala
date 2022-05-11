@@ -136,7 +136,7 @@ const Item = ({
               )}
             </Grid>
           </MDBox>
-          {user.role_id > 1 ? (
+          {user.role_id > 1 || blocked ? (
             <BasicModal
               open={open}
               setOpen={setOpen}
