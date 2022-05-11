@@ -110,17 +110,20 @@ function Tables(props) {
         destItems[destination.index].list_id =
           destItems[destination.index + 1].list_id;
       }
+      if (user.role_id < 1) {
+        const newList = JSON.parse(JSON.stringify(lists));
+        newList[source.droppableId].tasks = sourceItems;
+        newList[destination.droppableId].tasks = destItems;
 
-      const newList = JSON.parse(JSON.stringify(lists));
-      newList[source.droppableId].tasks = sourceItems;
-      newList[destination.droppableId].tasks = destItems;
-      submitTask.current = true;
-      setLists(newList);
-      const tasks = {
-        kanbanId,
-        tasks: newList,
-      };
-      ws.emit("task update", tasks);
+        submitTask.current = true;
+
+        setLists(newList);
+        const tasks = {
+          kanbanId,
+          tasks: newList,
+        };
+        ws.emit("task update", tasks);
+      }
     } else {
       const list = lists[source.droppableId];
       const copiedItems = [...list.tasks];
@@ -133,15 +136,18 @@ function Tables(props) {
         copiedItems[destination.index].orders =
           copiedItems[destination.index + 1].orders - 1;
       }
-      const newList = JSON.parse(JSON.stringify(lists));
-      newList[source.droppableId].tasks = copiedItems;
-      submitTask.current = true;
-      setLists(newList);
-      const tasks = {
-        kanbanId,
-        tasks: newList,
-      };
-      ws.emit("task update", tasks);
+
+      if (user.role_id < 1) {
+        const newList = JSON.parse(JSON.stringify(lists));
+        newList[source.droppableId].tasks = copiedItems;
+        submitTask.current = true;
+        setLists(newList);
+        const tasks = {
+          kanbanId,
+          tasks: newList,
+        };
+        ws.emit("task update", tasks);
+      }
     }
   };
 
