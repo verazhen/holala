@@ -13,13 +13,17 @@ const getTasks = async (id, user) => {
     const [tasks] = await pool.query(
       `SELECT * FROM tasks WHERE list_id = ${id} AND parent_id IS NULL`
     );
-    for (let j = 0; j < tasks.length; j++) {
-      const [[users]] = await pool.query(
-        "SELECT name FROM users WHERE id = ?",
-        [tasks[j].assignee]
-      );
 
-      tasks[j].name = tasks[j].assignee ? users.name : null;
+    for (let j = 0; j < tasks.length; j++) {
+      if (tasks[j].assignee) {
+        const [[user]] = await pool.query(
+          "SELECT name FROM users WHERE id = ?",
+          [tasks[j].assignee]
+        );
+        if (user) {
+          tasks[j].name = user.name;
+        }
+      }
     }
 
     data.push({ id, title, orders, tasks, delete_dt });
@@ -380,10 +384,10 @@ const addComment = async (data, user, taskId) => {
   }
 };
 
-const uploadImage = async (kanbanId,taskId) => {
+const uploadImage = async (kanbanId, taskId) => {
   const conn = await pool.getConnection();
   try {
-    const url = await generateUploadURL(kanbanId,'image','jpg');
+    const url = await generateUploadURL(kanbanId, "image", "jpg");
     await conn.query("START TRANSACTION");
     const imageUrl = url.split("?")[0];
 
