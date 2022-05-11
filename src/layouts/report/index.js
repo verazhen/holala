@@ -91,6 +91,21 @@ function Tables(props) {
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
     const { source, destination } = result;
+    const taskId = result.draggableId;
+    const listId = columns[source.droppableId].id;
+    console.log("blockTasks");
+    console.log(blockTasks);
+    console.log(blockTasks[listId]);
+    if (blockTasks[listId]) {
+      if (
+        blockTasks[listId].some((block) => {
+          return block == taskId;
+        })
+      ) {
+        alert('the task is temporarily blocked by other user')
+        return
+      }
+    }
 
     if (source.droppableId !== destination.droppableId) {
       //if not the same list
@@ -113,20 +128,23 @@ function Tables(props) {
         destItems[destination.index].list_id =
           destItems[destination.index + 1].list_id;
       }
-      if (user.role_id < 1) {
-        const newList = JSON.parse(JSON.stringify(lists));
-        newList[source.droppableId].tasks = sourceItems;
-        newList[destination.droppableId].tasks = destItems;
 
-        submitTask.current = true;
-
-        setLists(newList);
-        const tasks = {
-          kanbanId,
-          tasks: newList,
-        };
-        ws.emit("task update", tasks);
+      if (user.role_id > 1) {
+        return;
       }
+
+      const newList = JSON.parse(JSON.stringify(lists));
+      newList[source.droppableId].tasks = sourceItems;
+      newList[destination.droppableId].tasks = destItems;
+
+      submitTask.current = true;
+
+      setLists(newList);
+      const tasks = {
+        kanbanId,
+        tasks: newList,
+      };
+      ws.emit("task update", tasks);
     } else {
       const list = lists[source.droppableId];
       const copiedItems = [...list.tasks];
@@ -140,17 +158,18 @@ function Tables(props) {
           copiedItems[destination.index + 1].orders - 1;
       }
 
-      if (user.role_id < 1) {
-        const newList = JSON.parse(JSON.stringify(lists));
-        newList[source.droppableId].tasks = copiedItems;
-        submitTask.current = true;
-        setLists(newList);
-        const tasks = {
-          kanbanId,
-          tasks: newList,
-        };
-        ws.emit("task update", tasks);
+      if (user.role_id > 1) {
+        return;
       }
+      const newList = JSON.parse(JSON.stringify(lists));
+      newList[source.droppableId].tasks = copiedItems;
+      submitTask.current = true;
+      setLists(newList);
+      const tasks = {
+        kanbanId,
+        tasks: newList,
+      };
+      ws.emit("task update", tasks);
     }
   };
 

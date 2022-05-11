@@ -35,7 +35,7 @@ const Item = ({
   ws,
   blocked,
 }) => {
-  const draggableId = `${taskOrder}-${taskName}`;
+  const draggableId = `${taskId}`;
   const [open, setOpen] = useState(false);
 
   function deleteItem() {
