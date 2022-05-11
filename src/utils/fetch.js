@@ -9,8 +9,14 @@ async function fetchData(url, needUser) {
   });
 
   const response = await res.json();
-  if (response.status_code === 403 || response.status_code === 401) {
+
+  if (response.status_code === 4030 || response.status_code === 401) {
     window.location.href = "/authentication/sign-in";
+    return;
+  }
+
+  if (response.status_code === 4031) {
+    window.location.href = "/index";
     return;
   }
 
@@ -35,7 +41,10 @@ async function fetchSetData(url, data) {
     body: JSON.stringify({ data }),
   });
 
-  return res.json();
+  const response = await res.json();
+  console.log(response);
+
+  return response;
 }
 
 async function fetchPutData(url, data) {
@@ -49,7 +58,15 @@ async function fetchPutData(url, data) {
     body: JSON.stringify({ data }),
   });
 
-  return res.json();
+  const response = await res.json();
+  console.log(response);
+
+  if (response.status_code === 4030 || response.status_code === 401) {
+    window.location.href = "/authentication/sign-in";
+    return;
+  }
+
+  return response;
 }
 
 export { fetchData, fetchSetData, fetchPutData };
