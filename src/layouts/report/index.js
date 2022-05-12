@@ -27,6 +27,7 @@ import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_cont
 function Tables(props) {
   const [blockTasks, setBlockTasks] = useState([]);
   const [lists, setLists] = useState([]);
+  const [videoOpen, setVideoOpen] = useState(false);
   const [taskUpdateQue, setTaskUpdateQue] = useState(null);
   const [tags, setTags] = useState([]);
   const [user, setUser] = useState({});
@@ -229,7 +230,7 @@ function Tables(props) {
     height: "85vh",
   };
   return (
-    <DashboardLayout>
+    <DashboardLayout videoOpen={videoOpen} setVideoOpen={setVideoOpen}>
       <MDBox pt={6} pb={3} style={style}>
         <Grid container spacing={6} wrap="nowrap">
           <DragDropContext
@@ -335,6 +336,8 @@ function Tables(props) {
                           taskUpdateQue={taskUpdateQue}
                           setTaskUpdateQue={setTaskUpdateQue}
                           blockTasks={blockTasks[id] ? blockTasks[id] : []}
+                          videoOpen={videoOpen}
+                          setVideoOpen={setVideoOpen}
                         />
                       </MDBox>
                     </Card>

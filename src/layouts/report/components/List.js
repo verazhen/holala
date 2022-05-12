@@ -23,7 +23,9 @@ const List = ({
   blockTasks,
   editingRef,
   taskUpdateQue,
-  setTaskUpdateQue
+  setTaskUpdateQue,
+  videoOpen,
+  setVideoOpen
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
@@ -61,13 +63,11 @@ const List = ({
       ws.emit("task update", tasks);
     });
   }
-
-  useEffect(() => {
-    console.log(blockTasks);
-  }, [blockTasks]);
+  const listStyle = { maxHeight: "70vh", overflow: "auto" };
+  const listStyleMeeting = { maxHeight: "40vh", overflow: "auto" };
 
   return (
-    <div className="list">
+    <div className="list" style={videoOpen?listStyleMeeting:listStyle}>
       {user.role_id > 1 ? (
         <></>
       ) : (

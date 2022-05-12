@@ -16,6 +16,8 @@ import Box from "@mui/material/Box";
 import Fab from "@mui/material/Fab";
 import MDTypography from "components/MDTypography";
 import Grid from "@mui/material/Grid";
+import AspectRatioIcon from "@mui/icons-material/AspectRatio";
+
 // Material Dashboard 2 React context
 import { useMaterialUIController, setLayout } from "context";
 
@@ -26,33 +28,22 @@ import { SocketProvider } from "examples/LayoutContainers/DashboardLayout/socket
 import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_context";
 import { getLocalStorage } from "utils/utils";
 import styled from "styled-components";
-const Container2 = styled.div`
-  padding: 20px;
-  width: 80vw;
-  height: 30vh;
-  margin: auto;
-  position: absolute;
-  z-index: 99;
-  left: 500px;
-  bottom: 100px;
-`;
+const containerStyle = {
+  padding: "0 20px",
+  width: "80vw",
+  height: "30vh",
+  margin: "auto",
+  position: "absolute",
+  zIndex: 99,
+  left: "16vw",
+  bottom: "0px",
+};
 
-const StyledVideo = styled.video`
-  height: 240px;
-  width: 320px;
-  margin: 20px;
-`;
-
-const Video2 = ({ peer }) => {
-  const ref = useRef();
-
-  useEffect(() => {
-    peer.on("stream", (stream) => {
-      ref.current.srcObject = stream;
-    });
-  }, []);
-
-  return <StyledVideo playsInline autoPlay ref={ref} />;
+const videoStyle = {
+  height: "210px",
+  width: "290px",
+  margin: "0 20px",
+  borderRadius: "15px",
 };
 
 const style = {
@@ -62,7 +53,7 @@ const style = {
   zIndex: 999,
 };
 
-function DashboardLayout({ children }) {
+function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav } = controller;
   const { pathname } = useLocation();
@@ -107,6 +98,18 @@ function DashboardLayout({ children }) {
     setLayout(dispatch, "dashboard");
   }, [pathname]);
 
+  const Video2 = ({ peer }) => {
+    const ref = useRef();
+
+    useEffect(() => {
+      peer.on("stream", (stream) => {
+        ref.current.srcObject = stream;
+      });
+    }, []);
+
+    return <video style={videoStyle} playsInline autoPlay ref={ref} />;
+  };
+
   function createPeer(userToSignal, callerID, stream) {
     const peer = new Peer({
       initiator: true,
@@ -143,10 +146,12 @@ function DashboardLayout({ children }) {
 
   useEffect(() => {
     const kanbanId = getLocalStorage("kanbanId");
-    fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(({ account }) => {
-      setUser(account);
-      localStorage.setItem("uid", account.id);
-    });
+    fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(
+      ({ account }) => {
+        setUser(account);
+        localStorage.setItem("uid", account.id);
+      }
+    );
   }, []);
 
   useEffect(() => {
@@ -280,6 +285,8 @@ function DashboardLayout({ children }) {
   };
 
   function changeMeetingState() {
+    setVideoOpen(!videoOpen);
+
     if (room) {
       setRoom(false);
     } else {
@@ -336,9 +343,16 @@ function DashboardLayout({ children }) {
             </Grid>
           </Fab>
         </Box>
+
         {room ? (
-          <Container2>
-            <StyledVideo muted ref={userVideo} autoPlay playsInline />
+          <div style={containerStyle}>
+            <video
+              style={videoStyle}
+              muted
+              ref={userVideo}
+              autoPlay
+              playsInline
+            />
             {peers ? (
               peers.map((peer) => {
                 if (peer.peer.readable) {
@@ -354,7 +368,7 @@ function DashboardLayout({ children }) {
             ) : (
               <></>
             )}
-          </Container2>
+          </div>
         ) : (
           <></>
         )}
