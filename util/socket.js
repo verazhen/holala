@@ -108,9 +108,14 @@ module.exports = (server) => {
     });
 
     socket.on("returning signal", (payload) => {
+      const str = socket.id + Math.floor(Math.random() * 100);
+      //       socket.receiverId = socket.receiverId
+      //         ? socket.receiverId
+      //         : socket.id + Math.floor(Math.random() * 100);
+      console.log("*************returning signal", str);
       io.to(payload.callerID).emit("receiving returned signal", {
         signal: payload.signal,
-        id: socket.id,
+        id: str,
       });
     });
 
@@ -152,7 +157,8 @@ module.exports = (server) => {
         room = room.filter((id) => id !== socket.id);
         users[roomID] = room;
       }
-      socket.broadcast.emit("user left", socket.id);
+      //       socket.broadcast.emit("user left", socket.id);
+      socket.broadcast.emit("leave meet", socket.id);
     });
 
     //---------------kanban tasks socket
