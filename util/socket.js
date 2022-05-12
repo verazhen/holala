@@ -126,7 +126,9 @@ module.exports = (server) => {
       socket.broadcast.emit("user left", socket.id);
 
       if (blockTasks[onlineUsers[socket.id]]) {
-        delete blockTasks[onlineUsers[socket.id]][socket.id];
+        const kanbanId = onlineUsers[socket.id];
+        //delete the taskId blocked
+        delete blockTasks[kanbanId][socket.id];
         const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
           (accu, curr) => {
             const [listId] = Object.getOwnPropertyNames(curr);
@@ -191,7 +193,7 @@ module.exports = (server) => {
     socket.on("task unblock", (taskId) => {
       const kanbanId = onlineUsers[socket.id];
       //delete the taskId blocked
-      delete blockTasks[onlineUsers[socket.id]][socket.id];
+      delete blockTasks[kanbanId][socket.id];
       const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
         (accu, curr) => {
           const [listId] = Object.getOwnPropertyNames(curr);
