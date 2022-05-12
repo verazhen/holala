@@ -21,6 +21,9 @@ const List = ({
   user,
   ws,
   blockTasks,
+  editingRef,
+  taskUpdateQue,
+  setTaskUpdateQue
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
@@ -105,6 +108,9 @@ const List = ({
                     members={members}
                     user={user}
                     ws={ws}
+                    editingRef={editingRef}
+                    taskUpdateQue={taskUpdateQue}
+                    setTaskUpdateQue={setTaskUpdateQue}
                     blocked={blockTasks.some((block) => {
                       return block === task.id;
                     })}

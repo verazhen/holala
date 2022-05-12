@@ -27,6 +27,7 @@ import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_cont
 function Tables(props) {
   const [blockTasks, setBlockTasks] = useState([]);
   const [lists, setLists] = useState([]);
+  const [taskUpdateQue, setTaskUpdateQue] = useState(null);
   const [tags, setTags] = useState([]);
   const [user, setUser] = useState({});
   const [members, setMembers] = useState([]);
@@ -37,6 +38,7 @@ function Tables(props) {
   const openMenu = ({ currentTarget }) => setMenu(currentTarget);
   const closeMenu = () => setMenu(null);
   const listsRef = useRef([]);
+  const editingRef = useRef(false);
   const ws = useContext(SocketContext);
 
   function addList() {
@@ -93,17 +95,14 @@ function Tables(props) {
     const { source, destination } = result;
     const taskId = result.draggableId;
     const listId = columns[source.droppableId].id;
-    console.log("blockTasks");
-    console.log(blockTasks);
-    console.log(blockTasks[listId]);
     if (blockTasks[listId]) {
       if (
         blockTasks[listId].some((block) => {
           return block == taskId;
         })
       ) {
-        alert('the task is temporarily blocked by other user')
-        return
+        alert("the task is temporarily blocked by other user");
+        return;
       }
     }
 
@@ -200,6 +199,10 @@ function Tables(props) {
       }
     );
     ws.on("task update", (tasks) => {
+      if (editingRef.current) {
+        setTaskUpdateQue(tasks);
+        return;
+      }
       setLists(tasks);
     });
     ws.on("task block", (tasks) => {
@@ -328,6 +331,9 @@ function Tables(props) {
                           members={members}
                           user={user}
                           ws={ws}
+                          editingRef={editingRef}
+                          taskUpdateQue={taskUpdateQue}
+                          setTaskUpdateQue={setTaskUpdateQue}
                           blockTasks={blockTasks[id] ? blockTasks[id] : []}
                         />
                       </MDBox>

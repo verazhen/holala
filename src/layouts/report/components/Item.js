@@ -34,6 +34,9 @@ const Item = ({
   user,
   ws,
   blocked,
+  editingRef,
+  taskUpdateQue,
+  setTaskUpdateQue,
 }) => {
   const draggableId = `${taskId}`;
   const [open, setOpen] = useState(false);
@@ -67,7 +70,7 @@ const Item = ({
   };
 
   function onOpenModal(e) {
-    console.log(e.target.nodeName);
+    //check if clicking delete btn
     if (
       e.target.nodeName == "BUTTON" ||
       e.target.nodeName == "svg" ||
@@ -75,11 +78,14 @@ const Item = ({
     ) {
       return;
     }
+
     setOpen(true);
+    editingRef.current = true;
+
+    //emit to block the task
     if (user.role_id > 1) {
       return;
     }
-    //emit to block the task
     ws.emit("task block", taskId);
   }
 
@@ -89,6 +95,8 @@ const Item = ({
 
   function onCloseModal() {
     setOpen(false);
+    editingRef.current = false;
+
     if (user.role_id > 1) {
       return;
     }
@@ -175,6 +183,8 @@ const Item = ({
               setTags={setTags}
               memberList={members}
               user={user}
+              taskUpdateQue={taskUpdateQue}
+              setTaskUpdateQue={setTaskUpdateQue}
             />
           )}
         </div>

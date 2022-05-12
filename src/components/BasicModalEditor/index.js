@@ -66,6 +66,8 @@ function BasicModal({
   setTags,
   memberList,
   user,
+  taskUpdateQue,
+  setTaskUpdateQue,
 }) {
   const [title, setTitle] = useState(taskName);
   const [checked, setChecked] = useState(task.checked ? true : false);
@@ -165,7 +167,15 @@ function BasicModal({
         break;
       }
     }
-    const newLists = JSON.parse(JSON.stringify(lists));
+    let newLists;
+
+    //check if taskUpdateQue is empty
+    if (taskUpdateQue) {
+      newLists = JSON.parse(JSON.stringify(taskUpdateQue));
+      setTaskUpdateQue(null);
+    } else {
+      newLists = JSON.parse(JSON.stringify(lists));
+    }
     newLists[listIndex].tasks[taskIndex].title = title;
     newLists[listIndex].tasks[taskIndex].assignee = assigneeId;
     newLists[listIndex].tasks[taskIndex].due = due;
