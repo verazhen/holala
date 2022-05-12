@@ -37,6 +37,7 @@ const containerStyle = {
   zIndex: 99,
   left: "16vw",
   bottom: "0px",
+  overflowX: "auto",
 };
 
 const videoStyle = {
@@ -346,28 +347,34 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
 
         {room ? (
           <div style={containerStyle}>
-            <video
-              style={videoStyle}
-              muted
-              ref={userVideo}
-              autoPlay
-              playsInline
-            />
-            {peers ? (
-              peers.map((peer) => {
-                if (peer.peer.readable) {
-                  return (
-                    <Video2
-                      key={peer.peerID}
-                      peer={peer.peer}
-                      class="video-peer"
-                    />
-                  );
-                }
-              })
-            ) : (
-              <></>
-            )}
+            <Grid container direction="row" wrap="nowrap">
+              <Grid item>
+                <video
+                  style={videoStyle}
+                  muted
+                  ref={userVideo}
+                  autoPlay
+                  playsInline
+                />
+              </Grid>
+              {peers ? (
+                peers.map((peer) => {
+                  if (peer.peer.readable) {
+                    return (
+                      <Grid item>
+                        <Video2
+                          key={peer.peerID}
+                          peer={peer.peer}
+                          class="video-peer"
+                        />
+                      </Grid>
+                    );
+                  }
+                })
+              ) : (
+                <></>
+              )}
+            </Grid>
           </div>
         ) : (
           <></>
