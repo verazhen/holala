@@ -30,14 +30,12 @@ module.exports = (server) => {
   io.on("connection", (socket) => {
     console.log(`user ${socket.id} is connected`);
     //---------------chatroom socket
-    socket.on("kanban", async ({ kanbanId, uid }) => {
-      console.log(`user ${socket.id} joins in kanban: ${kanbanId}`);
+    socket.on("kanban", ({ kanbanId, uid }) => {
       socket.join(kanbanId);
       onlineUsers[socket.id] = kanbanId;
-      socket.on("getMessage", (message) => {
-        console.log(message);
+      socket.on("getMessage", async (message) => {
         io.to(kanbanId).emit("getMessage", message);
-        Kanban.updateChat(message).then((res) => console.log(res));
+        await Kanban.updateChat(message);
       });
 
       //init blocked tasks
@@ -56,81 +54,16 @@ module.exports = (server) => {
       }
     });
 
-    //---------------videoroom socket
-
-    socket.on("get room", async ({ uid, kanbanId }) => {
-      const { roomId, isNewRoom } = await Meeting.createMeeting({
-        uid,
-        kanbanId,
-      });
-      socket.broadcast.to(kanbanId).emit("get room", { roomId });
-      socket.emit("get room", { roomId, isNewRoom });
-    });
-
-    socket.on("leave room", async ({ uid, kanbanId }) => {
-      const result = await Meeting.leaveRoom({ uid, kanbanId });
-      let status;
-      let message;
-
-      if (result === null) {
-        status = 1;
-        message = `${uid} has left the room`;
-      } else if (!result) {
-        status = 2;
-        message = `failed to leave room`;
-      } else {
-        status = 3;
-        message = `${uid} has ended the room`;
-      }
-      console.log(message, result);
-
-      io.to(kanbanId).emit("leave room", { status, message, result });
-    });
-
-    socket.on("join room", (roomID) => {
-      console.log("a user join in room-", roomID);
-      if (users[roomID]) {
-        const length = users[roomID].length;
-        users[roomID].push(socket.id);
-      } else {
-        users[roomID] = [socket.id];
-      }
-      socketToRoom[socket.id] = roomID;
-      const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
-      console.log(usersInThisRoom);
-      socket.emit("all users", usersInThisRoom);
-    });
-
-    socket.on("sending signal", (payload) => {
-      io.to(payload.userToSignal).emit("user joined", {
-        signal: payload.signal,
-        callerID: payload.callerID,
-      });
-    });
-
-    socket.on("returning signal", (payload) => {
-      const str = socket.id + Math.floor(Math.random() * 100);
-      //       socket.receiverId = socket.receiverId
-      //         ? socket.receiverId
-      //         : socket.id + Math.floor(Math.random() * 100);
-      console.log("*************returning signal", str);
-      io.to(payload.callerID).emit("receiving returned signal", {
-        signal: payload.signal,
-        id: socket.id,
-      });
-    });
-
     socket.on("disconnect", () => {
       delete onlineUsers[socket.id];
-      console.log(onlineUsers);
       const roomID = socketToRoom[socket.id];
       let room = users[roomID];
       if (room) {
         room = room.filter((id) => id !== socket.id);
         users[roomID] = room;
       }
-      socket.broadcast.emit("user left", socket.id);
-
+      console.log("user disconnect");
+      console.log(users[roomID]);
       if (blockTasks[onlineUsers[socket.id]]) {
         const kanbanId = onlineUsers[socket.id];
         //delete the taskId blocked
@@ -146,25 +79,12 @@ module.exports = (server) => {
           },
           {}
         );
-        console.log(blockTasksObj);
         socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
       }
     });
 
-    socket.on("leave meet", () => {
-      const roomID = socketToRoom[socket.id];
-      let room = users[roomID];
-      if (room) {
-        room = room.filter((id) => id !== socket.id);
-        users[roomID] = room;
-      }
-      //       socket.broadcast.emit("user left", socket.id);
-      socket.broadcast.emit("leave meet", socket.id);
-    });
-
     //---------------kanban tasks socket
     socket.on("task update", ({ kanbanId, tasks }) => {
-      console.log(tasks);
       socket.broadcast.to(kanbanId).emit("task update", tasks);
     });
 
@@ -193,7 +113,6 @@ module.exports = (server) => {
         },
         {}
       );
-      console.log(blockTasksObj);
       socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
     });
 
@@ -212,8 +131,87 @@ module.exports = (server) => {
         },
         {}
       );
-      console.log(blockTasksObj);
       socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
+    });
+
+    //rtc connection
+    socket.on("get room", async ({ uid, kanbanId }) => {
+      socket.join(`rtc-${kanbanId}`);
+      const { roomId, isNewRoom } = await Meeting.createMeeting({
+        uid,
+        kanbanId,
+      });
+      socket.broadcast.to(kanbanId).emit("get room", { roomId });
+      socket.emit("get room", { roomId, isNewRoom });
+    });
+
+    socket.on("leave room", async ({ uid, kanbanId }) => {
+      const result = await Meeting.leaveRoom({ uid, kanbanId });
+      let status;
+      let message;
+
+      if (result === null) {
+        status = 1;
+        message = `${uid} has left the room`;
+      } else if (!result) {
+        status = 2;
+        message = `failed to leave room`;
+      } else {
+        status = 3;
+        message = `${uid} has ended the room`;
+      }
+
+      io.to(`rtc-${kanbanId}`).emit("leave room", { status, message, result });
+    });
+
+    socket.on("join room", (roomID) => {
+      console.log("a user join in room- ", roomID);
+      if (users[roomID]) {
+        users[roomID].push(socket.id);
+      } else {
+        users[roomID] = [socket.id];
+      }
+      socketToRoom[socket.id] = roomID;
+      const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+      console.log(users[roomID]);
+
+      //for new added user to sync online users
+      io.to(socket.id).emit("all users", usersInThisRoom);
+    });
+
+    socket.on("sending signal", (payload) => {
+      console.log(
+        `sending signal from ${socket.id} to ${payload.userToSignal}`
+      );
+      io.to(payload.userToSignal).emit("user joined", {
+        signal: payload.signal,
+        callerID: payload.callerID,
+      });
+    });
+
+    socket.on("returning signal", (payload) => {
+      const str = socket.id + Math.floor(Math.random() * 100);
+      //       socket.receiverId = socket.receiverId
+      //         ? socket.receiverId
+      //         : socket.id + Math.floor(Math.random() * 100);
+      console.log(`returning signal from ${socket.id} to ${payload.callerID}`);
+      io.to(payload.callerID).emit("receiving returned signal", {
+        signal: payload.signal,
+        id: socket.id,
+      });
+    });
+
+    socket.on("leave meet", () => {
+      const roomID = socketToRoom[socket.id];
+      let room = users[roomID];
+      if (room) {
+        room = room.filter((id) => id !== socket.id);
+        users[roomID] = room;
+      }
+      console.log("user left ", roomID);
+      console.log(users[roomID]);
+      io.to(`rtc-${roomID}`).emit("user left", socket.id);
+      //       socket.broadcast.emit("leave meet", socket.id);
     });
   });
 };

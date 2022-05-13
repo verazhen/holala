@@ -23,6 +23,7 @@ import { useMaterialUIController, setLayout } from "context";
 
 //Peer
 import Peer from "simple-peer";
+import webSocket from "socket.io-client";
 import { SOCKET_HOST } from "utils/constants";
 import { SocketProvider } from "examples/LayoutContainers/DashboardLayout/socket_context";
 import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_context";
@@ -61,7 +62,7 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   const [roomBtn, setRoomBtn] = useState("START MEETING");
   const [roomBtnColor, setRoomBtnColor] = useState("primary");
   const [roomStatus, setRoomStatus] = useState(null);
-  const [room, setRoom] = useState(false);
+  const [rtc, setRtc] = useState(null);
   const [stream, setStream] = useState(true);
   const [screen, setScreen] = useState(false);
   const [localStream, setLocalStream] = useState(null);
@@ -112,14 +113,17 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   };
 
   function createPeer(userToSignal, callerID, stream) {
+    //set local stream and create signal
     const peer = new Peer({
       initiator: true,
       trickle: false,
       stream,
     });
+    console.log("new peer", peer);
 
     peer.on("signal", (signal) => {
-      ws.emit("sending signal", {
+      console.log("signal", signal);
+      rtc.emit("sending signal", {
         userToSignal,
         callerID,
         signal,
@@ -137,7 +141,8 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
     });
 
     peer.on("signal", (signal) => {
-      ws.emit("returning signal", { signal, callerID });
+      console.log("returning signal", signal);
+      rtc.emit("returning signal", { signal, callerID });
     });
 
     peer.signal(incomingSignal);
@@ -155,20 +160,57 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
     );
   }, []);
 
+  function changeMeetingState() {
+    setVideoOpen(!videoOpen);
+
+    if (!rtc) {
+      console.log("connect to rtc");
+      setRtc(webSocket(`${SOCKET_HOST}`));
+      setRoomBtn("Connecting...");
+    } else {
+      setRoomBtn("START MEETING");
+      setRoomBtnColor("primary");
+      //if the room is created by the user stopRecording get the presigned url and
+      const uid = getLocalStorage("uid");
+      rtc.emit("leave room", { uid, kanbanId });
+      rtc.emit("leave meet", uid);
+      rtc.disconnect();
+      setRtc(null);
+
+      console.log(localStream.getTracks());
+      if (localStream.getTracks()) {
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+
+      setLocalStream(null);
+
+      roomRef.current = false;
+    }
+  }
+
   useEffect(() => {
-    if (ws) {
+    if (rtc) {
+      const uid = getLocalStorage("uid");
+      roomRef.current = true;
+      rtc.emit("get room", { uid, kanbanId });
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          setLocalStream(stream);
+        });
       //listen while meeting is started
-      ws.on("get room", (data) => {
+      rtc.on("get room", (data) => {
         console.log(`a meeting is started: `, data.roomId);
         setRoomStatus("(Meeting is created)");
         setRoomID(data.roomId);
-        console.log(data);
         if (data.isNewRoom) {
           startRecording();
         }
       });
 
-      ws.on("leave room", ({ message, result }) => {
+      rtc.on("leave room", ({ message, result }) => {
         setRoomStatus("");
         if (result) {
           recordUrlRef.current = result;
@@ -176,19 +218,22 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
         }
       });
     }
-  }, [ws]);
+  }, [rtc]);
 
   useEffect(() => {
     if (localStream) {
       userVideo.current.srcObject = localStream;
-      ws.emit("join room", kanbanId);
+      rtc.emit("join room", kanbanId);
       console.log(`you've joined a meeting room`);
       setRoomBtn("LEAVE THE ROOM");
       setRoomBtnColor("dark");
-      ws.on("all users", (users) => {
+      console.log(localStream);
+      rtc.on("all users", (users) => {
         const peers = [];
+        console.log("users", users);
+        //initialized online users
         users.forEach((userID) => {
-          const peer = createPeer(userID, ws.id, localStream);
+          const peer = createPeer(userID, rtc.id, localStream);
           peersRef.current.push({
             peerID: userID,
             peer,
@@ -201,7 +246,7 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
         setPeers(peers);
       });
 
-      ws.on("user joined", (payload) => {
+      rtc.on("user joined", (payload) => {
         const peer = addPeer(payload.signal, payload.callerID, localStream);
         peersRef.current.push({
           peerID: payload.callerID,
@@ -216,16 +261,18 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
         setPeers((users) => [...users, peerObj]);
       });
 
-      ws.on("receiving returned signal", (payload) => {
+      rtc.on("receiving returned signal", (payload) => {
         const item = peersRef.current.find((p) => p.peerID === payload.id);
         item.peer.signal(payload.signal);
       });
 
-      ws.on("user left", (id) => {
+      rtc.on("user left", (id) => {
         const peerObj = peersRef.current.find((p) => p.peerID === id);
-        if (peerObj) {
-          peerObj.peer.destroy();
-        }
+        //         console.log(peerObj);
+        //         if (peerObj) {
+        //           console.log("peerObj has destroyed");
+        //           peerObj.peer.destroy();
+        //         }
         const peers = peersRef.current.filter((p) => p.peerID !== id);
         peersRef.current = peers;
         setPeers(peers);
@@ -245,64 +292,6 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
     right: "40px",
     zIndex: 999,
   };
-
-  function changeMeetingState() {
-    setVideoOpen(!videoOpen);
-
-    if (!room) {
-      setRoom(true);
-      setRoomBtn("Connecting...");
-      const uid = getLocalStorage("uid");
-      roomRef.current = true;
-      ws.emit("get room", { uid, kanbanId });
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          setLocalStream(stream);
-        });
-    } else {
-      setRoom(false);
-      setRoomBtn("START MEETING");
-      setRoomBtnColor("primary");
-      //if the room is created by the user stopRecording get the presigned url and
-      const uid = getLocalStorage("uid");
-      ws.emit("leave room", { uid, kanbanId });
-
-      if (localStream && localStream.getTracks()) {
-        localStream.getTracks().forEach((track) => {
-          track.stop();
-        });
-      }
-      setLocalStream(null);
-
-      ws.emit("leave meet", ws.id);
-
-      ws.off("all users", (users) => {});
-
-      ws.off("user joined", (payload) => {});
-
-      ws.off("receiving returned signal", (payload) => {});
-      ws.off("user left", (payload) => {});
-      roomRef.current = false;
-    }
-  }
-
-  function changeStreamState() {
-    if (stream) {
-      setStream(false);
-    } else {
-      setStream(true);
-    }
-    streamRef.current = true;
-  }
-
-  function changeScreenState() {
-    if (screen) {
-      setScreen(false);
-    } else {
-      setScreen(true);
-    }
-  }
 
   return (
     <>
@@ -336,7 +325,7 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
           </Fab>
         </Box>
 
-        {room ? (
+        {rtc ? (
           <div style={containerStyle}>
             <Grid container direction="row" wrap="nowrap">
               <Grid item>
