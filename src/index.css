@@ -102,7 +102,6 @@
   background-color: transparent;
 }
 
-
 .list-title {
   font-size: 1.5rem;
   color: white;
@@ -231,6 +230,7 @@ input[type="file"]::file-selector-button:hover {
 .kanban {
   top: 0px !important;
   height: 350px !important;
+  overflow-y: auto !important;
 }
 
 .transcription-btn:hover {
@@ -318,4 +318,8 @@ input[type="file"]::file-selector-button:hover {
 .chat-body {
   height: 1100px;
   overflow: auto;
+}
+
+.css-1lhqsmn-MuiPaper-root-MuiAppBar-root {
+  z-index: 50 !important;
 }

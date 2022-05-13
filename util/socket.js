@@ -63,7 +63,8 @@ module.exports = (server) => {
         uid,
         kanbanId,
       });
-      io.to(kanbanId).emit("get room", { roomId, isNewRoom });
+      socket.broadcast.to(kanbanId).emit("get room", { roomId });
+      socket.emit("get room", { roomId, isNewRoom });
     });
 
     socket.on("leave room", async ({ uid, kanbanId }) => {
@@ -115,7 +116,7 @@ module.exports = (server) => {
       console.log("*************returning signal", str);
       io.to(payload.callerID).emit("receiving returned signal", {
         signal: payload.signal,
-        id: str,
+        id: socket.id,
       });
     });
 

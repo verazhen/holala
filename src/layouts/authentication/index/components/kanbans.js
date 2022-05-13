@@ -251,7 +251,7 @@ function Projects({ setUser }) {
                     </MDTypography>
                   </Grid>
                   <Grid item>
-                    <MDBox color="text" px={2}>
+                    <MDBox color="text" px={2} mr={2}>
                       <Icon
                         sx={{ cursor: "pointer", fontWeight: "bold" }}
                         fontSize="small"

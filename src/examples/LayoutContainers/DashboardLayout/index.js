@@ -162,6 +162,7 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
         console.log(`a meeting is started: `, data.roomId);
         setRoomStatus("(Meeting is created)");
         setRoomID(data.roomId);
+        console.log(data);
         if (data.isNewRoom) {
           startRecording();
         }
@@ -176,46 +177,6 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
       });
     }
   }, [ws]);
-
-  useEffect(() => {
-    if (room) {
-      const uid = getLocalStorage("uid");
-      roomRef.current = true;
-      ws.emit("get room", { uid, kanbanId });
-
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          setLocalStream(stream);
-        });
-    } else {
-      if (!roomRef.current) {
-        return;
-      }
-      setRoomBtn("START MEETING");
-      setRoomBtnColor("primary");
-      //if the room is created by the user stopRecording get the presigned url and
-      const uid = getLocalStorage("uid");
-      ws.emit("leave room", { uid, kanbanId });
-
-      if (localStream && localStream.getTracks()) {
-        localStream.getTracks().forEach((track) => {
-          track.stop();
-        });
-      }
-      setLocalStream(null);
-
-      ws.emit("leave meet", ws.id);
-
-      ws.off("all users", (users) => {});
-
-      ws.off("user joined", (payload) => {});
-
-      ws.off("receiving returned signal", (payload) => {});
-      ws.off("user left", (payload) => {});
-      roomRef.current = false;
-    }
-  }, [room]);
 
   useEffect(() => {
     if (localStream) {
@@ -288,11 +249,41 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   function changeMeetingState() {
     setVideoOpen(!videoOpen);
 
-    if (room) {
-      setRoom(false);
-    } else {
+    if (!room) {
       setRoom(true);
       setRoomBtn("Connecting...");
+      const uid = getLocalStorage("uid");
+      roomRef.current = true;
+      ws.emit("get room", { uid, kanbanId });
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          setLocalStream(stream);
+        });
+    } else {
+      setRoom(false);
+      setRoomBtn("START MEETING");
+      setRoomBtnColor("primary");
+      //if the room is created by the user stopRecording get the presigned url and
+      const uid = getLocalStorage("uid");
+      ws.emit("leave room", { uid, kanbanId });
+
+      if (localStream && localStream.getTracks()) {
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+      setLocalStream(null);
+
+      ws.emit("leave meet", ws.id);
+
+      ws.off("all users", (users) => {});
+
+      ws.off("user joined", (payload) => {});
+
+      ws.off("receiving returned signal", (payload) => {});
+      ws.off("user left", (payload) => {});
+      roomRef.current = false;
     }
   }
 
