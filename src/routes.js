@@ -5,11 +5,20 @@ import Meeting from "layouts/meeting";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import Index from "layouts/authentication/index";
+import None from "layouts/authentication/none";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
 
 const routes = [
+  {
+    type: "collapse",
+    name: "None",
+    key: "none",
+    icon: <Icon fontSize="small">index</Icon>,
+    route: "/",
+    component: <None />,
+  },
   {
     type: "collapse",
     name: "Index",
