@@ -160,7 +160,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   useEffect(() => {
-    console.log("data123");
     fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(
       ({ user, account }) => {
         setAccount(account);

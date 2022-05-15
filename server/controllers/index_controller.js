@@ -30,13 +30,14 @@ const getRoles = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const res = await Index.getUsers();
+    const response = await Index.getUsers();
 
-    res.status(200).send({
+    return res.status(200).send({
       status_code: 200,
-      data: res,
+      data: response,
     });
   } catch (error) {
+    console.log(error);
     return { error };
   }
 };
