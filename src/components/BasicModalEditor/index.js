@@ -330,6 +330,11 @@ function BasicModal({
     <Modal
       open={open}
       onClose={onCloseModal}
+      closeOnOverlayClick="true"
+      onOverlayClick={() => {
+        console.log("hi");
+        onCloseModal();
+      }}
       closeIcon={<></>}
       classNames={{
         modal: "basicModal",
@@ -509,7 +514,7 @@ function BasicModal({
           </Grid>
         </Grid>
         <Grid item style={{ width: "100%" }}>
-          <label className="modal-label" style={{ marginRight: "10px" }}>
+          <label className="modal-label"  style={{ marginRight: "10px" }}>
             Description
           </label>
           {editStatus === true ? (
@@ -548,8 +553,9 @@ function BasicModal({
                 style={{
                   color: "dimgrey",
                   fontSize: "1.2rem",
-                  lineHeight: "1.5rem",
+                  lineHeight: "2.3rem",
                   paddingLeft: "1rem",
+                  marginTop: "0.5rem",
                 }}
               >
                 <ReactMarkdown>{markdownText}</ReactMarkdown>
