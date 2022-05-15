@@ -42,15 +42,15 @@ const getTasksAmount = async (kanbanId, status, range) => {
     );
 
     const tasksSql = {
-      all: `SELECT count(*) FROM tasks WHERE list_id in (?) `,
-      finishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND checked > ?`,
-      unfinishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND checked IS NULL`,
+      all: `SELECT count(*) FROM tasks WHERE list_id in (?) AND delete_dt IS NOT NULL`,
+      finishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND checked > ? AND delete_dt IS NOT NULL`,
+      unfinishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND checked IS NULL AND delete_dt IS NOT NULL`,
     };
 
     const tasksComparedSql = {
-      all: `SELECT count(*) FROM tasks WHERE list_id in (?) AND create_dt <= ?`,
-      finishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?)  AND checked <= ? AND checked > ?`,
-      unfinishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND (checked IS NULL OR checked >= ?)`,
+      all: `SELECT count(*) FROM tasks WHERE list_id in (?) AND create_dt <= ? AND delete_dt IS NOT NULL`,
+      finishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?)  AND checked <= ? AND checked > ? AND delete_dt IS NOT NULL`,
+      unfinishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND (checked IS NULL OR checked >= ?) AND delete_dt IS NOT NULL`,
     };
 
     [[tasks]] = await pool.query(tasksSql[status], [listIds, rangeStart]);
@@ -116,7 +116,7 @@ const getTasksChart = async (kanbanId, range, interval) => {
     }
 
     const [tasks] = await pool.query(
-      `SELECT checked,create_dt FROM tasks WHERE list_id in (?)`,
+      `SELECT checked,create_dt FROM tasks WHERE list_id in (?) AND delete_dt IS NOT NULL`,
       [lists]
     );
 
@@ -222,13 +222,13 @@ const getLoading = async (kanbanId, range) => {
 
       if (lists.length > 0) {
         const [tasks] = await pool.query(
-          "SELECT id FROM tasks WHERE assignee = ? AND checked > ? AND list_id in (?)",
+          "SELECT id FROM tasks WHERE assignee = ? AND checked > ? AND list_id in (?) AND delete_dt IS NOT NULL",
           [members[i].uid, rangeStart, lists]
         );
         res.finished.push(tasks.length);
 
         const [tasks2] = await pool.query(
-          "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL AND list_id IN (?)",
+          "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL AND list_id IN (?) AND delete_dt IS NOT NULL",
           [members[i].uid, rangeStart, lists]
         );
         res.unfinished.push(tasks2.length);
