@@ -280,7 +280,8 @@ function BasicModal({
 
   function addTodo() {
     const newTodo = {
-      title: "Task ...",
+      title: "",
+      label: "add new task",
       checked: false,
       parent_id: taskId,
     };
@@ -400,7 +401,7 @@ function BasicModal({
                 </Grid>
               </Grid>
               <Grid item>
-                <label className="modal-label">Due</label>
+                <label className="modal-label">Status</label>
                 <Grid
                   container
                   spacing={2}
@@ -419,15 +420,16 @@ function BasicModal({
                       onChange={(e) => setChecked(!checked)}
                     />
                   </Grid>{" "}
-                  <Grid item>
-                    <MDInput
-                      type="date"
-                      value={due}
-                      style={{ width: "100%" }}
-                      onChange={(e) => setDue(e.target.value)}
-                    />
-                  </Grid>
                 </Grid>
+              </Grid>
+              <Grid item>
+                <label className="modal-label">Due</label>
+                <MDInput
+                  type="date"
+                  value={due}
+                  style={{ width: "100%" }}
+                  onChange={(e) => setDue(e.target.value)}
+                />
               </Grid>
             </Grid>
             <Grid item mt={1.5}>
@@ -440,7 +442,8 @@ function BasicModal({
                     </Grid>
                   );
                 })}
-                <Chip label="Add Tag" onClick={() => setOpenTagModal(true)} />
+                <Chip label="Add Tag" style={{backgroundColor:"#45C4B0",color:"white",fontWeight:"bold"}} onClick={()=>setOpenTagModal(true)
+                } />
               </Grid>
               <Modal
                 open={openTagModal}
@@ -542,7 +545,8 @@ function BasicModal({
 
                   <input
                     type="text"
-                    value={data.title}
+                    value={data.title ? data.title : ""}
+                    placeholder={data.label ? data.label : "add new task"}
                     className="todo"
                     onChange={(e) => editTodo(e, data)}
                   ></input>
