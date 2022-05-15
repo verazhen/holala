@@ -103,10 +103,6 @@ const Item = ({
     ws.emit("task unblock", taskId);
   }
 
-  useEffect(() => {
-    console.log(taskId, blocked);
-  }, [blocked]);
-
   return (
     <Draggable key={taskId} draggableId={draggableId} index={index}>
       {(provided) => (

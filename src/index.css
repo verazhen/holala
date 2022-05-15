@@ -320,7 +320,7 @@ input[type="file"]::file-selector-button:hover {
   overflow: auto;
 }
 
-.css-1lhqsmn-MuiPaper-root-MuiAppBar-root {
+.MuiAppBar-root {
   z-index: 50 !important;
 }
 
