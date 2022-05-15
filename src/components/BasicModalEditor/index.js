@@ -73,7 +73,7 @@ function BasicModal({
   const [checked, setChecked] = useState(task.checked ? true : false);
   const [due, setDue] = useState(getFullDate(task.due_dt));
   const [tagInput, setTagInput] = useState("");
-  const [notes, setNotes] = useState("say Something about this task...");
+  const [notes, setNotes] = useState("");
   const [files, setFiles] = useState([]);
   const [comments, setComments] = useState([]);
   const [myComment, setMyComment] = useState("");
@@ -336,7 +336,7 @@ function BasicModal({
       }}
     >
       <Grid container spacing={3} direction="column">
-        <Grid item>
+        <Grid item style={{ width: "100%" }}>
           <Grid container spacing={3} direction="row" wrap="nowrap" mb={3}>
             <Grid item xs={11}>
               <input
@@ -345,9 +345,6 @@ function BasicModal({
                 className="title"
                 onChange={(e) => setTitle(e.target.value)}
               ></input>
-            </Grid>
-            <Grid item>
-              <MDButton onClick={onSaveModal}>Save</MDButton>
             </Grid>
           </Grid>
           <Grid item>
@@ -442,8 +439,15 @@ function BasicModal({
                     </Grid>
                   );
                 })}
-                <Chip label="Add Tag" style={{backgroundColor:"#45C4B0",color:"white",fontWeight:"bold"}} onClick={()=>setOpenTagModal(true)
-                } />
+                <Chip
+                  label="Add Tag"
+                  style={{
+                    backgroundColor: "#45C4B0",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => setOpenTagModal(true)}
+                />
               </Grid>
               <Modal
                 open={openTagModal}
@@ -491,7 +495,7 @@ function BasicModal({
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>
+        <Grid item style={{ width: "100%" }}>
           <label className="modal-label" style={{ marginRight: "10px" }}>
             Description
           </label>
@@ -499,12 +503,13 @@ function BasicModal({
             <textarea
               className="description"
               ref={editor}
-              value={notes}
+              placeholder={"say Something in markdown about this task..."}
+              value={notes ? notes : ""}
               onChange={(e) => {
                 setNotes(e.target.value);
                 setMarkdownText(e.currentTarget.value);
               }}
-              style={{ height: "200px" }}
+              style={{ height: "200px", overflow: "auto" }}
               onBlur={() => setEditStatus(false)}
             ></textarea>
           ) : (
@@ -526,11 +531,20 @@ function BasicModal({
               >
                 Edit
               </MDButton>
-              <ReactMarkdown>{markdownText}</ReactMarkdown>
+              <div
+                style={{
+                  color: "dimgrey",
+                  fontSize: "1.2rem",
+                  lineHeight: "1.5rem",
+                  paddingLeft: "1rem",
+                }}
+              >
+                <ReactMarkdown>{markdownText}</ReactMarkdown>
+              </div>
             </>
           )}
         </Grid>
-        <Grid item>
+        <Grid item style={{ width: "100%" }}>
           <label className="modal-label">To-Do List</label>
           <MDProgress value={progress} mt={1} color="secondary" />
           <Grid container spacing={0.5} direction="column" wrap="nowrap" mt={1}>
@@ -612,14 +626,18 @@ function BasicModal({
                   <Paper
                     variant="outlined"
                     style={{
-                      height: "2.5rem",
-                      width: "100%",
                       borderRadius: "10px",
+                      width: "100%",
                     }}
                   >
                     <Typography
                       m={1}
-                      style={{ fontSize: "1rem", color: "dimgrey" }}
+                      style={{
+                        fontSize: "1rem",
+                        color: "dimgrey",
+                        width: "97%",
+                        overflowWrap: "break-word",
+                      }}
                     >
                       {comment.content}
                     </Typography>
@@ -628,8 +646,15 @@ function BasicModal({
               </Grid>
             );
           })}
-          <Grid container spacing={2} direction="row" wrap="nowrap" my={2}>
-            <Grid item xs={9.3}>
+          <Grid
+            container
+            spacing={2}
+            direction="row"
+            wrap="nowrap"
+            my={2}
+            style={{ width: "100%" }}
+          >
+            <Grid item xs={9.3} style={{ width: "100%" }}>
               <input
                 type="text"
                 value={myComment}
@@ -646,6 +671,11 @@ function BasicModal({
                 Leave Comment
               </MDButton>
             </Grid>
+          </Grid>
+          <Grid item>
+            <MDButton style={{marginLeft:"88%"}} onClick={onSaveModal}>
+              Save
+            </MDButton>
           </Grid>
         </Grid>
       </Grid>
