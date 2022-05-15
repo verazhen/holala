@@ -4,7 +4,7 @@ import { API_HOST } from "utils/constants";
 
 function None() {
   useEffect(() => {
-    fetchData(`${API_HOST}/`, false).then((data) => {
+    fetchData(`${API_HOST}/kanbans`, false).then((data) => {
       if (data) {
         window.location.href = "/index";
       }

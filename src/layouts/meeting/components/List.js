@@ -293,6 +293,7 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
           borderRadius: "10px",
           boxShadow: "2px 2px 8px 2px rgba(0, 0, 0, 0.1)",
         }}
+        className="meeting-card"
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -306,7 +307,12 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
             wrap="nowrap"
           >
             <Grid item mb={1} xs={12}>
-              <MDTypography variant="h5">會議記錄：{meetingTitle}</MDTypography>
+              <MDTypography variant="h5">
+                會議記錄：
+                {`${meetingTitle.slice(0, 10)} ${
+                  Number(meetingTitle.slice(11, 13)) + 8
+                }${meetingTitle.slice(13, 16)}`}
+              </MDTypography>
             </Grid>
             <Grid item mb={1} xs={12}>
               <MDTypography variant="h6">開始時間：{meetingTitle}</MDTypography>
@@ -385,6 +391,11 @@ const Meeting = ({ id, meetingTitle, record, members }) => {
                       }}
                     />
                   </Search>
+                  <div style={{ fontSize: "0.8rem" }}>
+                    {" "}
+                    click <AddCircleOutlineIcon /> button and add the transcript
+                    to your note!
+                  </div>
                   <div style={scriptDivStyle} className="transcript">
                     {transcription ? (
                       transcription.map(

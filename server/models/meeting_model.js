@@ -10,7 +10,7 @@ const { Role } = require("./components");
 const getMeetings = async (kanbanId) => {
   try {
     const [res] = await pool.query(
-      `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL`,
+      `SELECT * FROM meetings WHERE kanban_id = ? AND end_dt IS NOT NULL ORDER BY end_dt DESC;`,
       [kanbanId]
     );
 
