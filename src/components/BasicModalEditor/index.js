@@ -336,15 +336,28 @@ function BasicModal({
       }}
     >
       <Grid container spacing={3} direction="column">
-        <Grid item style={{ width: "100%" }}>
-          <Grid container spacing={3} direction="row" wrap="nowrap" mb={3}>
-            <Grid item xs={11}>
+        <Grid item>
+          <Grid
+            container
+            spacing={3}
+            direction="row"
+            wrap="nowrap"
+            mb={3}
+            style={{ width: "100%" }}
+          >
+            <Grid item mr="auto" xs={11}>
               <input
                 type="text"
                 value={title}
                 className="title"
                 onChange={(e) => setTitle(e.target.value)}
               ></input>
+            </Grid>
+            <Grid item>
+              <MDButton onClick={onSaveModal}>Save</MDButton>
+            </Grid>
+            <Grid item>
+              <MDButton onClick={() => onCloseModal()}>Cancel</MDButton>
             </Grid>
           </Grid>
           <Grid item>
@@ -612,7 +625,7 @@ function BasicModal({
             );
           })}
         </Grid>
-        <Grid item>
+        <Grid item style={{ width: "100%" }}>
           <label className="modal-label">Comment</label>
           {comments.map((comment) => {
             return (
@@ -672,10 +685,21 @@ function BasicModal({
               </MDButton>
             </Grid>
           </Grid>
-          <Grid item>
-            <MDButton style={{marginLeft:"88%"}} onClick={onSaveModal}>
-              Save
-            </MDButton>
+          <Grid
+            container
+            spacing={2}
+            direction="row"
+            wrap="nowrap"
+            my={2}
+            style={{ width: "100%" }}
+          >
+            <Grid item mr="auto"></Grid>
+            <Grid item>
+              <MDButton onClick={onSaveModal}>Save</MDButton>
+            </Grid>
+            <Grid item>
+              <MDButton onClick={() => onCloseModal()}>Cancel</MDButton>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
