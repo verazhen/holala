@@ -243,7 +243,7 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
                 type="text"
                 value={input}
                 onChange={inputChange}
-                onKeyDown={handleKeyDown}
+                onKeyPress={handleKeyDown}
                 className="chat-input"
               />
             </Grid>
