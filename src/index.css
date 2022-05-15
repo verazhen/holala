@@ -332,3 +332,9 @@ li {
   margin-left: 10px;
   line-height: 1.4rem;
 }
+
+.MuiDrawer-paperAnchorDockedLeft {
+    height: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
