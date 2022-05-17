@@ -120,18 +120,20 @@ module.exports = (server) => {
       const kanbanId = onlineUsers[socket.id];
       //delete the taskId blocked
       delete blockTasks[kanbanId][socket.id];
-      const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
-        (accu, curr) => {
-          const [listId] = Object.getOwnPropertyNames(curr);
-          if (!accu[listId]) {
-            accu[listId] = [];
-          }
-          accu[listId].push(curr[listId]);
-          return accu;
-        },
-        {}
-      );
-      socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
+      if (Object.values(blockTasks[kanbanId]).length > 0) {
+        const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
+          (accu, curr) => {
+            const [listId] = Object.getOwnPropertyNames(curr);
+            if (!accu[listId]) {
+              accu[listId] = [];
+            }
+            accu[listId].push(curr[listId]);
+            return accu;
+          },
+          {}
+        );
+        socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
+      }
     });
 
     //rtc connection
