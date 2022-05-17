@@ -43,13 +43,15 @@ const Item = ({
   const isBlocked = useRef(false);
 
   function deleteItem() {
-    const blocked = blockTasks.current[listId].some((block) => {
-      return block === taskId;
-    });
+    if (blockTasks.current[listId]) {
+      const blocked = blockTasks.current[listId].some((block) => {
+        return block === taskId;
+      });
 
-    if (blocked) {
-      alert("the item is blocked");
-      return;
+      if (blocked) {
+        alert("the item is blocked");
+        return;
+      }
     }
 
     const list = lists[listIndex];

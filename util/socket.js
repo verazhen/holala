@@ -51,6 +51,7 @@ module.exports = (server) => {
           },
           {}
         );
+        socket.emit("task block", blockTasksObj);
       }
     });
 

@@ -208,6 +208,7 @@ function Tables(props) {
     });
     ws.on("task block", (tasks) => {
       blockTasks.current = tasks;
+      console.log(blockTasks.current)
     });
   }, []);
 
