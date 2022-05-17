@@ -25,7 +25,7 @@ const List = ({
   taskUpdateQue,
   setTaskUpdateQue,
   videoOpen,
-  setVideoOpen
+  setVideoOpen,
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
@@ -34,8 +34,6 @@ const List = ({
     if (!submitTask.current) {
       return;
     }
-    console.log("useEffect Task");
-    console.log(tasks);
     fetchPutData(`${API_HOST}/kanban/${kanbanId}/list/${listId}`, tasks).then(
       (lists) => (submitTask.current = false)
     );
@@ -67,7 +65,7 @@ const List = ({
   const listStyleMeeting = { maxHeight: "40vh", overflow: "auto" };
 
   return (
-    <div className="list" style={videoOpen?listStyleMeeting:listStyle}>
+    <div className="list" style={videoOpen ? listStyleMeeting : listStyle}>
       {user.role_id > 1 ? (
         <></>
       ) : (
@@ -108,12 +106,10 @@ const List = ({
                     members={members}
                     user={user}
                     ws={ws}
+                    blockTasks={blockTasks}
                     editingRef={editingRef}
                     taskUpdateQue={taskUpdateQue}
                     setTaskUpdateQue={setTaskUpdateQue}
-                    blocked={blockTasks.some((block) => {
-                      return block === task.id;
-                    })}
                   />
                 );
               } else {

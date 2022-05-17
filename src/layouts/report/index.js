@@ -25,7 +25,6 @@ import { API_HOST } from "utils/constants";
 import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_context";
 
 function Tables(props) {
-  const [blockTasks, setBlockTasks] = useState([]);
   const [lists, setLists] = useState([]);
   const [videoOpen, setVideoOpen] = useState(false);
   const [taskUpdateQue, setTaskUpdateQue] = useState(null);
@@ -39,6 +38,7 @@ function Tables(props) {
   const openMenu = ({ currentTarget }) => setMenu(currentTarget);
   const closeMenu = () => setMenu(null);
   const listsRef = useRef([]);
+  const blockTasks = useRef({});
   const editingRef = useRef(false);
   const ws = useContext(SocketContext);
 
@@ -96,9 +96,9 @@ function Tables(props) {
     const { source, destination } = result;
     const taskId = result.draggableId;
     const listId = columns[source.droppableId].id;
-    if (blockTasks[listId]) {
+    if (blockTasks.current[listId]) {
       if (
-        blockTasks[listId].some((block) => {
+        blockTasks.current[listId].some((block) => {
           return block == taskId;
         })
       ) {
@@ -207,7 +207,7 @@ function Tables(props) {
       setLists(tasks);
     });
     ws.on("task block", (tasks) => {
-      setBlockTasks(tasks);
+      blockTasks.current = tasks;
     });
   }, []);
 
@@ -335,7 +335,7 @@ function Tables(props) {
                           editingRef={editingRef}
                           taskUpdateQue={taskUpdateQue}
                           setTaskUpdateQue={setTaskUpdateQue}
-                          blockTasks={blockTasks[id] ? blockTasks[id] : []}
+                          blockTasks={blockTasks}
                           videoOpen={videoOpen}
                           setVideoOpen={setVideoOpen}
                         />

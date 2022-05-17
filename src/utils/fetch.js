@@ -59,7 +59,6 @@ async function fetchPutData(url, data) {
   });
 
   const response = await res.json();
-  console.log(response);
 
   if (response.status_code === 4030 || response.status_code === 401) {
     window.location.href = "/authentication/sign-in";
