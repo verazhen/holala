@@ -39,11 +39,15 @@ import {
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
+window.test = function() {
+    document.getElementById("rtc").innerHTML = "Not React";
+
+}
+
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
-    direction,
     layout,
     openConfigurator,
     sidenavColor,

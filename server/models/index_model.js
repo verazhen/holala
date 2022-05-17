@@ -21,39 +21,6 @@ const getKanbans = async (uid) => {
   return res;
 };
 
-const getRoles = async () => {
-  try {
-    const roles = Object.keys(Role);
-    for (let i = 0; i < roles.length; i++) {
-      const roleObj = {
-        id: Number(roles[i]),
-        label: Role[roles[i]],
-      };
-      roles[i] = roleObj;
-    }
-
-    return roles;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-};
-
-const getUsers = async () => {
-  try {
-    let [users] = await pool.query("SELECT * FROM users ");
-    users = users.map((user) => {
-      delete user.password;
-      return user;
-    });
-
-    return users;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-};
-
 const addKanban = async (id, data) => {
   const conn = await pool.getConnection();
   try {
@@ -106,6 +73,39 @@ const updateKanban = async (data, kanbanId) => {
     return false;
   } finally {
     await conn.release();
+  }
+};
+
+const getRoles = async () => {
+  try {
+    const roles = Object.keys(Role);
+    for (let i = 0; i < roles.length; i++) {
+      const roleObj = {
+        id: Number(roles[i]),
+        label: Role[roles[i]],
+      };
+      roles[i] = roleObj;
+    }
+
+    return roles;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+const getUsers = async () => {
+  try {
+    let [users] = await pool.query("SELECT * FROM users ");
+    users = users.map((user) => {
+      delete user.password;
+      return user;
+    });
+
+    return users;
+  } catch (e) {
+    console.log(e);
+    return false;
   }
 };
 

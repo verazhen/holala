@@ -129,7 +129,6 @@ module.exports = (server) => {
           accu[listId].push(curr[listId]);
           return accu;
         },
-        {}
       );
       socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
     });

@@ -105,6 +105,7 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
 
     useEffect(() => {
       peer.on("stream", (stream) => {
+        document.getElementById("rtc").srcObject = stream;
         ref.current.srcObject = stream;
       });
     }, []);
@@ -163,6 +164,8 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   function changeMeetingState() {
     setVideoOpen(!videoOpen);
 
+    window.initRtc();
+
     if (!rtc) {
       console.log("connect to rtc");
       setRtc(webSocket(`${SOCKET_HOST}`));
@@ -195,11 +198,11 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
       const uid = getLocalStorage("uid");
       roomRef.current = true;
       rtc.emit("get room", { uid, kanbanId });
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          setLocalStream(stream);
-        });
+//       navigator.mediaDevices
+//         .getUserMedia({ video: true, audio: true })
+//         .then((stream) => {
+// //           setLocalStream(stream);
+//         });
       //listen while meeting is started
       rtc.on("get room", (data) => {
         console.log(`a meeting is started: `, data.roomId);
