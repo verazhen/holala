@@ -29,22 +29,29 @@ const Item = ({
   listId,
   task,
   tags,
+  blockTasks,
   setTags,
   members,
   user,
   ws,
-  blocked,
   editingRef,
   taskUpdateQue,
   setTaskUpdateQue,
 }) => {
   const draggableId = `${taskId}`;
   const [open, setOpen] = useState(false);
+  const isBlocked = useRef(false);
 
   function deleteItem() {
-    if (blocked) {
-      alert("the item is blocked");
-      return;
+    if (blockTasks.current[listId]) {
+      const blocked = blockTasks.current[listId].some((block) => {
+        return block === taskId;
+      });
+
+      if (blocked) {
+        alert("the item is blocked");
+        return;
+      }
     }
 
     const list = lists[listIndex];
@@ -77,6 +84,12 @@ const Item = ({
       e.target.nodeName == "path"
     ) {
       return;
+    }
+
+    if (blockTasks.current[listId]) {
+      isBlocked.current = blockTasks.current[listId].some((block) => {
+        return block === taskId;
+      });
     }
 
     setOpen(true);
@@ -140,7 +153,7 @@ const Item = ({
               )}
             </Grid>
           </MDBox>
-          {user.role_id > 1 || blocked ? (
+          {user.role_id > 1 || isBlocked.current ? (
             <BasicModal
               open={open}
               setOpen={setOpen}
