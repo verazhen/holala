@@ -102,7 +102,7 @@ const Item = ({
     if (user.role_id > 1 || isBlocked.current) {
       return;
     }
-    ws.emit("task block", taskId);
+    ws.emit("task block", { toBlock: true, taskId });
   }
 
   function startEdit(e) {
@@ -124,7 +124,7 @@ const Item = ({
         }
       );
     }
-    ws.emit("task unblock", taskId);
+    ws.emit("task block", { toBlock: false, taskId });
   }
 
   return (
@@ -184,7 +184,7 @@ const Item = ({
               memberList={members}
               user={user}
               taskUpdateQue={taskUpdateQue}
-                            setTaskUpdateQue={setTaskUpdateQue}
+              setTaskUpdateQue={setTaskUpdateQue}
             />
           ) : (
             <BasicModalEditor

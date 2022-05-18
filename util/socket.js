@@ -62,56 +62,43 @@ module.exports = (server) => {
         room = room.filter((id) => id !== socket.id);
         users[roomID] = room;
       }
-      console.log("user disconnect");
-      console.log(users[roomID]);
+
+      //delete the blocked list by socket.id
       if (blockTasks[onlineUsers[socket.id]]) {
         const kanbanId = onlineUsers[socket.id];
-        //delete the taskId blocked
         delete blockTasks[kanbanId][socket.id];
         const blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
-        console.log("disconnect");
-        console.log(blockTasksObj);
-        socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
+        socket.to(kanbanId).emit("task block", blockTasksObj);
       }
     });
 
     //---------------kanban tasks socket
     socket.on("task update", ({ kanbanId, tasks }) => {
-      socket.broadcast.to(kanbanId).emit("task update", tasks);
+      socket.to(kanbanId).emit("task update", tasks);
     });
 
     //---------------kanban race condition
-    socket.on("task block", async (taskId) => {
-      const kanbanId = onlineUsers[socket.id];
-      if (!blockTasks[kanbanId]) {
-        blockTasks[kanbanId] = {};
-      }
-
-      if (!blockTasks[kanbanId][socket.id]) {
-        blockTasks[kanbanId][socket.id] = {};
-      }
-
-      const task = await Kanban.getTask(taskId);
-
-      blockTasks[kanbanId][socket.id][task.list_id] = taskId;
-      const blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
-      console.log("task block");
-      console.log(blockTasksObj);
-      socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
-    });
-
-    socket.on("task unblock", (taskId) => {
-      const kanbanId = onlineUsers[socket.id];
-      //delete the taskId blocked
-      delete blockTasks[kanbanId][socket.id];
+    socket.on("task block", async ({ toBlock, taskId }) => {
       let blockTasksObj = {};
+      const kanbanId = onlineUsers[socket.id];
+      if (!toBlock) {
+        //delete the taskId blocked
+        delete blockTasks[kanbanId][socket.id];
+        if (Object.values(blockTasks[kanbanId]).length > 0) {
+          blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
+        }
+      } else {
+        blockTasks[kanbanId] = blockTasks[kanbanId] || {};
+        blockTasks[kanbanId][socket.id] = blockTasks[kanbanId][socket.id] || {};
 
-      if (Object.values(blockTasks[kanbanId]).length > 0) {
+        const task = await Kanban.getTask(taskId);
+
+        blockTasks[kanbanId][socket.id][task.list_id] = taskId;
         blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
       }
       console.log("task unblock");
       console.log(blockTasksObj);
-      socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
+      socket.to(kanbanId).emit("task block", blockTasksObj);
     });
 
     //rtc connection
