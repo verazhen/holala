@@ -183,6 +183,8 @@ const Item = ({
               setTags={setTags}
               memberList={members}
               user={user}
+              taskUpdateQue={taskUpdateQue}
+                            setTaskUpdateQue={setTaskUpdateQue}
             />
           ) : (
             <BasicModalEditor

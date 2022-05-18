@@ -66,6 +66,8 @@ function BasicModal({
   setTags,
   memberList,
   user,
+  taskUpdateQue,
+  setTaskUpdateQue,
 }) {
   const [title, setTitle] = useState(taskName);
   const [checked, setChecked] = useState(task.checked ? true : false);
@@ -91,6 +93,16 @@ function BasicModal({
   const initialization = useRef(null);
   const updateChips = useRef(null);
   const updateTodos = useRef(null);
+
+  function cancelBtn() {
+    //check if taskUpdateQue is empty
+    if (taskUpdateQue) {
+      setTaskUpdateQue(null);
+      const newLists = JSON.parse(JSON.stringify(taskUpdateQue));
+      setLists(newLists);
+    }
+    onCloseModal();
+  }
 
   useEffect(() => {
     if (!initialization.current) {
@@ -157,10 +169,6 @@ function BasicModal({
     });
   }
 
-  function onSaveModal() {
-    onCloseModal();
-  }
-
   useEffect(() => {
     setProgress(
       (todos.filter((todo) => {
@@ -196,7 +204,7 @@ function BasicModal({
               <input type="text" value={title} className="title"></input>
             </Grid>
             <Grid item>
-              <MDButton onClick={onSaveModal}>Close</MDButton>
+              <MDButton onClick={cancelBtn}>Close</MDButton>
             </Grid>
           </Grid>
           <Grid item>

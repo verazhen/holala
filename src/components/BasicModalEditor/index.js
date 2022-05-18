@@ -68,7 +68,7 @@ function BasicModal({
   user,
   taskUpdateQue,
   setTaskUpdateQue,
-  ws
+  ws,
 }) {
   const [title, setTitle] = useState(taskName);
   const [checked, setChecked] = useState(task.checked ? true : false);
@@ -200,6 +200,16 @@ function BasicModal({
       `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       newTask
     );
+    onCloseModal();
+  }
+
+  function cancelBtn() {
+    //check if taskUpdateQue is empty
+    if (taskUpdateQue) {
+      setTaskUpdateQue(null);
+      const newLists = JSON.parse(JSON.stringify(taskUpdateQue));
+      setLists(newLists);
+    }
     onCloseModal();
   }
 
@@ -367,7 +377,7 @@ function BasicModal({
               <MDButton onClick={onSaveModal}>Save</MDButton>
             </Grid>
             <Grid item>
-              <MDButton onClick={() => onCloseModal()}>Cancel</MDButton>
+              <MDButton onClick={cancelBtn}>Cancel</MDButton>
             </Grid>
           </Grid>
           <Grid item>
