@@ -9,6 +9,18 @@ function findNowRoom(client) {
   });
 }
 
+function blockNestToObj(nestedObj) {
+  const result = Object.values(nestedObj).reduce((accu, curr) => {
+    const [listId] = Object.getOwnPropertyNames(curr);
+    if (!accu[listId]) {
+      accu[listId] = [];
+    }
+    accu[listId].push(curr[listId]);
+    return accu;
+  }, {});
+  return result;
+}
+
 const users = {};
 const socketToRoom = {};
 const blockTasks = {};
@@ -21,11 +33,6 @@ module.exports = (server) => {
       methods: ["GET", "POST"],
     },
   });
-
-  // const subClient = Cache.duplicate();
-  //
-  // io.adapter(createAdapter(Cache, subClient));
-  //   io.listen(3400);
 
   io.on("connection", (socket) => {
     console.log(`user ${socket.id} is connected`);
@@ -40,17 +47,7 @@ module.exports = (server) => {
 
       //init blocked tasks
       if (blockTasks[kanbanId]) {
-        const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
-          (accu, curr) => {
-            const [listId] = Object.getOwnPropertyNames(curr);
-            if (!accu[listId]) {
-              accu[listId] = [];
-            }
-            accu[listId].push(curr[listId]);
-            return accu;
-          },
-          {}
-        );
+        const blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
         console.log("connection");
         console.log(blockTasksObj);
         socket.emit("task block", blockTasksObj);
@@ -71,17 +68,7 @@ module.exports = (server) => {
         const kanbanId = onlineUsers[socket.id];
         //delete the taskId blocked
         delete blockTasks[kanbanId][socket.id];
-        const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
-          (accu, curr) => {
-            const [listId] = Object.getOwnPropertyNames(curr);
-            if (!accu[listId]) {
-              accu[listId] = [];
-            }
-            accu[listId].push(curr[listId]);
-            return accu;
-          },
-          {}
-        );
+        const blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
         console.log("disconnect");
         console.log(blockTasksObj);
         socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
@@ -107,17 +94,7 @@ module.exports = (server) => {
       const task = await Kanban.getTask(taskId);
 
       blockTasks[kanbanId][socket.id][task.list_id] = taskId;
-      const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
-        (accu, curr) => {
-          const [listId] = Object.getOwnPropertyNames(curr);
-          if (!accu[listId]) {
-            accu[listId] = [];
-          }
-          accu[listId].push(curr[listId]);
-          return accu;
-        },
-        {}
-      );
+      const blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
       console.log("task block");
       console.log(blockTasksObj);
       socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
@@ -130,17 +107,7 @@ module.exports = (server) => {
       let blockTasksObj = {};
 
       if (Object.values(blockTasks[kanbanId]).length > 0) {
-        blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
-          (accu, curr) => {
-            const [listId] = Object.getOwnPropertyNames(curr);
-            if (!accu[listId]) {
-              accu[listId] = [];
-            }
-            accu[listId].push(curr[listId]);
-            return accu;
-          },
-          {}
-        );
+        blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
       }
       console.log("task unblock");
       console.log(blockTasksObj);
