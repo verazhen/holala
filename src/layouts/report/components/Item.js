@@ -205,6 +205,7 @@ const Item = ({
               user={user}
               taskUpdateQue={taskUpdateQue}
               setTaskUpdateQue={setTaskUpdateQue}
+              ws={ws}
             />
           )}
         </div>

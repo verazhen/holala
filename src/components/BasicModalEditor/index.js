@@ -68,6 +68,7 @@ function BasicModal({
   user,
   taskUpdateQue,
   setTaskUpdateQue,
+  ws
 }) {
   const [title, setTitle] = useState(taskName);
   const [checked, setChecked] = useState(task.checked ? true : false);
@@ -182,6 +183,11 @@ function BasicModal({
     newLists[listIndex].tasks[taskIndex].checked = checked;
     newLists[listIndex].tasks[taskIndex].description = markdownText;
     setLists(newLists);
+    const tasks = {
+      kanbanId,
+      tasks: newLists,
+    };
+    ws.emit("task update", tasks);
 
     const newTask = {
       title,
@@ -332,7 +338,6 @@ function BasicModal({
       onClose={onCloseModal}
       closeOnOverlayClick="true"
       onOverlayClick={() => {
-        console.log("hi");
         onCloseModal();
       }}
       closeIcon={<></>}
@@ -514,7 +519,7 @@ function BasicModal({
           </Grid>
         </Grid>
         <Grid item style={{ width: "100%" }}>
-          <label className="modal-label"  style={{ marginRight: "10px" }}>
+          <label className="modal-label" style={{ marginRight: "10px" }}>
             Description
           </label>
           {editStatus === true ? (
