@@ -77,24 +77,6 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   const streamRef = useRef(false);
   const [user, setUser] = useState({});
   const kanbanId = getLocalStorage("kanbanId");
-  const { status, startRecording, stopRecording, mediaBlobUrl } =
-    useReactMediaRecorder({
-      screen: true,
-      audio: true,
-      video: false,
-      onStop: function (blobUrl, blob) {
-        const uid = getLocalStorage("uid");
-        //fetch s3 bucket with pre-signed url
-        const url = recordUrlRef.current;
-        fetch(url, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "video/mp4",
-          },
-          body: blob,
-        });
-      },
-    });
 
   useEffect(() => {
     setLayout(dispatch, "dashboard");
@@ -164,68 +146,63 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   function changeMeetingState() {
     setVideoOpen(!videoOpen);
 
-    window.initRtc();
 
-    if (!rtc) {
+
+    if (!videoOpen) {
       console.log("connect to rtc");
-      setRtc(webSocket(`${SOCKET_HOST}`));
+          window.initRtc();
+//       setRtc(webSocket(`${SOCKET_HOST}`));
       setRoomBtn("Connecting...");
     } else {
       setRoomBtn("START MEETING");
       setRoomBtnColor("primary");
+      window.closeRtc();
       //if the room is created by the user stopRecording get the presigned url and
-      const uid = getLocalStorage("uid");
-      rtc.emit("leave room", { uid, kanbanId });
-      rtc.emit("leave meet", uid);
-      rtc.disconnect();
-      setRtc(null);
+//       const uid = getLocalStorage("uid");
+//       rtc.emit("leave room", { uid, kanbanId });
+//       rtc.emit("leave meet", uid);
+//       rtc.disconnect();
+//       setRtc(null);
 
-      console.log(localStream.getTracks());
-      if (localStream.getTracks()) {
-        localStream.getTracks().forEach((track) => {
-          track.stop();
-        });
-      }
-
-      setLocalStream(null);
+//       console.log(localStream.getTracks());
+//       if (localStream.getTracks()) {
+//         localStream.getTracks().forEach((track) => {
+//           track.stop();
+//         });
+//       }
+//
+//       setLocalStream(null);
 
       roomRef.current = false;
     }
   }
 
-  useEffect(() => {
-    if (rtc) {
-      const uid = getLocalStorage("uid");
-      roomRef.current = true;
-      rtc.emit("get room", { uid, kanbanId });
-//       navigator.mediaDevices
-//         .getUserMedia({ video: true, audio: true })
-//         .then((stream) => {
-// //           setLocalStream(stream);
-//         });
-      //listen while meeting is started
-      rtc.on("get room", (data) => {
-        console.log(`a meeting is started: `, data.roomId);
-        setRoomStatus("(Meeting is created)");
-        setRoomID(data.roomId);
-        if (data.isNewRoom) {
-          startRecording();
-        }
-      });
-
-      rtc.on("leave room", ({ message, result }) => {
-        setRoomStatus("");
-        if (result) {
-          recordUrlRef.current = result;
-          stopRecording();
-        }
-      });
-    }
-  }, [rtc]);
+//   useEffect(() => {
+//     if (rtc) {
+//       const uid = getLocalStorage("uid");
+//       roomRef.current = true;
+//       rtc.emit("get room", { uid, kanbanId });
+// //       navigator.mediaDevices
+// //         .getUserMedia({ video: true, audio: true })
+// //         .then((stream) => {
+// // //           setLocalStream(stream);
+// //         });
+//       //listen while meeting is started
+// //       rtc.on("get room", (data) => {
+// //         console.log(`a meeting is started: `, data.roomId);
+// //         setRoomStatus("(Meeting is created)");
+// //         setRoomID(data.roomId);
+// //         if (data.isNewRoom) {
+// //           startRecording();
+// //         }
+// //       });
+//
+//     }
+//   }, [rtc]);
 
   useEffect(() => {
     if (localStream) {
-      userVideo.current.srcObject = localStream;
+//       userVideo.current.srcObject = localStream;
       rtc.emit("join room", kanbanId);
       console.log(`you've joined a meeting room`);
       setRoomBtn("LEAVE THE ROOM");

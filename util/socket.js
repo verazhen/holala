@@ -128,7 +128,7 @@ module.exports = (server) => {
           }
           accu[listId].push(curr[listId]);
           return accu;
-        },
+        }
       );
       socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
     });
@@ -189,10 +189,6 @@ module.exports = (server) => {
     });
 
     socket.on("returning signal", (payload) => {
-      const str = socket.id + Math.floor(Math.random() * 100);
-      //       socket.receiverId = socket.receiverId
-      //         ? socket.receiverId
-      //         : socket.id + Math.floor(Math.random() * 100);
       console.log(`returning signal from ${socket.id} to ${payload.callerID}`);
       io.to(payload.callerID).emit("receiving returned signal", {
         signal: payload.signal,
@@ -200,7 +196,7 @@ module.exports = (server) => {
       });
     });
 
-    socket.on("leave meet", () => {
+    socket.on("leave meet", (kanbanId) => {
       const roomID = socketToRoom[socket.id];
       let room = users[roomID];
       if (room) {
@@ -209,8 +205,7 @@ module.exports = (server) => {
       }
       console.log("user left ", roomID);
       console.log(users[roomID]);
-      io.to(`rtc-${roomID}`).emit("user left", socket.id);
-      //       socket.broadcast.emit("leave meet", socket.id);
+      io.to(`rtc-${kanbanId}`).emit("user left", socket.id);
     });
   });
 };
