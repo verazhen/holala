@@ -82,57 +82,6 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
     setLayout(dispatch, "dashboard");
   }, [pathname]);
 
-  const Video2 = ({ peer }) => {
-    const ref = useRef();
-
-    useEffect(() => {
-      peer.on("stream", (stream) => {
-        document.getElementById("rtc").srcObject = stream;
-        ref.current.srcObject = stream;
-      });
-    }, []);
-
-    return <video style={videoStyle} playsInline autoPlay ref={ref} />;
-  };
-
-  function createPeer(userToSignal, callerID, stream) {
-    //set local stream and create signal
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream,
-    });
-    console.log("new peer", peer);
-
-    peer.on("signal", (signal) => {
-      console.log("signal", signal);
-      rtc.emit("sending signal", {
-        userToSignal,
-        callerID,
-        signal,
-      });
-    });
-
-    return peer;
-  }
-
-  function addPeer(incomingSignal, callerID, stream) {
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream,
-    });
-
-    peer.on("signal", (signal) => {
-      console.log("returning signal", signal);
-      rtc.emit("returning signal", { signal, callerID });
-    });
-
-    peer.signal(incomingSignal);
-
-    return peer;
-  }
-
   useEffect(() => {
     const kanbanId = getLocalStorage("kanbanId");
     fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(
@@ -146,117 +95,22 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
   function changeMeetingState() {
     setVideoOpen(!videoOpen);
 
-
-
     if (!videoOpen) {
-      console.log("connect to rtc");
-          window.initRtc();
-//       setRtc(webSocket(`${SOCKET_HOST}`));
       setRoomBtn("Connecting...");
+      window.initRtc();
+      setRoomBtn("STOP MEETING");
     } else {
       setRoomBtn("START MEETING");
       setRoomBtnColor("primary");
       window.closeRtc();
-      //if the room is created by the user stopRecording get the presigned url and
-//       const uid = getLocalStorage("uid");
-//       rtc.emit("leave room", { uid, kanbanId });
-//       rtc.emit("leave meet", uid);
-//       rtc.disconnect();
-//       setRtc(null);
-
-//       console.log(localStream.getTracks());
-//       if (localStream.getTracks()) {
-//         localStream.getTracks().forEach((track) => {
-//           track.stop();
-//         });
-//       }
-//
-//       setLocalStream(null);
-
       roomRef.current = false;
     }
   }
 
-//   useEffect(() => {
-//     if (rtc) {
-//       const uid = getLocalStorage("uid");
-//       roomRef.current = true;
-//       rtc.emit("get room", { uid, kanbanId });
-// //       navigator.mediaDevices
-// //         .getUserMedia({ video: true, audio: true })
-// //         .then((stream) => {
-// // //           setLocalStream(stream);
-// //         });
-//       //listen while meeting is started
-// //       rtc.on("get room", (data) => {
-// //         console.log(`a meeting is started: `, data.roomId);
-// //         setRoomStatus("(Meeting is created)");
-// //         setRoomID(data.roomId);
-// //         if (data.isNewRoom) {
-// //           startRecording();
-// //         }
-// //       });
-//
-//     }
-//   }, [rtc]);
-
   useEffect(() => {
     if (localStream) {
-//       userVideo.current.srcObject = localStream;
-      rtc.emit("join room", kanbanId);
-      console.log(`you've joined a meeting room`);
       setRoomBtn("LEAVE THE ROOM");
       setRoomBtnColor("dark");
-      console.log(localStream);
-      rtc.on("all users", (users) => {
-        const peers = [];
-        console.log("users", users);
-        //initialized online users
-        users.forEach((userID) => {
-          const peer = createPeer(userID, rtc.id, localStream);
-          peersRef.current.push({
-            peerID: userID,
-            peer,
-          });
-          peers.push({
-            peerID: userID,
-            peer,
-          });
-        });
-        setPeers(peers);
-      });
-
-      rtc.on("user joined", (payload) => {
-        const peer = addPeer(payload.signal, payload.callerID, localStream);
-        peersRef.current.push({
-          peerID: payload.callerID,
-          peer,
-        });
-
-        const peerObj = {
-          peer,
-          peerID: payload.callerID,
-        };
-
-        setPeers((users) => [...users, peerObj]);
-      });
-
-      rtc.on("receiving returned signal", (payload) => {
-        const item = peersRef.current.find((p) => p.peerID === payload.id);
-        item.peer.signal(payload.signal);
-      });
-
-      rtc.on("user left", (id) => {
-        const peerObj = peersRef.current.find((p) => p.peerID === id);
-        //         console.log(peerObj);
-        //         if (peerObj) {
-        //           console.log("peerObj has destroyed");
-        //           peerObj.peer.destroy();
-        //         }
-        const peers = peersRef.current.filter((p) => p.peerID !== id);
-        peersRef.current = peers;
-        setPeers(peers);
-      });
     }
   }, [localStream]);
 
@@ -304,41 +158,6 @@ function DashboardLayout({ children, videoOpen, setVideoOpen }) {
             </Grid>
           </Fab>
         </Box>
-
-        {rtc ? (
-          <div style={containerStyle}>
-            <Grid container direction="row" wrap="nowrap">
-              <Grid item>
-                <video
-                  style={videoStyle}
-                  muted
-                  ref={userVideo}
-                  autoPlay
-                  playsInline
-                />
-              </Grid>
-              {peers ? (
-                peers.map((peer) => {
-                  if (peer.peer.readable) {
-                    return (
-                      <Grid item>
-                        <Video2
-                          key={peer.peerID}
-                          peer={peer.peer}
-                          class="video-peer"
-                        />
-                      </Grid>
-                    );
-                  }
-                })
-              ) : (
-                <></>
-              )}
-            </Grid>
-          </div>
-        ) : (
-          <></>
-        )}
 
         <MDBox
           sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({

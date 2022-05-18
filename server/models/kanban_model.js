@@ -247,7 +247,6 @@ const updateList = async (tasks) => {
       [values]
     );
 
-    console.log(res);
     await conn.query("COMMIT");
     return res;
   } catch (e) {

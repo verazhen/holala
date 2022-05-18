@@ -31,11 +31,17 @@ const List = ({
   const delStatus = useRef(false);
 
   useEffect(() => {
-    if (!submitTask.current) {
+    if (tasks.length === 0 || submitTask.current !== tasks[0].list_id) {
       return;
     }
+
+    console.log("----------------");
+    console.log(tasks);
+
     fetchPutData(`${API_HOST}/kanban/${kanbanId}/list/${listId}`, tasks).then(
-      (lists) => (submitTask.current = false)
+      () => {
+        submitTask.current = null;
+      }
     );
   }, [tasks]);
 
@@ -82,6 +88,11 @@ const List = ({
       <Droppable droppableId={droppableId} index={listIndex}>
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
+            {tasks.length === 0 ? (
+              <div style={{ height: "10px" }}></div>
+            ) : (
+              <></>
+            )}
             {tasks.map((task, index) => {
               if (!task.delete_dt) {
                 return (

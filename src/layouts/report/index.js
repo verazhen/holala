@@ -116,8 +116,10 @@ function Tables(props) {
       const [removed] = sourceItems.splice(source.index, 1);
 
       destItems.splice(destination.index, 0, removed);
-
-      if (destination.index != 0) {
+      if (destColumn.tasks.length === 0) {
+        destItems[destination.index].list_id =
+          columns[destination.droppableId].id;
+      } else if (destination.index != 0) {
         destItems[destination.index].orders =
           destItems[destination.index - 1].orders + 1;
         destItems[destination.index].list_id =
@@ -136,8 +138,7 @@ function Tables(props) {
       const newList = JSON.parse(JSON.stringify(lists));
       newList[source.droppableId].tasks = sourceItems;
       newList[destination.droppableId].tasks = destItems;
-
-      submitTask.current = true;
+      submitTask.current = destItems[0].list_id;
 
       setLists(newList);
       const tasks = {
@@ -163,7 +164,7 @@ function Tables(props) {
       }
       const newList = JSON.parse(JSON.stringify(lists));
       newList[source.droppableId].tasks = copiedItems;
-      submitTask.current = true;
+      submitTask.current = copiedItems[0].list_id;
       setLists(newList);
       const tasks = {
         kanbanId,
@@ -208,7 +209,7 @@ function Tables(props) {
     });
     ws.on("task block", (tasks) => {
       blockTasks.current = tasks;
-      console.log(blockTasks.current)
+      console.log(blockTasks.current);
     });
   }, []);
 
