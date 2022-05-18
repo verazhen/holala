@@ -51,6 +51,8 @@ module.exports = (server) => {
           },
           {}
         );
+        console.log("connection");
+        console.log(blockTasksObj);
         socket.emit("task block", blockTasksObj);
       }
     });
@@ -80,6 +82,8 @@ module.exports = (server) => {
           },
           {}
         );
+        console.log("disconnect");
+        console.log(blockTasksObj);
         socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
       }
     });
@@ -114,6 +118,8 @@ module.exports = (server) => {
         },
         {}
       );
+      console.log("task block");
+      console.log(blockTasksObj);
       socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
     });
 
@@ -121,8 +127,10 @@ module.exports = (server) => {
       const kanbanId = onlineUsers[socket.id];
       //delete the taskId blocked
       delete blockTasks[kanbanId][socket.id];
+      let blockTasksObj = {};
+
       if (Object.values(blockTasks[kanbanId]).length > 0) {
-        const blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
+        blockTasksObj = Object.values(blockTasks[kanbanId]).reduce(
           (accu, curr) => {
             const [listId] = Object.getOwnPropertyNames(curr);
             if (!accu[listId]) {
@@ -133,8 +141,10 @@ module.exports = (server) => {
           },
           {}
         );
-        socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
       }
+      console.log("task unblock");
+      console.log(blockTasksObj);
+      socket.broadcast.to(kanbanId).emit("task block", blockTasksObj);
     });
 
     //rtc connection

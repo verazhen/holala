@@ -41,6 +41,7 @@ const Item = ({
   const draggableId = `${taskId}`;
   const [open, setOpen] = useState(false);
   const isBlocked = useRef(false);
+  const isEditor = useRef(false);
 
   function deleteItem() {
     if (blockTasks.current[listId]) {
@@ -68,7 +69,7 @@ const Item = ({
     fetchPutData(
       `${API_HOST}/kanban/${kanbanId}/list/${listId}/task/${taskId}`,
       data
-    ).then((res) => console.log(res));
+    );
   }
   const styles = {
     fontFamily: "sans-serif",
@@ -90,13 +91,15 @@ const Item = ({
       isBlocked.current = blockTasks.current[listId].some((block) => {
         return block === taskId;
       });
+    } else {
+      isBlocked.current = false;
     }
 
     setOpen(true);
     editingRef.current = true;
 
     //emit to block the task
-    if (user.role_id > 1) {
+    if (user.role_id > 1 || isBlocked.current) {
       return;
     }
     ws.emit("task block", taskId);
@@ -110,8 +113,16 @@ const Item = ({
     setOpen(false);
     editingRef.current = false;
 
-    if (user.role_id > 1) {
+    if (user.role_id > 1 || isBlocked.current) {
       return;
+    }
+
+    if (blockTasks.current[listId]) {
+      blockTasks.current[listId] = blockTasks.current[listId].filter(
+        (block) => {
+          return block !== taskId;
+        }
+      );
     }
     ws.emit("task unblock", taskId);
   }
