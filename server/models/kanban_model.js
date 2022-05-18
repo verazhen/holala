@@ -158,9 +158,7 @@ const addNewTask = async (data, listId) => {
   try {
     await conn.query("START TRANSACTION");
 
-    const dateTime = Date.now();
-    const timestamp = Math.floor(dateTime / 1000);
-    const orders = timestamp;
+    const orders = Date.now() * 100;
     const [res] = await conn.query(
       "INSERT INTO tasks (list_id,title,orders,parent_id) VALUES (?,?,?,?)",
       [listId, data.title, orders, data.parent_id]
@@ -238,6 +236,7 @@ const updateList = async (tasks) => {
     await conn.query("START TRANSACTION");
 
     const values = tasks.map(({ id, list_id, title, orders }) => {
+      console.log(id, list_id, title, orders);
       return [id, list_id, title, orders];
     });
 
@@ -248,6 +247,7 @@ const updateList = async (tasks) => {
       [values]
     );
 
+    console.log(res);
     await conn.query("COMMIT");
     return res;
   } catch (e) {
@@ -430,5 +430,5 @@ module.exports = {
   updateListDetail,
   updateMembers,
   getKanban,
-  getTask
+  getTask,
 };
