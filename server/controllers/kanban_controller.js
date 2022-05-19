@@ -1,24 +1,43 @@
 const Kanban = require("../models/kanban_model");
+const { wrapModel } = require("../../util/util");
 
 const getTasks = async (req, res) => {
   const { kanbanId } = req.params;
   const { user } = req;
-  const data = await Kanban.getTasks(kanbanId, user);
+  const response = await wrapModel(Kanban.getTasks, kanbanId, user);
 
-  return res.json(data);
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
+
+  return res.json(response);
 };
 
 const getKanban = async (req, res) => {
   const { kanbanId } = req.params;
-  const data = await Kanban.getKanban(kanbanId);
+  const response = await wrapModel(Kanban.getKanban, kanbanId);
 
-  return res.json({ data });
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
+
+  return res.json({ data: response });
 };
 
 const addNewTask = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId } = req.params;
-  const response = await Kanban.addNewTask(data, listId);
+  const response = await wrapModel(Kanban.addNewTask, data, listId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({ id: response });
 };
@@ -26,18 +45,30 @@ const addNewTask = async (req, res) => {
 const getTaskDetails = async (req, res) => {
   const { user } = req;
   const { kanbanId, listId, taskId } = req.params;
-  const data = await Kanban.getTaskDetails(user, taskId);
+  const response = await wrapModel(Kanban.getTaskDetails, user, taskId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
-    data,
+    data: response,
   });
 };
 
-const addCard = async (req, res) => {
+const addList = async (req, res) => {
   const { data } = req.body;
   const { kanbanId } = req.params;
 
-  const response = await Kanban.addList(kanbanId, data);
+  const response = await wrapModel(Kanban.addList, kanbanId, data);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
   return res.json({
     data: { listId: response.insertId },
   });
@@ -46,7 +77,13 @@ const addCard = async (req, res) => {
 const updateList = async (req, res) => {
   const { data } = req.body;
   const { listId } = req.params;
-  const response = await Kanban.updateList(data);
+  const response = await wrapModel(Kanban.updateList, data);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     data: { listId, taskId: response.insertId },
@@ -56,23 +93,41 @@ const updateList = async (req, res) => {
 const updateTask = async (req, res) => {
   const { data } = req.body;
   const { taskId } = req.params;
-  const response = await Kanban.updateTask(data, taskId);
+  const response = await wrapModel(Kanban.updateTask, data, taskId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({ data: response });
 };
 
 const getChat = async (req, res) => {
   const { kanbanId } = req.params;
-  const data = await Kanban.getChat(kanbanId);
+  const response = await wrapModel(Kanban.getChat, kanbanId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
-    data,
+    data: response,
   });
 };
 
 const updateChat = async (req, res) => {
   const { data } = req.body;
-  const response = await Kanban.updateChat(data);
+  const response = await wrapModel(Kanban.updateChat, data);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     response,
@@ -83,7 +138,13 @@ const addComment = async (req, res) => {
   const { data } = req.body;
   const { user } = req;
   const { kanbanId, listId, taskId } = req.params;
-  const response = await Kanban.addComment(data, user, taskId);
+  const response = await wrapModel(Kanban.addComment, data, user, taskId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     response,
@@ -93,7 +154,13 @@ const addComment = async (req, res) => {
 const updateTags = async (req, res) => {
   const { data } = req.body;
   const { taskId } = req.params;
-  const response = await Kanban.updateTags(data, taskId);
+  const response = await wrapModel(Kanban.updateTags, data, taskId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     response,
@@ -103,7 +170,13 @@ const updateTags = async (req, res) => {
 const updateTodos = async (req, res) => {
   const { data } = req.body;
   const { taskId, listId } = req.params;
-  const response = await Kanban.updateTodos(data, taskId, listId);
+  const response = await wrapModel(Kanban.updateTodos, data, taskId, listId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     response,
@@ -113,7 +186,13 @@ const updateTodos = async (req, res) => {
 const uploadImage = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId, taskId } = req.params;
-  const response = await Kanban.uploadImage(kanbanId, taskId);
+  const response = await wrapModel(Kanban.uploadImage, kanbanId, taskId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     data: response,
@@ -123,7 +202,13 @@ const uploadImage = async (req, res) => {
 const updateListDetail = async (req, res) => {
   const { data } = req.body;
   const { kanbanId, listId } = req.params;
-  const response = await Kanban.updateListDetail(data, listId);
+  const response = await wrapModel(Kanban.updateListDetail, data, listId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     data: response,
@@ -133,7 +218,13 @@ const updateListDetail = async (req, res) => {
 const updateMembers = async (req, res) => {
   const { data } = req.body;
   const { kanbanId } = req.params;
-  const response = await Kanban.updateMembers(data, kanbanId);
+  const response = await wrapModel(Kanban.updateMembers, data, kanbanId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
 
   return res.json({
     data: response,
@@ -142,7 +233,7 @@ const updateMembers = async (req, res) => {
 
 module.exports = {
   getTasks,
-  addCard,
+  addList,
   updateList,
   getChat,
   updateChat,
