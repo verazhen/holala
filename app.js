@@ -32,6 +32,21 @@ app.use("/api/" + API_VERSION, [
   require("./server/routes/report_route"),
 ]);
 
+app.use(function (req, res, next) {
+  res.status(404).send({
+    status_code: 404,
+    error: "Route not found.",
+  });
+});
+
+app.use(function (err, req, res, next) {
+  console.log(err);
+  res.status(500).send({
+    status_code: 500,
+    error: "Internal Server Error",
+  });
+});
+
 server.listen(port, async () => {
   console.log(`Listening on port: ${port}`);
 });
