@@ -303,7 +303,7 @@ function BasicModal({
     };
 
     fetchSetData(
-      `${API_HOST}/kanban/${kanbanId}/list/${listId}/addTest`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task`,
       newTodo
     );
 

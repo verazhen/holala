@@ -4,7 +4,7 @@ const { wrapAsync, authentication } = require("../../util/util");
 
 const {
   getTasks,
-  addCard,
+  addList,
   updateList,
   getChat,
   addComment,
@@ -37,11 +37,11 @@ router
 //add new List or update order
 router
   .route("/kanban/:kanbanId/tasks")
-  .post(authentication(Role.editor), wrapAsync(addCard));
+  .post(authentication(Role.editor), wrapAsync(addList));
 
 //add a new task/todo
 router
-  .route("/kanban/:kanbanId/list/:listId/addTest")
+  .route("/kanban/:kanbanId/list/:listId/task")
   .post(authentication(Role.editor), wrapAsync(addNewTask));
 
 //update a task/todo

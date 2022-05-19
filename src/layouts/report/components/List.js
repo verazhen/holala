@@ -50,7 +50,7 @@ const List = ({
     const list = lists[listIndex];
     const newTask = { unique_id: v4(), title, checked: 0 };
     fetchSetData(
-      `${API_HOST}/kanban/${kanbanId}/list/${listId}/addTest`,
+      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task`,
       newTask
     ).then(({ id }) => {
       newTask.id = id;
