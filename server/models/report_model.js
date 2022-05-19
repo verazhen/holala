@@ -1,41 +1,11 @@
 const { pool } = require("./mysqlcon");
-
-function getFullDate(targetDate) {
-  var D, y, m, d;
-  if (targetDate) {
-    D = new Date(targetDate);
-    y = D.getFullYear();
-    m = D.getMonth() + 1;
-    d = D.getDate();
-  } else {
-    y = fullYear;
-    m = month;
-    d = date;
-  }
-  m = m > 9 ? m : "0" + m;
-  d = d > 9 ? d : "0" + d;
-
-  return y + "-" + m + "-" + d;
-}
+const Util = require("../../util/report_util");
 
 async function findListIds(kanbanId) {
   const [lists] = await pool.query(`SELECT id FROM lists WHERE kanban_id = ?`, [
     kanbanId,
   ]);
-  const listIds = lists.reduce((accu, curr) => {
-    accu.push(curr.id);
-    return accu;
-  }, []);
-
-  return listIds;
-}
-
-function findRangeStart(timestamp, range) {
-  return new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
-}
-
-function findRangeStartCompared(timestamp, range) {
-  return new Date(timestamp - 1000 * 60 * 60 * 24 * (range * 2 - 1));
+  return lists.map((list) => list.id);
 }
 
 const getTasksAmount = async (kanbanId, status, range) => {
@@ -45,8 +15,8 @@ const getTasksAmount = async (kanbanId, status, range) => {
       return { taskAmount: 0, taskAmountCompared: 0 };
     }
 
-    const rangeStart = findRangeStart(Date.now(), range);
-    const rangeStartCompared = findRangeStartCompared(Date.now(), range);
+    const rangeStart = Util.findRangeStart(Date.now(), range);
+    const rangeStartCompared = Util.findRangeStartCompared(Date.now(), range);
 
     const tasksSql = {
       all: `SELECT count(*) FROM tasks WHERE list_id in (?) AND delete_dt IS NULL`,
@@ -80,8 +50,8 @@ const getTasksAmount = async (kanbanId, status, range) => {
 const getMeetings = async (kanbanId, range) => {
   try {
     const timestamp = Date.now();
-    const rangeStart = findRangeStart(Date.now(), range);
-    const rangeStartCompared = findRangeStartCompared(Date.now(), range);
+    const rangeStart = Util.findRangeStart(Date.now(), range);
+    const rangeStartCompared = Util.findRangeStartCompared(Date.now(), range);
 
     const [[meetings]] = await pool.query(
       `SELECT count(*) FROM meetings WHERE kanban_id = ? AND end_dt > ? `,
@@ -95,62 +65,45 @@ const getMeetings = async (kanbanId, range) => {
   }
 };
 
-//FE data format example:
 const getTasksChart = async (kanbanId, range, interval) => {
   try {
     const listIds = await findListIds(kanbanId);
+    let intervalTags,
+      finishedTaskSet,
+      remainingTaskSet,
+      idealTaskSet = [];
+
+    const response = {
+      intervalTags: [],
+      finishedTaskSet: [],
+      remainingTaskSet: [],
+      idealTaskSet: [],
+    };
+
     if (listIds.length <= 0) {
-    //FE data format needed:
-      return {
-        intervalTags: [],
-        finishedTaskSet: [],
-        remainingTaskSet: [],
-        idealTaskSet: [],
-      };
+      //FE data format needed:
+      return response;
     }
 
     const timestamp = Date.now();
     const rangeEnd = new Date(timestamp);
-    const rangeStart = findRangeStart(Date.now(), range);
+    const rangeStart = Util.findRangeStart(Date.now(), range);
 
+    //sort by checked 雙指針 88 => function
     const [tasks] = await pool.query(
-      `SELECT checked,create_dt FROM tasks WHERE list_id in (?) AND delete_dt IS NULL`,
-      [lists]
+      `SELECT checked,create_dt FROM tasks WHERE list_id in (?) AND delete_dt IS NULL ORDER BY checked`,
+      [listIds]
     );
 
-    //TODOS:高耦合
-    const intervalTags = [];
-    function getTags(currTime, end, interval) {
-      for (let i = 0; i < range / interval + 1; i++) {
-        let date = new Date(
-          timestamp - 1000 * 60 * 60 * 24 * (range - 1 - i * interval)
-        );
-        date = getFullDate(date);
-        intervalTags.push(date);
-      }
-      return;
-    }
-    getTags(rangeEnd, rangeStart, interval);
-
-    const finishedTaskSet = intervalTags.reduce((accu, curr, index, arr) => {
-      const currTime = new Date(arr[index]);
-      const after = new Date(arr[index + 1]);
-      const checkedInRange = tasks.filter(({ checked }) => {
-        return checked >= currTime && checked < after;
-      });
-
-      accu.push(checkedInRange.length);
-      return accu;
-    }, []);
-
-    const remainingTaskSet = intervalTags.reduce((accu, curr, index, arr) => {
-      const after = new Date(arr[index + 1]);
+    intervalTags = Util.getIntervalTags(rangeEnd, rangeStart, range, interval);
+    finishedTaskSet = Util.getFinishedTaskSet(intervalTags, tasks);
+    remainingTaskSet = intervalTags.map((interval, index, arr) => {
+      const end = new Date(arr[index + 1]);
       const checkedInRange = tasks.filter(({ checked, create_dt }) => {
-        return (checked >= after || !checked) && create_dt <= after;
+        return (checked >= end || !checked) && create_dt <= end;
       });
-      accu.push(checkedInRange.length);
-      return accu;
-    }, []);
+      return checkedInRange.length;
+    });
 
     intervalTags.pop();
     finishedTaskSet.pop();
@@ -160,7 +113,7 @@ const getTasksChart = async (kanbanId, range, interval) => {
       (remainingTaskSet[0] - remainingTaskSet[remainingTaskSet.length - 1]) /
       (remainingTaskSet.length - 1);
 
-    const idealTaskSet = remainingTaskSet.map((remainingTaskSet, i, arr) => {
+    idealTaskSet = remainingTaskSet.map((remainingTaskSet, i, arr) => {
       return arr[0] - i * idealTaskSetInterval;
     });
 
@@ -180,7 +133,7 @@ const getLoading = async (kanbanId, range) => {
   try {
     const timestamp = Date.now();
     const rangeEnd = new Date(timestamp);
-    const rangeStart = findRangeStart(Date.now(), range);
+    const rangeStart = Util.findRangeStart(Date.now(), range);
     const res = {};
     res.name = [];
     res.finished = [];
@@ -204,17 +157,17 @@ const getLoading = async (kanbanId, range) => {
         return res;
       }
 
-      const [tasks] = await pool.query(
+      const [tasksFinished] = await pool.query(
         "SELECT id FROM tasks WHERE assignee = ? AND checked > ? AND list_id in (?) AND delete_dt IS NULL",
         [members[i].uid, rangeStart, listIds]
       );
-      res.finished.push(tasks.length);
+      res.finished.push(tasksFinished.length);
 
-      const [tasks2] = await pool.query(
+      const [tasksUnfinished] = await pool.query(
         "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL AND list_id IN (?) AND delete_dt IS NULL",
-        [members[i].uid, rangeStart, listIds]
+        [members[i].uid, listIds]
       );
-      res.unfinished.push(tasks2.length);
+      res.unfinished.push(tasksUnfinished.length);
     }
 
     return res;
