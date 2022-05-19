@@ -1,52 +1,71 @@
 require("dotenv").config();
 const Meeting = require("../models/meeting_model");
+const { wrapModel } = require("../../util/util");
 
 const createMeeting = async (req, res) => {
-  try {
-    const { user } = req;
-    const { kanbanId } = req.params;
-    const response = await Meeting.createMeeting({ user: user.id, kanbanId });
-    return res.json({
-      data: response,
-    });
-  } catch (error) {
-    return { error };
+  const { user } = req;
+  const { kanbanId } = req.params;
+  const response = await wrapModel(Meeting.createMeeting, {
+    user: user.id,
+    kanbanId,
+  });
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
   }
+  return res.json({
+    data: response,
+  });
 };
 
 const getMeetings = async (req, res) => {
-  try {
-    const { kanbanId } = req.params;
-    const response = await Meeting.getMeetings(kanbanId);
-    return res.json(response);
-  } catch (error) {
-    return { error };
+  const { kanbanId } = req.params;
+  const response = await wrapModel(Meeting.getMeetings, kanbanId);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
   }
+  return res.json(response);
 };
 
+//TODOS:cache for transcript
 const getMeetingDetail = async (req, res) => {
-  try {
-    const { kanbanId, meetingId } = req.params;
-    const response = await Meeting.getMeetingDetail(kanbanId, meetingId);
-    return res.json({
-      data: response,
-    });
-  } catch (error) {
-    return { error };
+  const { kanbanId, meetingId } = req.params;
+  const response = await wrapModel(
+    Meeting.getMeetingDetail,
+    kanbanId,
+    meetingId
+  );
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
   }
+
+  return res.json({
+    data: response,
+  });
 };
 
 const saveNote = async (req, res) => {
-  try {
-    const { meetingId } = req.params;
-    const { data } = req.body;
-    const response = await Meeting.saveNote(meetingId, data);
-    return res.json({
-      data: response,
-    });
-  } catch (error) {
-    return { error };
+  const { meetingId } = req.params;
+  const { data } = req.body;
+  const response = await wrapModel(Meeting.saveNote, meetingId, data);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
   }
+
+  return res.json({
+    data: response,
+  });
 };
 
 const sendEmail = async (req, res) => {
@@ -54,7 +73,20 @@ const sendEmail = async (req, res) => {
     const { kanbanId, noteId } = req.params;
     const user = req.user;
     const { data } = req.body;
-    const response = await Meeting.sendEmail(kanbanId, noteId, data, user);
+    const response = await wrapModel(
+      Meeting.sendEmail,
+      kanbanId,
+      noteId,
+      data,
+      user
+    );
+
+    if (response.error) {
+      return res
+        .status(response.code)
+        .send({ status_code: response.code, error: response.error });
+    }
+
     return res.json({
       status_code: 200,
     });
