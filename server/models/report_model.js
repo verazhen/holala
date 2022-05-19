@@ -18,28 +18,35 @@ function getFullDate(targetDate) {
   return y + "-" + m + "-" + d;
 }
 
+async function findListIds(kanbanId) {
+  const [lists] = await pool.query(`SELECT id FROM lists WHERE kanban_id = ?`, [
+    kanbanId,
+  ]);
+  const listIds = lists.reduce((accu, curr) => {
+    accu.push(curr.id);
+    return accu;
+  }, []);
+
+  return listIds;
+}
+
+function findRangeStart(timestamp, range) {
+  return new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
+}
+
+function findRangeStartCompared(timestamp, range) {
+  return new Date(timestamp - 1000 * 60 * 60 * 24 * (range * 2 - 1));
+}
+
 const getTasksAmount = async (kanbanId, status, range) => {
   try {
-    const [lists] = await pool.query(
-      `SELECT id FROM lists WHERE kanban_id = ?`,
-      [kanbanId]
-    );
-    const listIds = lists.reduce((accu, curr) => {
-      accu.push(curr.id);
-      return accu;
-    }, []);
-
+    const listIds = await findListIds(kanbanId);
     if (listIds.length <= 0) {
       return { taskAmount: 0, taskAmountCompared: 0 };
     }
 
-    let tasks;
-    let tasksCompared;
-    const timestamp = Date.now();
-    const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
-    const rangeStartCompared = new Date(
-      timestamp - 1000 * 60 * 60 * 24 * (range * 2 - 1)
-    );
+    const rangeStart = findRangeStart(Date.now(), range);
+    const rangeStartCompared = findRangeStartCompared(Date.now(), range);
 
     const tasksSql = {
       all: `SELECT count(*) FROM tasks WHERE list_id in (?) AND delete_dt IS NULL`,
@@ -53,18 +60,17 @@ const getTasksAmount = async (kanbanId, status, range) => {
       unfinishedByRange: `SELECT count(*) FROM tasks WHERE list_id in (?) AND (checked IS NULL OR checked >= ?) AND delete_dt IS NULL`,
     };
 
-    [[tasks]] = await pool.query(tasksSql[status], [listIds, rangeStart]);
-
-    [[tasksCompared]] = await pool.query(tasksComparedSql[status], [
+    const [[tasks]] = await pool.query(tasksSql[status], [listIds, rangeStart]);
+    const [[tasksCompared]] = await pool.query(tasksComparedSql[status], [
       listIds,
       rangeStart,
       rangeStartCompared,
     ]);
 
-    const taskAmount = tasks["count(*)"];
-    const taskAmountCompared = tasksCompared["count(*)"];
-
-    return { taskAmount, taskAmountCompared };
+    return {
+      taskAmount: tasks["count(*)"],
+      taskAmountCompared: tasksCompared["count(*)"],
+    };
   } catch (e) {
     console.log(e);
     return null;
@@ -74,39 +80,27 @@ const getTasksAmount = async (kanbanId, status, range) => {
 const getMeetings = async (kanbanId, range) => {
   try {
     const timestamp = Date.now();
-    const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
-    const rangeStartCompared = new Date(
-      timestamp - 1000 * 60 * 60 * 24 * (range * 2 - 1)
-    );
+    const rangeStart = findRangeStart(Date.now(), range);
+    const rangeStartCompared = findRangeStartCompared(Date.now(), range);
 
     const [[meetings]] = await pool.query(
       `SELECT count(*) FROM meetings WHERE kanban_id = ? AND end_dt > ? `,
       [kanbanId, rangeStart]
     );
 
-    return meetings["count(*)"];
+    return { meetings: meetings["count(*)"] };
   } catch (e) {
     console.log(e);
     return null;
   }
 };
 
+//FE data format example:
 const getTasksChart = async (kanbanId, range, interval) => {
   try {
-    let [lists] = await pool.query(
-      `SELECT id FROM lists WHERE kanban_id = ?`,
-      [kanbanId]
-    );
-    lists = lists.reduce((accu, curr) => {
-      accu.push(curr.id);
-      return accu;
-    }, []);
-
-    const timestamp = Date.now();
-    const rangeEnd = new Date(timestamp);
-    const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
-
-    if (lists.length <= 0) {
+    const listIds = await findListIds(kanbanId);
+    if (listIds.length <= 0) {
+    //FE data format needed:
       return {
         intervalTags: [],
         finishedTaskSet: [],
@@ -115,23 +109,17 @@ const getTasksChart = async (kanbanId, range, interval) => {
       };
     }
 
+    const timestamp = Date.now();
+    const rangeEnd = new Date(timestamp);
+    const rangeStart = findRangeStart(Date.now(), range);
+
     const [tasks] = await pool.query(
       `SELECT checked,create_dt FROM tasks WHERE list_id in (?) AND delete_dt IS NULL`,
       [lists]
     );
 
+    //TODOS:高耦合
     const intervalTags = [];
-    //     function getTags(currTime, end, interval) {
-    //       if (currTime >= end) {
-    //         const date = getFullDate(currTime);
-    //         intervalTags.unshift(date);
-    //         const yesterday = new Date();
-    //         yesterday.setDate(currTime.getDate() - interval);
-    //         getTags(yesterday, end, interval);
-    //       }
-    //       return;
-    //     }
-
     function getTags(currTime, end, interval) {
       for (let i = 0; i < range / interval + 1; i++) {
         let date = new Date(
@@ -142,7 +130,6 @@ const getTasksChart = async (kanbanId, range, interval) => {
       }
       return;
     }
-
     getTags(rangeEnd, rangeStart, interval);
 
     const finishedTaskSet = intervalTags.reduce((accu, curr, index, arr) => {
@@ -193,25 +180,18 @@ const getLoading = async (kanbanId, range) => {
   try {
     const timestamp = Date.now();
     const rangeEnd = new Date(timestamp);
-    const rangeStart = new Date(timestamp - 1000 * 60 * 60 * 24 * (range - 1));
+    const rangeStart = findRangeStart(Date.now(), range);
+    const res = {};
+    res.name = [];
+    res.finished = [];
+    res.unfinished = [];
 
     const [members] = await pool.query(
       `SELECT uid FROM kanban_permission WHERE kanban_id = ?`,
       [kanbanId]
     );
 
-    let [lists] = await pool.query(`SELECT id FROM lists WHERE kanban_id = ?`, [
-      kanbanId,
-    ]);
-
-    lists = lists.reduce((accu, curr) => {
-      accu.push(curr.id);
-      return accu;
-    }, []);
-    const res = {};
-    res.name = [];
-    res.finished = [];
-    res.unfinished = [];
+    const listIds = await findListIds(kanbanId);
 
     for (const i in members) {
       const [[users]] = await pool.query(
@@ -220,19 +200,21 @@ const getLoading = async (kanbanId, range) => {
       );
       res.name.push(users.name);
 
-      if (lists.length > 0) {
-        const [tasks] = await pool.query(
-          "SELECT id FROM tasks WHERE assignee = ? AND checked > ? AND list_id in (?) AND delete_dt IS NULL",
-          [members[i].uid, rangeStart, lists]
-        );
-        res.finished.push(tasks.length);
-
-        const [tasks2] = await pool.query(
-          "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL AND list_id IN (?) AND delete_dt IS NULL",
-          [members[i].uid, rangeStart, lists]
-        );
-        res.unfinished.push(tasks2.length);
+      if (listIds.length <= 0) {
+        return res;
       }
+
+      const [tasks] = await pool.query(
+        "SELECT id FROM tasks WHERE assignee = ? AND checked > ? AND list_id in (?) AND delete_dt IS NULL",
+        [members[i].uid, rangeStart, listIds]
+      );
+      res.finished.push(tasks.length);
+
+      const [tasks2] = await pool.query(
+        "SELECT id FROM tasks WHERE assignee = ? AND checked IS NULL AND list_id IN (?) AND delete_dt IS NULL",
+        [members[i].uid, rangeStart, listIds]
+      );
+      res.unfinished.push(tasks2.length);
     }
 
     return res;

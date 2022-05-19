@@ -100,7 +100,7 @@ function Dashboard() {
       `${API_HOST}/kanban/${kanbanId}/report/meetings?range=${range}`,
       true
     ).then(({ data }) => {
-      setMeetings(data);
+      setMeetings(data.meetings);
     });
 
     fetchData(
