@@ -6,6 +6,7 @@ const api_key = process.env.MAILGUN_KEY;
 const domain = "verazon.online";
 const mailgun = require("mailgun-js")({ apiKey: api_key, domain: domain });
 const { Role } = require("../../util/enums");
+const { json2Transcript } = require("../../util/meeting_util");
 
 const getMeetings = async (kanbanId) => {
   try {
@@ -113,52 +114,24 @@ const leaveRoom = async ({ uid, kanbanId }) => {
 //TODO: REFACTOR
 const getMeetingDetail = async (kanbanId, meetingId) => {
   try {
-    const [[res]] = await pool.query(
+    const [[meeting]] = await pool.query(
       `SELECT transcript,notes FROM meetings WHERE id = ?`,
       [meetingId]
     );
-    if (!res) {
+    if (!meeting) {
       return false;
     }
 
-    let textArr = [];
-    if (res.transcript) {
-      const url = res.transcript;
+    let transcription = [];
+    if (meeting.transcript) {
+      const url = meeting.transcript;
       const { data } = await axios.get(url);
-      const { items } = data.results;
 
       //convert jsonfile to transcript array
-      let text = " ";
-      let start_time;
-      items.map((item) => {
-        if (item.start_time) {
-          start_time = start_time || item.start_time;
-          text = text.concat(item.alternatives[0].content, " ");
-        } else {
-          const content = text.trim();
-          const startTime = Math.floor(start_time);
-          const hour =
-            Math.floor(start_time / 60 / 60) > 10
-              ? Math.floor(start_time / 60 / 60)
-              : `0${Math.floor(start_time / 60 / 60)}`;
-          const minute =
-            Math.floor(start_time / 60) > 10
-              ? Math.floor(start_time / 60)
-              : `0${Math.floor(start_time / 60)}`;
-          const second =
-            startTime % 60 > 10 ? startTime % 60 : `0${startTime % 60}`;
-          textArr.push({
-            start_time: `${hour}:${minute}:${second}`,
-            timestamp: start_time,
-            content: content.concat(item.alternatives[0].content),
-          });
-          text = " ";
-          start_time = undefined;
-        }
-      });
+      transcription = json2Transcript(data.results.items);
     }
 
-    return { transcription: textArr, notes: res.notes };
+    return { transcription, notes: meeting.notes };
   } catch (e) {
     console.log(e);
     return false;
