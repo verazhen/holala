@@ -112,7 +112,6 @@ const leaveRoom = async ({ uid, kanbanId }) => {
   }
 };
 
-//TODO: REFACTOR
 const getMeetingDetail = async (kanbanId, meetingId) => {
   try {
     const [[meeting]] = await pool.query(
@@ -154,10 +153,7 @@ const sendEmail = async (kanbanId, noteId, data, user) => {
       members[i].email = users.email;
     }
 
-    const recipients = members.reduce((accu, curr) => {
-      accu.push(curr.email);
-      return accu;
-    }, []);
+    const recipients = members.map((member) => member.email);
 
     //send Email
     const mail = {
