@@ -49,11 +49,11 @@ const createMeeting = async ({ uid, kanbanId }) => {
 
     if (!res) {
       //insert a new meeting
-      const [result] = await pool.query(
+      const [meetings] = await pool.query(
         `INSERT INTO meetings (kanban_id,user_id) VALUES (?,?) `,
         [kanbanId, uid]
       );
-      roomId = result.insertId;
+      roomId = meetings.insertId;
       isNewRoom = true;
     } else {
       roomId = res.id;
@@ -89,10 +89,11 @@ const leaveRoom = async ({ uid, kanbanId }) => {
       recordUrl = await generateUploadURL(kanbanId, `record/${res.id}`, "mp4");
       const url = recordUrl.split("?")[0];
 
-      const [result] = await conn.query(
-        `UPDATE meetings SET end_dt=?, record=? WHERE id=? `,
-        [new Date(), url, res.id]
-      );
+      await conn.query(`UPDATE meetings SET end_dt=?, record=? WHERE id=? `, [
+        new Date(),
+        url,
+        res.id,
+      ]);
       response = recordUrl;
     } else {
       //if the request user is not the meeting owner
@@ -127,7 +128,7 @@ const getMeetingDetail = async (kanbanId, meetingId) => {
       const url = meeting.transcript;
       const { data } = await axios.get(url);
 
-      //convert jsonfile to transcript array
+      //convert s3  transcription jsonfile to transcript array for react
       transcription = json2Transcript(data.results.items);
     }
 
@@ -182,14 +183,14 @@ const saveNote = async (meetingId, data) => {
   try {
     await conn.query("START TRANSACTION");
 
-    const [result] = await conn.query(
+    const [meetings] = await conn.query(
       `UPDATE meetings SET notes=? WHERE id=?`,
       [data, meetingId]
     );
 
     await conn.query("COMMIT");
 
-    return result;
+    return meetings;
   } catch (e) {
     await conn.query("ROLLBACK");
     console.log(e);
