@@ -48,5 +48,8 @@ app.use(function (err, req, res, next) {
 });
 
 server.listen(port, async () => {
-  console.log(`Listening on port: ${port}`);
+  Cache.connect().catch(() => {
+    console.log("【ENV Notification】 redis connect fail");
+  });
+  console.log(`【ENV Notification】 Server listening on port: ${port}`);
 });
