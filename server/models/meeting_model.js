@@ -7,6 +7,7 @@ const domain = "verazon.online";
 const mailgun = require("mailgun-js")({ apiKey: api_key, domain: domain });
 const { Role } = require("../../util/enums");
 const { json2Transcript } = require("../../util/meeting_util");
+const Cache = require("../../util/cache");
 
 const getMeetings = async (kanbanId) => {
   try {
@@ -113,6 +114,8 @@ const leaveRoom = async ({ uid, kanbanId }) => {
 };
 
 const getMeetingDetail = async (kanbanId, meetingId) => {
+  const TRANSCRIPTION_KEY = `transcript_${meetingId}`;
+  const cacheExpired = 60 * 60 * 24 * 30;
   try {
     const [[meeting]] = await pool.query(
       `SELECT transcript,notes FROM meetings WHERE id = ?`,
@@ -122,13 +125,39 @@ const getMeetingDetail = async (kanbanId, meetingId) => {
       return false;
     }
 
-    let transcription = [];
+    let transcription;
     if (meeting.transcript) {
-      const url = meeting.transcript;
-      const { data } = await axios.get(url);
+      try {
+        if (Cache.ready) {
+          transcription = await Cache.get(TRANSCRIPTION_KEY);
+          transcription = JSON.parse(transcription);
+        }
+      } catch (e) {
+        console.error(`Get campaign cache error: ${e}`);
+      }
 
-      //convert s3  transcription jsonfile to transcript array for react
-      transcription = json2Transcript(data.results.items);
+      if (!transcription) {
+        const url = meeting.transcript;
+        const { data } = await axios.get(url);
+        //convert s3  transcription jsonfile to transcript array for react
+        transcription = json2Transcript(data.results.items);
+
+        try {
+          if (Cache.ready) {
+            //maximum insert capacity for one string is 512M
+            if (response.transcription.length > 0) {
+              await Cache.set(
+                TRANSCRIPTION_KEY,
+                JSON.stringify(response.transcription),
+                "EX",
+                cacheExpired
+              );
+            }
+          }
+        } catch (e) {
+          console.error(`Set campaign cache error: ${e}`);
+        }
+      }
     }
 
     return { transcription, notes: meeting.notes };

@@ -32,9 +32,10 @@ const getMeetings = async (req, res) => {
   return res.json(response);
 };
 
-//TODOS:cache for transcript
+//TODOS:refactor
 const getMeetingDetail = async (req, res) => {
   const { kanbanId, meetingId } = req.params;
+
   const response = await wrapModel(
     Meeting.getMeetingDetail,
     kanbanId,
