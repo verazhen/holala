@@ -4,6 +4,10 @@ const { jwt, bcrypt } = require("./authTool");
 const { TOKEN_SECRET } = process.env;
 const { Role } = require("./enums");
 
+function getKeyByValue(object, value) {
+  return Object.keys(object).find((key) => object[key] === value);
+}
+
 const wrapAsync = (fn) => {
   return function (req, res, next) {
     fn(req, res, next).catch(next);
@@ -92,4 +96,5 @@ module.exports = {
   authentication,
   wrapAsync,
   wrapModel,
+  getKeyByValue
 };
