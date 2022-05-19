@@ -11,19 +11,20 @@ const wrapAsync = (fn) => {
 };
 
 async function wrapModel(fn, ...args) {
-  console.log(fn, args);
   let response;
   let counter = 0;
 
-  for (let i = 0; i < args.length; i++) {
-    if (!args[i]) {
-      response = {
-        code: 400,
-        error: "Request Error: Missing parameters",
-      };
-      break;
-    } else {
-      counter++;
+  if (args.length > 0) {
+    for (let i = 0; i < args.length; i++) {
+      if (!args[i]) {
+        response = {
+          code: 400,
+          error: "Request Error: Missing parameters",
+        };
+        break;
+      } else {
+        counter++;
+      }
     }
   }
 
@@ -37,7 +38,6 @@ async function wrapModel(fn, ...args) {
       error: "Database Error",
     };
   }
-
   return response;
 }
 
@@ -91,5 +91,5 @@ const authentication = (roleId) => {
 module.exports = {
   authentication,
   wrapAsync,
-  wrapModel
+  wrapModel,
 };

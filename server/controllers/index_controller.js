@@ -1,52 +1,63 @@
 const Index = require("../models/index_model");
+const { wrapModel } = require("../../util/util");
 
 const getKanbans = async (req, res) => {
-  try {
-    const { id } = req.user;
-    const data = await Index.getKanbans(id);
+  const { id } = req.user;
+  const response = await wrapModel(Index.getKanbans, id);
 
-    res.status(200).send({
-      status_code: 200,
-      user: req.user,
-      data,
-    });
-  } catch (error) {
-    return { error };
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
   }
+
+  res.status(200).send({
+    status_code: 200,
+    user: req.user,
+    data: response,
+  });
 };
 
 const getRoles = async (req, res) => {
-  try {
-    const data = await Index.getRoles();
+  const response = await wrapModel(Index.getRoles);
 
-    res.status(200).send({
-      status_code: 200,
-      data,
-    });
-  } catch (error) {
-    return { error };
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
   }
+
+  res.status(200).send({
+    status_code: 200,
+    data: response,
+  });
 };
 
 const getUsers = async (req, res) => {
-  try {
-    const response = await Index.getUsers();
+  const response = await wrapModel(Index.getUsers);
 
-    return res.status(200).send({
-      status_code: 200,
-      data: response,
-    });
-  } catch (error) {
-    console.log(error);
-    return { error };
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
   }
+  return res.status(200).send({
+    status_code: 200,
+    data: response,
+  });
 };
 
 const addKanban = async (req, res) => {
   try {
     const { id } = req.user;
     const { data } = req.body;
-    const response = await Index.addKanban(id, data);
+    const response = await wrapModel(Index.addKanban, id, data);
+
+    if (response.error) {
+      return res
+        .status(response.code)
+        .send({ status_code: response.code, error: response.error });
+    }
 
     res.status(200).send({
       status_code: 200,
@@ -61,7 +72,13 @@ const updateKanban = async (req, res) => {
   try {
     const { data } = req.body;
     const { kanbanId } = req.params;
-    const response = await Index.updateKanban(data, kanbanId);
+    const response = await wrapModel(Index.updateKanban, data, kanbanId);
+
+    if (response.error) {
+      return res
+        .status(response.code)
+        .send({ status_code: response.code, error: response.error });
+    }
 
     res.status(200).send({
       status_code: 200,

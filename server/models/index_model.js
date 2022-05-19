@@ -81,8 +81,8 @@ const getRoles = async () => {
     const roles = Object.keys(Role);
     for (let i = 0; i < roles.length; i++) {
       const roleObj = {
-        id: Number(roles[i]),
-        label: Role[roles[i]],
+        id: Role[roles[i]],
+        label: roles[i],
       };
       roles[i] = roleObj;
     }
