@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const { Role } = require("../../util/enums");
+const { wrapAsync, authentication } = require("../../util/util");
 
 const {
   getTasks,
@@ -17,72 +19,74 @@ const {
   getKanban,
 } = require("../controllers/kanban_controller");
 
-const { wrapAsync, authentication } = require("../../util/util");
-
 //get all task in all list
 router
   .route("/kanban/:kanbanId/tasks")
-  .get(authentication(2), wrapAsync(getTasks));
+  .get(authentication(Role.viewer), wrapAsync(getTasks));
 
 //get kanban Detail
-router.route("/kanban/:kanbanId").get(authentication(2), wrapAsync(getKanban));
+router
+  .route("/kanban/:kanbanId")
+  .get(authentication(Role.viewer), wrapAsync(getKanban));
 
 //get task details
 router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId")
-  .get(authentication(2), wrapAsync(getTaskDetails));
+  .get(authentication(Role.viewer), wrapAsync(getTaskDetails));
 
 //add new List or update order
 router
   .route("/kanban/:kanbanId/tasks")
-  .post(authentication(1), wrapAsync(addCard));
+  .post(authentication(Role.editor), wrapAsync(addCard));
 
 //add a new task/todo
 router
   .route("/kanban/:kanbanId/list/:listId/addTest")
-  .post(authentication(1), wrapAsync(addNewTask));
+  .post(authentication(Role.editor), wrapAsync(addNewTask));
 
 //update a task/todo
 router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId")
-  .put(authentication(1), wrapAsync(updateTask));
+  .put(authentication(Role.editor), wrapAsync(updateTask));
 
 //update a list
 router
   .route("/kanban/:kanbanId/list/:listId/detail")
-  .put(authentication(1), wrapAsync(updateListDetail));
+  .put(authentication(Role.editor), wrapAsync(updateListDetail));
 
 //add new task/todos or update order
 router
   .route("/kanban/:kanbanId/list/:listId")
-  .put(authentication(1), wrapAsync(updateList));
+  .put(authentication(Role.editor), wrapAsync(updateList));
 
 //add comments
 router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId/comment")
-  .post(authentication(1), wrapAsync(addComment));
+  .post(authentication(Role.editor), wrapAsync(addComment));
 
 //upload image
 router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId/imageUrl")
-  .get(authentication(2), wrapAsync(uploadImage));
+  .get(authentication(Role.viewer), wrapAsync(uploadImage));
 
 //update tag
 router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId/tag")
-  .put(authentication(1), wrapAsync(updateTags));
+  .put(authentication(Role.editor), wrapAsync(updateTags));
 
 //update todos
 router
   .route("/kanban/:kanbanId/list/:listId/task/:taskId/todo")
-  .put(authentication(1), wrapAsync(updateTodos));
+  .put(authentication(Role.editor), wrapAsync(updateTodos));
 
 //update members
 router
   .route("/kanban/:kanbanId/members")
-  .put(authentication(1), wrapAsync(updateMembers));
+  .put(authentication(Role.editor), wrapAsync(updateMembers));
 
 //get history chat
-router.route("/chat/:kanbanId").get(authentication(2), wrapAsync(getChat));
+router
+  .route("/chat/:kanbanId")
+  .get(authentication(Role.viewer), wrapAsync(getChat));
 
 module.exports = router;

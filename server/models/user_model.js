@@ -4,7 +4,7 @@ const { pool } = require("./mysqlcon");
 const salt = parseInt(process.env.BCRYPT_SALT);
 const { TOKEN_EXPIRE, TOKEN_SECRET } = process.env; // 30 days by seconds
 const { jwt, bcrypt } = require("../../util/authTool");
-const { Role } = require("./components");
+const { Role } = require("../../util/enums");
 
 const signUp = async (name, email, password) => {
   const conn = await pool.getConnection();
@@ -113,11 +113,11 @@ const getUserDetail = async (id, kanbanId, roleId) => {
       );
 
       if (!permission.role_id) {
-        return null;
+        return { status: 4031, error: "View Forbidden" };
       }
 
       if (permission.role_id > roleId) {
-        return { error: permission.role_id };
+        return { status: 4032, error: "Edit Forbidden" };
       }
 
       const [[user]] = await pool.query(
@@ -137,7 +137,7 @@ const getUserDetail = async (id, kanbanId, roleId) => {
     }
   } catch (e) {
     console.log(e);
-    return null;
+    return { status: 4030, error: "Forbidden" };
   }
 };
 
