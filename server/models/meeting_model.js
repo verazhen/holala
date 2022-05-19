@@ -110,45 +110,53 @@ const leaveRoom = async ({ uid, kanbanId }) => {
   }
 };
 
-//TODO: CACHE
+//TODO: REFACTOR
 const getMeetingDetail = async (kanbanId, meetingId) => {
   try {
     const [[res]] = await pool.query(
       `SELECT transcript,notes FROM meetings WHERE id = ?`,
       [meetingId]
     );
-    const url = res.transcript;
-    const { data } = await axios.get(url);
-    const { items } = data.results;
+    if (!res) {
+      return false;
+    }
+
     let textArr = [];
-    let text = " ";
-    let start_time;
-    items.map((item) => {
-      if (item.start_time) {
-        start_time = start_time || item.start_time;
-        text = text.concat(item.alternatives[0].content, " ");
-      } else {
-        const content = text.trim();
-        const startTime = Math.floor(start_time);
-        const hour =
-          Math.floor(start_time / 60 / 60) > 10
-            ? Math.floor(start_time / 60 / 60)
-            : `0${Math.floor(start_time / 60 / 60)}`;
-        const minute =
-          Math.floor(start_time / 60) > 10
-            ? Math.floor(start_time / 60)
-            : `0${Math.floor(start_time / 60)}`;
-        const second =
-          startTime % 60 > 10 ? startTime % 60 : `0${startTime % 60}`;
-        textArr.push({
-          start_time: `${hour}:${minute}:${second}`,
-          timestamp: start_time,
-          content: content.concat(item.alternatives[0].content),
-        });
-        text = " ";
-        start_time = undefined;
-      }
-    });
+    if (res.transcript) {
+      const url = res.transcript;
+      const { data } = await axios.get(url);
+      const { items } = data.results;
+
+      //convert jsonfile to transcript array
+      let text = " ";
+      let start_time;
+      items.map((item) => {
+        if (item.start_time) {
+          start_time = start_time || item.start_time;
+          text = text.concat(item.alternatives[0].content, " ");
+        } else {
+          const content = text.trim();
+          const startTime = Math.floor(start_time);
+          const hour =
+            Math.floor(start_time / 60 / 60) > 10
+              ? Math.floor(start_time / 60 / 60)
+              : `0${Math.floor(start_time / 60 / 60)}`;
+          const minute =
+            Math.floor(start_time / 60) > 10
+              ? Math.floor(start_time / 60)
+              : `0${Math.floor(start_time / 60)}`;
+          const second =
+            startTime % 60 > 10 ? startTime % 60 : `0${startTime % 60}`;
+          textArr.push({
+            start_time: `${hour}:${minute}:${second}`,
+            timestamp: start_time,
+            content: content.concat(item.alternatives[0].content),
+          });
+          text = " ";
+          start_time = undefined;
+        }
+      });
+    }
 
     return { transcription: textArr, notes: res.notes };
   } catch (e) {
