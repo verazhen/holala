@@ -1,5 +1,5 @@
 const { pool } = require("./mysqlcon");
-const { Role } = require("./components");
+const { Role } = require("../../util/enums");
 
 const getKanbans = async (uid) => {
   const [kanbans] = await pool.query(

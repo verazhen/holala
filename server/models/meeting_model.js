@@ -5,7 +5,7 @@ const axios = require("axios").default;
 const api_key = process.env.MAILGUN_KEY;
 const domain = "verazon.online";
 const mailgun = require("mailgun-js")({ apiKey: api_key, domain: domain });
-const { Role } = require("./components");
+const { Role } = require("../../util/enums");
 
 const getMeetings = async (kanbanId) => {
   try {

@@ -1,6 +1,6 @@
 const Role = {
-  1: "editor",
-  2: "viewer",
+  editor: 1,
+  viewer: 2,
 };
 
 module.exports = {
