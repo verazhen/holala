@@ -64,9 +64,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "react test": "react-scripts test",
     "eject": "react-scripts eject",
-    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
+    "test": "NODE_ENV=test mocha --exit"
   },
   "eslintConfig": {
     "extends": [
@@ -87,6 +88,7 @@
     ]
   },
   "devDependencies": {
+    "chai": "^4.3.6",
     "eslint": "8.8.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "8.3.0",
@@ -95,6 +97,7 @@
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react": "7.28.0",
     "eslint-plugin-react-hooks": "4.3.0",
+    "mocha": "^10.0.0",
     "prettier": "2.5.1"
   }
 }
