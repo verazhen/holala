@@ -5,6 +5,11 @@ const SOCKET_HOST = Socket.local;
 let mediaRecorder;
 let uploadUrl;
 let socket;
+var myStream = "";
+var pc = [];
+var socketId = "";
+var randomNumber = `__${h.generateRandomString()}__${h.generateRandomString()}__`;
+
 async function recordScreen() {
   return await navigator.mediaDevices.getDisplayMedia({
     audio: true,
@@ -49,12 +54,6 @@ document.getElementById("video-container").style.display = "none";
 
 window.initRtc = () => {
   console.log("----------init rtc---------");
-  var pc = [];
-  var socketId = "";
-  var randomNumber = `__${h.generateRandomString()}__${h.generateRandomString()}__`;
-  var myStream = "";
-  var screen = "";
-  var recordedStream = [];
   getAndSetUserStream();
   socket = window.io.connect(SOCKET_HOST);
   document.getElementById("video-container").style.display = "block";
@@ -73,12 +72,17 @@ window.initRtc = () => {
 
     socket.on("new user", (data) => {
       socket.emit("newUserStart", { to: data.socketId, sender: socketId });
-      pc.push(data.socketId);
       init(true, data.socketId);
     });
 
+    socket.on("user left", (data) => {
+      delete pc[data.sender];
+      document.getElementById(data.sender).remove();
+      console.log(document.getElementById(data.sender))
+      console.log(pc)
+    });
+
     socket.on("newUserStart", (data) => {
-      pc.push(data.sender);
       init(false, data.sender);
     });
 
@@ -148,11 +152,7 @@ window.initRtc = () => {
   function init(createOffer, partnerName) {
     pc[partnerName] = new RTCPeerConnection(h.getIceServer());
 
-    if (screen && screen.getTracks().length) {
-      screen.getTracks().forEach((track) => {
-        pc[partnerName].addTrack(track, screen); //should trigger negotiationneeded event
-      });
-    } else if (myStream) {
+    if (myStream) {
       myStream.getTracks().forEach((track) => {
         pc[partnerName].addTrack(track, myStream); //should trigger negotiationneeded event
       });
@@ -213,8 +213,8 @@ window.initRtc = () => {
         //video controls elements
         let controlDiv = document.createElement("div");
         controlDiv.className = "remote-video-controls";
-//         controlDiv.innerHTML = `<i class="fa fa-microphone text-white pr-3 mute-remote-mic" title="Mute"></i>
-//                           <i class="fa fa-expand text-white expand-remote-video" title="Expand"></i>`;
+        //         controlDiv.innerHTML = `<i class="fa fa-microphone text-white pr-3 mute-remote-mic" title="Mute"></i>
+        //                           <i class="fa fa-expand text-white expand-remote-video" title="Expand"></i>`;
 
         //create a new div for card
         let cardDiv = document.createElement("div");
@@ -322,15 +322,15 @@ window.closeRtc = () => {
   const kanbanId = localStorage.getItem("kanbanId");
   socket.emit("leave room", { uid, kanbanId });
   socket.emit("leave meet", kanbanId);
+  socket.emit("user left", { room: kanbanId, sender: socketId });
   socket.disconnect();
-  if (localStream.getTracks()) {
-    localStream.getTracks().forEach((track) => {
+  pc = [];
+  if (myStream.getTracks()) {
+    myStream.getTracks().forEach((track) => {
       track.stop();
     });
   }
-  document.querySelectorAll("video").forEach((video) => {
-    if (video.id !== "rtc") {
-      video.remove();
-    }
+  document.querySelectorAll(".video-div").forEach((video) => {
+    if (video.id !== "myVideo-div") video.remove();
   });
 };
