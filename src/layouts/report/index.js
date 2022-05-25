@@ -233,7 +233,7 @@ function Tables(props) {
   };
   return (
     <DashboardLayout videoOpen={videoOpen} setVideoOpen={setVideoOpen}>
-      <MDBox pt={6} pb={3} style={style}>
+      <MDBox id="kanban-container" pt={6} pb={3} style={style}>
         <Grid container spacing={6} wrap="nowrap">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, lists, setLists)}

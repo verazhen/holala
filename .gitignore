@@ -100,9 +100,8 @@ midterm*
 /src-old
 /build-old
 /dynamic
-/public
 /public-old
-
+s
 # misc
 .DS_Store
 .env.local
