@@ -78,8 +78,8 @@ window.initRtc = () => {
     socket.on("user left", (data) => {
       delete pc[data.sender];
       document.getElementById(data.sender).remove();
-      console.log(document.getElementById(data.sender))
-      console.log(pc)
+      console.log(document.getElementById(data.sender));
+      console.log(pc);
     });
 
     socket.on("newUserStart", (data) => {

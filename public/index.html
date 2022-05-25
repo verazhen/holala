@@ -42,5 +42,29 @@
     </div>
     <script type="module" src="%PUBLIC_URL%/chat.js"></script>
     <div id="root"></div>
+    <script>
+      let lastUrl = location.pathname;
+      new MutationObserver(() => {
+        const url = location.pathname;
+        if (url !== lastUrl) {
+          onUrlChange(url);
+        }
+      }).observe(document, { subtree: true, childList: true });
+
+      function onUrlChange(url) {
+        const route = lastUrl.split("/")[0];
+        const kanbanId = lastUrl.split("/")[1];
+        if (
+          url.split("/")[0] === "project" &&
+          lastUrl.split("/")[2] === "kanban"
+        ) {
+          if (url.split("/")[0] !== route || url.split("/")[1] !== kanbanId) {
+            window.closeRtc();
+          }
+        }
+
+        lastUrl = url;
+      }
+    </script>
   </body>
 </html>

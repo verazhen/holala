@@ -57,11 +57,7 @@ module.exports = (server) => {
     socket.on("disconnect", () => {
       delete onlineUsers[socket.id];
       const roomID = socketToRoom[socket.id];
-      let room = users[roomID];
-      if (room) {
-        room = room.filter((id) => id !== socket.id);
-        users[roomID] = room;
-      }
+      socket.emit("user left", { sender: socket.id });
 
       //delete the blocked list by socket.id
       if (blockTasks[onlineUsers[socket.id]]) {
@@ -146,6 +142,10 @@ module.exports = (server) => {
 
     socket.on("newUserStart", (data) => {
       socket.to(data.to).emit("newUserStart", { sender: data.sender });
+    });
+
+    socket.on("user left", (data) => {
+      socket.to(`room-${data.room}`).emit("user left", { sender: data.sender });
     });
 
     socket.on("sdp", (data) => {
