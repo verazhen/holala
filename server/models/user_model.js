@@ -137,7 +137,7 @@ const getUserDetail = async (id, kanbanId, roleId) => {
     }
   } catch (e) {
     console.log(e);
-    return { status: 4030, error: "Forbidden" };
+    return { status: 4031, error: "Forbidden" };
   }
 };
 

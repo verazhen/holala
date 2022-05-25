@@ -86,7 +86,7 @@ const authentication = (roleId) => {
       return;
     } catch (err) {
       console.log(err);
-      res.status(403).send({ status_code: 4030, error: "Forbidden" });
+      res.status(403).send({ status_code: 4031, error: "Forbidden" });
       return;
     }
   };
