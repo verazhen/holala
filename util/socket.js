@@ -104,7 +104,7 @@ module.exports = (server) => {
         uid,
         kanbanId,
       });
-      socket.broadcast.to(kanbanId).emit("get room", { roomId });
+      socket.broadcast.to(`rtc-${kanbanId}`).emit("get room", { roomId });
       socket.emit("get room", { roomId, isNewRoom });
     });
 
@@ -124,18 +124,19 @@ module.exports = (server) => {
         message = `${uid} has ended the room`;
       }
 
+      console.log(status, message, result);
       io.to(`rtc-${kanbanId}`).emit("leave room", { status, message, result });
     });
 
     socket.on("subscribe", (data) => {
       //subscribe/join a room
-      socket.join(`room-${data.room}`);
+      socket.join(`rtc-${data.room}`);
       socket.join(data.socketId);
 
       //Inform other members in the room of new user's arrival
-      if (socket.adapter.rooms.has(`room-${data.room}`) === true) {
+      if (socket.adapter.rooms.has(`rtc-${data.room}`) === true) {
         socket
-          .to(`room-${data.room}`)
+          .to(`rtc-${data.room}`)
           .emit("new user", { socketId: data.socketId });
       }
     });
@@ -145,7 +146,7 @@ module.exports = (server) => {
     });
 
     socket.on("user left", (data) => {
-      socket.to(`room-${data.room}`).emit("user left", { sender: data.sender });
+      socket.to(`rtc-${data.room}`).emit("user left", { sender: data.sender });
     });
 
     socket.on("sdp", (data) => {
