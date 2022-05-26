@@ -1,30 +1,33 @@
 <div align="center">
   <h1> Holala</h1>
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/verazhen/holala/">
+    <img src="https://github.com/verazhen/holala/blob/doc/docs/Holala.png?raw=true" alt="Logo" width="200" height="200">
   </a>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    A collaborate task management and meeting tool for remote teams to run project
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/verazhen/holala/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://verazon.online/">View Demo</a>
 
   </p>
 </div>
-## About Holala
-(the screenshot here)
 
-Holala is a fully functioning task management Web App which has both a minimal and clean UI that promotes well organized tasking.
-From high rises to the home office,
-It’s more than work. It’s a way of working together.
+---
+## About Holala  
+Holala is a way to work together, a fully functioning task management Web App which has both a minimal and clean UI
+that promotes well organized tasking from high rises to the home office.
+
+
+![image](./docs/screen_capture/intro.gif)
 
 The App supports features below:
-- personal Task Board: allowing simple and organized task tracking that separates overarching goals or topics from specific tasks.
-- Meeting Minute Board:
-- Report Board:
+- **personal Task Board:** allows simple and organized task tracking that separates overarching goals or topics from 
+specific tasks.
+- **Meeting Minute Board:** lists screen recording during the meeting for members to review
+- **Report Board:** provides the task progress and member loading for retro
 
 
 ### Tech Stack
@@ -39,35 +42,37 @@ The App supports features below:
 
 - **Environment:** Docker, Docker Compose
 
+---
 ## Getting Started
 The project provides you with 2 install method: git clone, docker-compose, the latter one provides a easier way to install project without Prerequisites.
 
-### Docker-Compose
+### 1. Docker-Compose 
+
 
 To deploy this project with **container**, you have to proceed follow steps,
 
-&emsp;1. Install Docker Compose  
-&emsp;2. Update your envriables in docker-compose.yml  
-&emsp;3. Run all containers with docker-compose up
+1. Install Docker Compose  
+2. Update your envriables in docker-compose.yml  
+3. Run all containers with docker-compose up
 
-### Alternative: Git Clone
+### 2. Alternative: Git Clone
 
 #### Prerequisites
-&emsp;1. Mysql  
-&emsp;2. MongoDB  
-&emsp;3. Redis  
-&emsp;4. Amazon S3, AWS Lambda, Amazon Transcribe API
+1. Mysql  
+2. MongoDB  
+3. Redis  
+4. Amazon S3, AWS Lambda, Amazon Transcribe API
 
 #### Installation
 
-&emsp;1. Clone the project
+1. Clone the project
 
 ```bash
   git clone https://github.com/verazhen/Holala
 ```
 
 
-&emsp;2. Go to the project directory and Install server dependencies
+2. Go to the project directory and Install server dependencies
 
 ```bash
   cd holala
@@ -77,15 +82,15 @@ To deploy this project with **container**, you have to proceed follow steps,
   npm install
 ```
 
-&emsp;3. Set up your envirement with .env.example
+3. Set up your envirement with .env.example
 
-&emsp;4. Start the server
+4. Start the server
 
 ```bash
   npm run start
 ```
 
-&emsp;5. Install client dependencies
+5. Install client dependencies
 
 ```bash
   cd src
@@ -94,11 +99,12 @@ To deploy this project with **container**, you have to proceed follow steps,
   npm install
 ```
 
-&emsp;6. activate the client with webpack
+6. activate the client with webpack
 
 ```bash
   npm start
 ```
+---
 ## Demo
 
 ### Kanban Page - Task Management
@@ -111,18 +117,18 @@ Lists and tasks are the building blocks of organizing work on a Holala kanban.
 
 ### Kanban Page - Authorization Management
 Manage mambers to have the correct level of access to different kanbans.
-![image](picture or gif url)
+![image](./docs/screen_capture/authorization.gif)
 
 ### Kanban Page - Task Detail Tracker
 Tasks are your portal to more organized work—where every single part of your task can be managed, tracked, and shared with teammates. Open any card to uncover an ecosystem of checklists, due dates, attachments, conversations, and more.
-![image](picture or gif url)
+![image](./docs/screen_capture/task_detail.gif)
 #### Features
 - Manage deadlines
 - Manage tags
 - Edit tags
 - Provide and track feedback
 - Assign tasks and hand off work
-- Upload Attatchment
+- Upload Attachment
 
 ### Kanban Page - Chat and Video Conference
 The page provides a collaboration space where remote teams can come together, brainstorm, and learn with kanban.
@@ -133,13 +139,14 @@ The page provides a collaboration space where remote teams can come together, br
 
 ### Meeting-Minute Page
 The page lists all the meeting-minutes record that is automatically generated by the system everytime a meeting is ended
-![image](picture or gif url)
+![image](./docs/screen_capture/meeting_minute.gif)
 #### Features
 - Video Player for Screen Recording
-- Transcription for Screen Recording
+- Transcription for Screen Recording 
+- Search feature for transcription 
 - Note Editor
 - Email Editor and Sender
 
 ### Report Page
 Visualize progress of the kanban tasks and the loading for each members along with the range and interval interactive filter.  
-![image](picture or gif url)
+![image](./docs/screen_capture/report.gif)
