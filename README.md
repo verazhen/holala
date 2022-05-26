@@ -105,6 +105,15 @@ To deploy this project with **container**, you have to proceed follow steps,
   npm start
 ```
 ---
+## Architecture
+![image](./docs/structure_holala.png)
+
+---
+## Database Schema
+
+![image](./docs/db_schema.png)
+
+---
 ## Demo
 
 ### Kanban Page - Task Management
