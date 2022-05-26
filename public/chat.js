@@ -61,6 +61,23 @@ window.initRtc = () => {
   const kanbanId = localStorage.getItem("kanbanId");
   socket.emit("get room", { uid, kanbanId });
   socket.emit("join room", kanbanId);
+  socket.on("get room", (data) => {
+    if (data.isNewRoom) {
+      recordScreen().then((record) => {
+        mediaRecorder = createRecorder(record, "video/mp4");
+      });
+    }
+  });
+
+  socket.on("leave room", ({ message, result }) => {
+    console.log("result");
+    console.log(result);
+    if (result === 3) {
+      uploadUrl = result;
+      mediaRecorder.stop();
+    }
+  });
+
   socket.on("connect", () => {
     //set socketId
     socketId = socket.io.engine.id;
