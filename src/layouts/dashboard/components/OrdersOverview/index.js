@@ -22,7 +22,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
-import TimelineItem from "examples/Timeline/TimelineItem";
+import TimelineItem from "elements/Timeline/TimelineItem";
 
 function OrdersOverview() {
   return (

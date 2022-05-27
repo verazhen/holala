@@ -26,7 +26,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React examples
-import DataTable from "examples/Tables/DataTable";
+import DataTable from "elements/Tables/DataTable";
 
 // Data
 import data from "layouts/dashboard/components/Projects/data";

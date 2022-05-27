@@ -9,12 +9,12 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import Footer from "examples/Footer";
-import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
-import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
-import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
-import MixedChart from "examples/Charts/MixedChart";
+import DashboardLayout from "elements/LayoutContainers/DashboardLayout";
+import Footer from "elements/Footer";
+import ReportsBarChart from "elements/Charts/BarCharts/ReportsBarChart";
+import ReportsLineChart from "elements/Charts/LineCharts/ReportsLineChart";
+import ComplexStatisticsCard from "elements/Cards/StatisticsCards/ComplexStatisticsCard";
+import MixedChart from "elements/Charts/MixedChart";
 import { API_HOST } from "utils/constants";
 
 // Data

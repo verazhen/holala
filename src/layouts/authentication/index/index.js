@@ -8,7 +8,7 @@ import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
 import IndexLayout from "layouts/authentication/components/IndexLayout";
-import Footer from "examples/Footer";
+import Footer from "elements/Footer";
 
 // Dashboard components
 import Projects from "layouts/authentication/index/components/kanbans";

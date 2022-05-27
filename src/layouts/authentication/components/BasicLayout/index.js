@@ -10,8 +10,8 @@ import Stack from "@mui/material/Stack";
 import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
-import PageLayout from "examples/LayoutContainers/PageLayout";
+import DefaultNavbar from "elements/Navbars/DefaultNavbar";
+import PageLayout from "elements/LayoutContainers/PageLayout";
 
 // Authentication pages components
 import Footer from "layouts/authentication/components/Footer";

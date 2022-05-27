@@ -12,7 +12,7 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 
 // Material Dashboard 2 React example components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import DashboardLayout from "elements/LayoutContainers/DashboardLayout";
 
 import List from "./components/List";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -22,7 +22,7 @@ import { useParams } from "react-router-dom";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { addLocalStorage, getLocalStorage } from "utils/utils";
 import { API_HOST } from "utils/constants";
-import SocketContext from "examples/LayoutContainers/DashboardLayout/socket_context";
+import SocketContext from "elements/LayoutContainers/DashboardLayout/socket_context";
 
 function Tables(props) {
   const [lists, setLists] = useState([]);

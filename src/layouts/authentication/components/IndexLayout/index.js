@@ -10,10 +10,10 @@ import Container from "@mui/material/Container";
 import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
 import IconButton from "@mui/material/IconButton";
-import { navbarIconButton } from "examples/Navbars/DashboardNavbar/styles";
+import { navbarIconButton } from "elements/Navbars/DashboardNavbar/styles";
 import bgImage from "assets/images/group.png";
 
-import PageLayout from "examples/LayoutContainers/PageLayout";
+import PageLayout from "elements/LayoutContainers/PageLayout";
 // Authentication pages components
 import Footer from "layouts/authentication/components/Footer";
 

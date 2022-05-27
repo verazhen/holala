@@ -13,7 +13,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React examples
-import KanbanMenu from "examples/Tables/KanbanMenu";
+import KanbanMenu from "elements/Tables/KanbanMenu";
 
 // Data
 import data from "layouts/authentication/components/Projects/data";
