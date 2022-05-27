@@ -1,0 +1,84 @@
+version: '1.0'
+
+services:
+  redis:
+    image: redis:6.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${CACHE_PASSWORD}
+    volumes:
+      - "redisV:/var/lib/redis/"
+      - "/home/ec2-user/holala/redis.conf:/usr/local/etc/redis/redis.conf"
+    ports:
+      - "${CACHE_PORT}:6379"
+    restart: always
+
+  mysql:
+    image: mysql:8
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - "mysqlV:/var/lib/mysql"
+      - "sqldumpV:/docker-entrypoint-initdb.d"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+
+  mongo:
+    image: mongo
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - "mongodbV:/data/configdb"
+      - "mongoconfV:/data/db"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+
+
+  holala:
+    depends_on:
+      - mysql
+      - mongo
+    image: holala
+    ports:
+      - "${PORT}:3000"
+    volumes:
+      - "sqldumpV:/usr/src/app/sqldump"
+      - "nginxhtmlV:/usr/src/app/build"
+    restart: always
+    env_file:
+      - /home/ec2-user/.env
+
+  nginx:
+    depends_on:
+      - holala
+    image: nginx
+    ports:
+      - "${NGINX_80PORT}:80"
+      - "${NGINX_443PORT}:443"
+    volumes:
+      - "nginxhtmlV:/usr/share/nginx/html"
+      - "/etc/nginx:/etc/nginx"
+    restart: always
+
+volumes:
+  redisV:
+    external: false
+  mysqlV:
+    external: false
+  mongodbV:
+    external: false
+  mongoconfV:
+    external: false
+  sqldumpV:
+    external: false
+  nginxhtmlV:
+    external: false
+  nginxconfV:
+    external: false
+
+networks:
+  default:
+    driver: bridge
+    external: false
+    name: holala-net

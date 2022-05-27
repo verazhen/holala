@@ -48,12 +48,20 @@ The project provides you with 2 install method: git clone, docker-compose, the l
 
 ### 1. Docker-Compose 
 
+#### Prerequisites
+- [Install Docker Compose](https://docs.docker.com/compose/install/)
 
+#### Run Docker-Compose
 To deploy this project with **container**, you have to proceed follow steps,
 
-1. Install Docker Compose  
-2. Update your envriables in docker-compose.yml  
-3. Run all containers with docker-compose up
+1. Download [docker-compose.yml](./docker-compose.yml).
+2. Create .env file according to [.env.template](./.env.template)
+3. Customize `nginx config`, `redis config` and `.env` folder path in **docker-compose.yml**
+4. Run all containers with docker-compose up where you create the .env file.
+```bash
+docker-compose up -d
+```
+
 
 ### 2. Alternative: Git Clone
 
