@@ -17,14 +17,6 @@ import ComplexStatisticsCard from "elements/Cards/StatisticsCards/ComplexStatist
 import MixedChart from "elements/Charts/MixedChart";
 import { API_HOST } from "utils/constants";
 
-// Data
-import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
-import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
-
-// Dashboard components
-import Projects from "layouts/dashboard/components/Projects";
-import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
-
 const inputStyle = {
   height: "50px",
   width: "100%",

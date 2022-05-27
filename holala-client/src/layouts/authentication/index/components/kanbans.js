@@ -21,9 +21,6 @@ import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 
-// Material Dashboard 2 React examples
-import KanbanMenu from "elements/Tables/KanbanMenu";
-
 // Data
 import data from "layouts/authentication/components/Projects/data";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";

@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef, useContext } from "react";
-import { useReactMediaRecorder } from "react-media-recorder";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { API_HOST } from "utils/constants";
 // react-router-dom components
@@ -21,8 +20,7 @@ import AspectRatioIcon from "@mui/icons-material/AspectRatio";
 // Material Dashboard 2 React context
 import { useMaterialUIController, setLayout } from "context";
 
-//Peer
-import Peer from "simple-peer";
+//Peers
 import webSocket from "socket.io-client";
 import { SOCKET_HOST } from "utils/constants";
 import { SocketProvider } from "elements/LayoutContainers/DashboardLayout/socket_context";

@@ -1,6 +1,6 @@
 import h from "./helpers.js";
 import Socket from "./constants.js";
-const SOCKET_HOST = Socket.local;
+const SOCKET_HOST = Socket.develop;
 
 let mediaRecorder;
 let uploadUrl;
