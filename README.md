@@ -90,7 +90,7 @@ docker-compose up -d
   npm install
 ```
 
-3. Set up your envirement with .env.example
+3. Set up your environment with [.env.example](./.env.example)
 
 4. Start the server
 
