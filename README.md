@@ -149,7 +149,7 @@ Tasks are your portal to more organized work—where every single part of your t
 
 ### Kanban Page - Chat and Video Conference
 The page provides a collaboration space where remote teams can come together, brainstorm, and learn with kanban.
-![image](picture or gif url)
+![image](./docs/screen_capture/conference.gif)
 #### Features
 - Chat Room
 - Video Conference
