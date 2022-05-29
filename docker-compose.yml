@@ -6,7 +6,7 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${CACHE_PASSWORD}
     volumes:
       - "redisV:/var/lib/redis/"
-      - "/home/ec2-user/holala/redis.conf:/usr/local/etc/redis/redis.conf"
+      - "redisConfV:/usr/local/etc/redis/redis.conf"
     ports:
       - "${CACHE_PORT}:6379"
     restart: always
@@ -34,17 +34,18 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
 
-
   holala:
     depends_on:
       - mysql
       - mongo
+      - redis
     image: holala
     ports:
       - "${PORT}:3000"
     volumes:
       - "sqldumpV:/usr/src/app/sqldump"
-      - "nginxhtmlV:/usr/src/app/build"
+      - "nginxhtmlV:/usr/src/app/holala-client/build"
+      - "redisConfV:/usr/src/app/redis.conf"
     restart: always
     env_file:
       - /home/ec2-user/.env
@@ -63,6 +64,8 @@ services:
 
 volumes:
   redisV:
+    external: false
+  redisConfV:
     external: false
   mysqlV:
     external: false

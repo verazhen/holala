@@ -56,8 +56,9 @@ To deploy this project with **container**, you have to proceed follow steps,
 
 1. Download [docker-compose.yml](./docker-compose.yml).
 2. Create .env file according to [.env.template](./.env.template)
-3. Customize `nginx config`, `redis config` and `.env` folder path in **docker-compose.yml**
-4. Run all containers with docker-compose up where you create the .env file.
+- optional config for more features related to meeting recording/ mailer: `S3_KEY`, `S3_SECRET`, `S3_REGION`, `MAILGUN_KEY`
+4. Customize `nginx config`, `redis config` and `.env` folder path in **docker-compose.yml**
+5. Run all containers with docker-compose up where you create the .env file.
 ```bash
 docker-compose up -d
 ```
