@@ -1,6 +1,7 @@
 const Socket = {
   local: "http://localhost:5000",
-  develop: "https://verazon.online",
+  demo: "https://verazon.online",
+  develop: "",
 };
 
 export default Socket;

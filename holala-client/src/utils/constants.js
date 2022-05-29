@@ -1,12 +1,14 @@
 const hostname = {
   local: "http://localhost:5000",
-  develop: "https://verazon.online",
+  demo: "https://verazon.online",
+  develop: "",
 };
 
 const socket = {
   local: "http://localhost:5000",
-  develop: "https://verazon.online",
+  demo: "https://verazon.online",
+  develop: "",
 };
 
-export const API_HOST = `${hostname.local}/api/1.0`;
-export const SOCKET_HOST = `${socket.local}`;
+export const API_HOST = `${hostname.develop}/api/1.0`;
+export const SOCKET_HOST = `${socket.develop}`;
