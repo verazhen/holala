@@ -402,8 +402,18 @@ function DashboardNavbar({ absolute, light, isMini }) {
                             ) : (
                               <MDButton
                                 onClick={() => {
-                                  setOpenRoleModal(true);
-                                  setSelectedValue(index);
+                                  if (member.uid === account.id) {
+                                    const answer = window.prompt(
+                                      "Are you sure you want to modify your permission?(enter y to continued)"
+                                    );
+                                    if (answer === "y" || answer === "Y") {
+                                      setOpenRoleModal(true);
+                                      setSelectedValue(index);
+                                    }
+                                  } else {
+                                    setOpenRoleModal(true);
+                                    setSelectedValue(index);
+                                  }
                                 }}
                               >
                                 {member.role_label}
@@ -416,6 +426,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
                             <Grid item>
                               <MDButton
                                 onClick={() => {
+                                  if (member.uid === account.id) {
+                                    const answer = window.prompt(
+                                      "Are you sure you want to remove yourself?(enter y)"
+                                    );
+                                    if (answer !== "y" && answer !== "Y")
+                                      return;
+                                  }
                                   let newMembers = JSON.parse(
                                     JSON.stringify(members)
                                   );
