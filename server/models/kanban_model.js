@@ -129,11 +129,10 @@ const getTaskDetails = async (user, taskId) => {
 };
 
 //TODO: Efficiency
-const addList = async (id, data) => {
+const addList = async (id, insert) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const [insert] = data.slice(-1);
     const { title } = insert;
     const dateTime = Date.now();
     const timestamp = Math.floor(dateTime / 1000);

@@ -368,5 +368,9 @@ li {
 }
 ::-webkit-scrollbar-thumb {
   border-radius: 15px;
-  background: rgba(139, 214, 204, 0.6)
+  background: rgba(139, 214, 204, 0.6);
+}
+
+.list-title::placeholder {
+  color: rgba(255, 255, 255, .8)
 }

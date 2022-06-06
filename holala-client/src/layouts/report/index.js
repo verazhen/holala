@@ -43,21 +43,25 @@ function Tables(props) {
   const ws = useContext(SocketContext);
 
   function addList() {
-    submittingStatus.current = true;
     const newList = {
-      title: "untitled",
+      title: "",
       tasks: [],
     };
-    setLists(function (prevData) {
-      const newLists = [...prevData, newList];
 
-      const tasks = {
-        kanbanId,
-        tasks: newLists,
-      };
-      ws.emit("task update", tasks);
-      return newLists;
-    });
+    fetchSetData(`${API_HOST}/kanban/${kanbanId}/tasks`, newList).then(
+      ({ data }) => {
+        setLists(function (prevData) {
+          newList.id = data.listId;
+          const newLists = [...prevData, newList];
+          const tasks = {
+            kanbanId,
+            tasks: newLists,
+          };
+          ws.emit("task update", tasks);
+          return newLists;
+        });
+      }
+    );
   }
 
   function delList() {
@@ -209,7 +213,6 @@ function Tables(props) {
     });
     ws.on("task block", (tasks) => {
       blockTasks.current = tasks;
-      console.log(blockTasks.current);
     });
   }, []);
 
@@ -264,7 +267,8 @@ function Tables(props) {
                           <Grid item>
                             <input
                               type="text"
-                              value={title}
+                              placeholder={title ? "" : "untitled"}
+                              value={title ? title : ""}
                               className="list-title"
                               ref={(el) => (listsRef.current[index] = el)}
                               onChange={(e) => editList(e, index)}
