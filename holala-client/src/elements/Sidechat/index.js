@@ -173,12 +173,14 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
             justifyContent="center"
           >
             <Grid item>
-              <Avatar
-                src={`https://avatars.dicebear.com/api/micah/${
-                  user ? user.name : "default"
-                }.svg`}
-                sx={{ width: 56, height: 56 }}
-              ></Avatar>
+              {user.name ? (
+                <Avatar
+                  src={`https://avatars.dicebear.com/api/micah/${user.name}.svg`}
+                  sx={{ width: 56, height: 56 }}
+                ></Avatar>
+              ) : (
+                <></>
+              )}
             </Grid>
           </Grid>
         </>
@@ -187,12 +189,14 @@ function Sidenav({ ws, setWs, color, brand, brandName, user, ...rest }) {
           <MDBox pt={3} pb={1} px={4} textAlign="center">
             <Grid container direction="row" alignItems="center">
               <Grid item mr={2}>
-                <Avatar
-                  src={`https://avatars.dicebear.com/api/micah/${
-                    user ? user.name : "default"
-                  }.svg`}
-                  sx={{ width: 56, height: 56 }}
-                ></Avatar>
+                {user.name ? (
+                  <Avatar
+                    src={`https://avatars.dicebear.com/api/micah/${user.name}.svg`}
+                    sx={{ width: 56, height: 56 }}
+                  ></Avatar>
+                ) : (
+                  <></>
+                )}
               </Grid>
               <Grid item>
                 <MDTypography variant="h4" fontWeight="bold" color={textColor}>
