@@ -22,7 +22,6 @@ function blockNestToObj(nestedObj, socket) {
       accu[listId] = [];
     }
     accu[listId].push({ block: curr[listId], editor: socketToUser[socket.id] });
-    console.log(accu);
     return accu;
   }, {});
   return result;
@@ -44,7 +43,7 @@ module.exports = (server) => {
       onlineUsers[socket.id] = kanbanId;
       const user = await Index.getUser(undefined, uid);
       socketToUser[socket.id] = user.name;
-      console.log(socketToUser);
+      console.log(onlineUsers);
       socket.on("getMessage", async (message) => {
         io.to(kanbanId).emit("getMessage", message);
         await Kanban.updateChat(message);
@@ -74,6 +73,7 @@ module.exports = (server) => {
 
     //---------------kanban tasks socket
     socket.on("task update", ({ kanbanId, tasks }) => {
+      console.log(onlineUsers);
       socket.to(kanbanId).emit("task update", tasks);
     });
 
@@ -126,7 +126,6 @@ module.exports = (server) => {
         message = `${uid} has ended the room`;
       }
 
-      console.log(status, message, result);
       io.to(`rtc-${kanbanId}`).emit("leave room", { status, message, result });
     });
 
