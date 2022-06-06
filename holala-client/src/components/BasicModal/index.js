@@ -167,6 +167,7 @@ function BasicModal({
     setComments((prev) => {
       return [newComment, ...prev];
     });
+    setMyComment("");
   }
 
   useEffect(() => {

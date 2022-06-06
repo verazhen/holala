@@ -158,6 +158,7 @@ function BasicModal({
     setComments((prev) => {
       return [newComment, ...prev];
     });
+    setMyComment("");
   }
 
   function onSaveModal() {
@@ -302,10 +303,7 @@ function BasicModal({
       parent_id: taskId,
     };
 
-    fetchSetData(
-      `${API_HOST}/kanban/${kanbanId}/list/${listId}/task`,
-      newTodo
-    );
+    fetchSetData(`${API_HOST}/kanban/${kanbanId}/list/${listId}/task`, newTodo);
 
     setTodos((prev) => {
       newTodo.key = prev.length;
