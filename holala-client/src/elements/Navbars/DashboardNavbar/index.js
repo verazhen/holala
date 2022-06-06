@@ -10,7 +10,6 @@ import PropTypes from "prop-types";
 import { Modal } from "react-responsive-modal";
 
 // @material-ui core components
-import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -82,7 +81,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [members, setMembers] = useState([]);
   const [users, setUsers] = useState([]);
   const [kanban, setKanban] = useState("");
-  const [alert, setAlert] = useState({});
   const descriptionElementRef = useRef(null);
   const [scroll, setScroll] = useState("paper");
   const [email, setEmail] = useState("");
@@ -167,45 +165,39 @@ function DashboardNavbar({ absolute, light, isMini }) {
       }
     );
     fetchData(`${API_HOST}/roles`, false).then((data) => setRoles(data));
-    fetchData(`${API_HOST}/users`, false).then((data) => {
-      setUsers(data);
-    });
-
     fetchData(`${API_HOST}/kanban/${kanbanId}`, false).then((data) => {
       setKanban(data.title);
     });
   }, []);
 
   function inviteMember() {
-    //send email to server and get user name
-    const [invitee] = users.filter((user) => {
-      return user.email === email;
-    });
-    if (!invitee) {
-      setAlert({ status: "warning", message: "The user is not existed" });
-      setEmail("");
-      return;
-    }
+    fetchData(`${API_HOST}/user?email=${email}`, false).then((data) => {
+      if (!data) {
+        window.alert("The user is not existed");
+        setEmail("");
+        return;
+      } else {
+        const invitee = data;
+        //check if member is existed
+        const check = members.some((member) => {
+          return member.uid === invitee.id;
+        });
 
-    //check if member is existed
-    const check = members.some((member) => {
-      return member.uid === invitee.id;
+        if (check) {
+          window.alert("The user is already existed");
+          setEmail("");
+          return;
+        }
+        //     set members
+        invitee.uid = invitee.id;
+        invitee.role_id = 1;
+        invitee.role_label = "editor";
+        setMembers((prev) => {
+          return [...prev, invitee];
+        });
+        setEmail("");
+      }
     });
-
-    if (check) {
-      setAlert({ status: "warning", message: "The user is already existed" });
-      setEmail("");
-      return;
-    }
-    //     set members
-    invitee.uid = invitee.id;
-    invitee.role_id = 1;
-    invitee.role_label = "editor";
-    setMembers((prev) => {
-      return [...prev, invitee];
-    });
-    setEmail("");
-    setAlert({});
   }
 
   function onSaveMembers() {
@@ -332,16 +324,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
             >
               <DialogTitle>KANBAN Members</DialogTitle>
               <DialogContent dividers={scroll === "paper"}>
-                <MDBox position="absolute" width="100%" minHeight="10vh">
-                  <Stack sx={{ width: "50%" }} mt={-9.5} ml={73} spacing={2}>
-                    {Object.keys(alert).length !== 0 ? (
-                      <Alert severity={alert.status}>{alert.message}</Alert>
-                    ) : (
-                      <></>
-                    )}
-                  </Stack>
-                </MDBox>
-
                 {account.role_id > 1 ? (
                   <></>
                 ) : (

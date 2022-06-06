@@ -6,6 +6,7 @@ const {
   updateKanban,
   getRoles,
   getUsers,
+  getUser
 } = require("../controllers/index_controller");
 
 const { wrapAsync, authentication } = require("../../util/util");
@@ -24,7 +25,10 @@ router
 //get roles
 router.route("/roles").get(authentication(), wrapAsync(getRoles));
 
-//get user
+//get users
 router.route("/users").get(authentication(), wrapAsync(getUsers));
+
+//get user
+router.route("/user").get(authentication(), wrapAsync(getUser));
 
 module.exports = router;

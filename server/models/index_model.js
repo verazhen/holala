@@ -109,10 +109,29 @@ const getUsers = async () => {
   }
 };
 
+const getUser = async (email) => {
+  try {
+    let [[user]] = await pool.query(
+      "SELECT * FROM users WHERE email = ?",
+      email
+    );
+
+    if (!user) {
+      return { code: 404, error: "user not found" };
+    }
+
+    return user;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 module.exports = {
   getKanbans,
   addKanban,
   updateKanban,
   getRoles,
   getUsers,
+  getUser,
 };

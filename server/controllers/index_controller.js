@@ -47,6 +47,21 @@ const getUsers = async (req, res) => {
   });
 };
 
+const getUser = async (req, res) => {
+const { email } = req.query;
+  const response = await wrapModel(Index.getUser,email);
+
+  if (response.error) {
+    return res
+      .status(response.code)
+      .send({ status_code: response.code, error: response.error });
+  }
+  return res.status(200).send({
+    status_code: 200,
+    data: response,
+  });
+};
+
 const addKanban = async (req, res) => {
   try {
     const { id } = req.user;
@@ -95,4 +110,5 @@ module.exports = {
   updateKanban,
   getRoles,
   getUsers,
+  getUser
 };
