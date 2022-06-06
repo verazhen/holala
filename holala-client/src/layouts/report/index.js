@@ -29,6 +29,7 @@ function Tables(props) {
   const [videoOpen, setVideoOpen] = useState(false);
   const [taskUpdateQue, setTaskUpdateQue] = useState(null);
   const [tags, setTags] = useState([]);
+  const [blocks, setBlocks] = useState([]);
   const [user, setUser] = useState({});
   const [members, setMembers] = useState([]);
   const submittingStatus = useRef(false);
@@ -102,7 +103,7 @@ function Tables(props) {
     const listId = columns[source.droppableId].id;
     if (blockTasks.current[listId]) {
       if (
-        blockTasks.current[listId].some((block) => {
+        blockTasks.current[listId].some(({ block }) => {
           return block == taskId;
         })
       ) {
@@ -213,6 +214,7 @@ function Tables(props) {
     });
     ws.on("task block", (tasks) => {
       blockTasks.current = tasks;
+      setBlocks(tasks);
     });
   }, []);
 
@@ -342,6 +344,7 @@ function Tables(props) {
                           taskUpdateQue={taskUpdateQue}
                           setTaskUpdateQue={setTaskUpdateQue}
                           blockTasks={blockTasks}
+                          blocks={blocks[id]}
                           videoOpen={videoOpen}
                           setVideoOpen={setVideoOpen}
                         />

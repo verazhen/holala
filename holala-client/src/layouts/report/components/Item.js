@@ -11,6 +11,7 @@ import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import { fetchData, fetchSetData, fetchPutData } from "utils/fetch";
 import { API_HOST } from "utils/constants";
+import Avatar from "@mui/material/Avatar";
 
 import { Draggable } from "react-beautiful-dnd";
 const Item = ({
@@ -37,6 +38,7 @@ const Item = ({
   editingRef,
   taskUpdateQue,
   setTaskUpdateQue,
+  editor,
 }) => {
   const draggableId = `${taskId}`;
   const [open, setOpen] = useState(false);
@@ -45,7 +47,7 @@ const Item = ({
 
   function deleteItem() {
     if (blockTasks.current[listId]) {
-      const blocked = blockTasks.current[listId].some((block) => {
+      const blocked = blockTasks.current[listId].some(({ block }) => {
         return block === taskId;
       });
 
@@ -88,7 +90,7 @@ const Item = ({
     }
 
     if (blockTasks.current[listId]) {
-      isBlocked.current = blockTasks.current[listId].some((block) => {
+      isBlocked.current = blockTasks.current[listId].some(({ block }) => {
         return block === taskId;
       });
     } else {
@@ -119,7 +121,7 @@ const Item = ({
 
     if (blockTasks.current[listId]) {
       blockTasks.current[listId] = blockTasks.current[listId].filter(
-        (block) => {
+        ({ block }) => {
           return block !== taskId;
         }
       );
@@ -148,7 +150,7 @@ const Item = ({
                 <div className="item-text">{taskName}</div>
               </Grid>
               {user.role_id > 1 ? (
-                <></>
+                <Grid item xs={3}></Grid>
               ) : (
                 <Grid item xs={3}>
                   <MDButton
@@ -163,6 +165,14 @@ const Item = ({
                 </Grid>
               )}
             </Grid>
+            {editor ? (
+              <Avatar
+                src={`https://avatars.dicebear.com/api/micah/${editor}.svg`}
+                sx={{ width: 20, height: 20 }}
+              ></Avatar>
+            ) : (
+              <></>
+            )}
           </MDBox>
           {user.role_id > 1 || isBlocked.current ? (
             <BasicModal

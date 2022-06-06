@@ -48,8 +48,8 @@ const getUsers = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-const { email } = req.query;
-  const response = await wrapModel(Index.getUser,email);
+  const { email, uid } = req.query;
+  const response = await wrapModel(Index.getUser, email, uid);
 
   if (response.error) {
     return res
@@ -110,5 +110,5 @@ module.exports = {
   updateKanban,
   getRoles,
   getUsers,
-  getUser
+  getUser,
 };

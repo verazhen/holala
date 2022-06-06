@@ -109,17 +109,20 @@ const getUsers = async () => {
   }
 };
 
-const getUser = async (email) => {
+const getUser = async (email, uid) => {
   try {
-    let [[user]] = await pool.query(
-      "SELECT * FROM users WHERE email = ?",
-      email
-    );
+    let user;
+    if (email) {
+      [[user]] = await pool.query("SELECT * FROM users WHERE email = ?", email);
+    } else if (uid) {
+      [[user]] = await pool.query("SELECT * FROM users WHERE id = ?", uid);
+    }
 
     if (!user) {
       return { code: 404, error: "user not found" };
     }
 
+    console.log(user);
     return user;
   } catch (e) {
     console.log(e);

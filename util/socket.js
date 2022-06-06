@@ -2,6 +2,12 @@ const { Server } = require("socket.io");
 const { createAdapter } = require("@socket.io/redis-adapter");
 const Kanban = require("../server/models/kanban_model");
 const Meeting = require("../server/models/meeting_model");
+const Index = require("../server/models/index_model");
+const users = {};
+const socketToRoom = {};
+const socketToUser = {};
+const blockTasks = {};
+const onlineUsers = {};
 
 function findNowRoom(client) {
   return Object.keys(client.rooms).find((item) => {
@@ -9,22 +15,18 @@ function findNowRoom(client) {
   });
 }
 
-function blockNestToObj(nestedObj) {
+function blockNestToObj(nestedObj, socket) {
   const result = Object.values(nestedObj).reduce((accu, curr) => {
     const [listId] = Object.getOwnPropertyNames(curr);
     if (!accu[listId]) {
       accu[listId] = [];
     }
-    accu[listId].push(curr[listId]);
+    accu[listId].push({ block: curr[listId], editor: socketToUser[socket.id] });
+    console.log(accu);
     return accu;
   }, {});
   return result;
 }
-
-const users = {};
-const socketToRoom = {};
-const blockTasks = {};
-const onlineUsers = {};
 
 module.exports = (server) => {
   let io = new Server(server, {
@@ -37,9 +39,12 @@ module.exports = (server) => {
   io.on("connection", (socket) => {
     console.log(`user ${socket.id} is connected`);
     //---------------chatroom socket
-    socket.on("kanban", ({ kanbanId, uid }) => {
+    socket.on("kanban", async ({ kanbanId, uid }) => {
       socket.join(kanbanId);
       onlineUsers[socket.id] = kanbanId;
+      const user = await Index.getUser(undefined, uid);
+      socketToUser[socket.id] = user.name;
+      console.log(socketToUser);
       socket.on("getMessage", async (message) => {
         io.to(kanbanId).emit("getMessage", message);
         await Kanban.updateChat(message);
@@ -47,15 +52,14 @@ module.exports = (server) => {
 
       //init blocked tasks
       if (blockTasks[kanbanId]) {
-        const blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
-        console.log("connection");
-        console.log(blockTasksObj);
+        const blockTasksObj = blockNestToObj(blockTasks[kanbanId], socket);
         socket.emit("task block", blockTasksObj);
       }
     });
 
     socket.on("disconnect", () => {
       delete onlineUsers[socket.id];
+      delete socketToUser[socket.id];
       const roomID = socketToRoom[socket.id];
       socket.emit("user left", { sender: socket.id });
 
@@ -63,7 +67,7 @@ module.exports = (server) => {
       if (blockTasks[onlineUsers[socket.id]]) {
         const kanbanId = onlineUsers[socket.id];
         delete blockTasks[kanbanId][socket.id];
-        const blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
+        const blockTasksObj = blockNestToObj(blockTasks[kanbanId], socket);
         socket.to(kanbanId).emit("task block", blockTasksObj);
       }
     });
@@ -81,7 +85,7 @@ module.exports = (server) => {
         //delete the taskId blocked
         delete blockTasks[kanbanId][socket.id];
         if (Object.values(blockTasks[kanbanId]).length > 0) {
-          blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
+          blockTasksObj = blockNestToObj(blockTasks[kanbanId], socket);
         }
       } else {
         blockTasks[kanbanId] = blockTasks[kanbanId] || {};
@@ -90,10 +94,8 @@ module.exports = (server) => {
         const task = await Kanban.getTask(taskId);
 
         blockTasks[kanbanId][socket.id][task.list_id] = taskId;
-        blockTasksObj = blockNestToObj(blockTasks[kanbanId]);
+        blockTasksObj = blockNestToObj(blockTasks[kanbanId], socket);
       }
-      console.log("task unblock");
-      console.log(blockTasksObj);
       socket.to(kanbanId).emit("task block", blockTasksObj);
     });
 

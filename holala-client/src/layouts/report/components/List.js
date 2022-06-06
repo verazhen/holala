@@ -26,14 +26,12 @@ const List = ({
   setTaskUpdateQue,
   videoOpen,
   setVideoOpen,
+  blocks,
 }) => {
   const droppableId = `${listIndex}`;
   const delStatus = useRef(false);
 
   useEffect(() => {
-    console.log("----------------");
-    console.log(listId, tasks);
-
     if (tasks.length === 0 || submitTask.current !== tasks[0].list_id) {
       return;
     }
@@ -120,6 +118,16 @@ const List = ({
                     user={user}
                     ws={ws}
                     blockTasks={blockTasks}
+                    editor={
+                      blocks
+                        ? blocks.reduce((accu, curr) => {
+                            const { block, editor } = curr;
+                            if (block === task.id) {
+                              return editor;
+                            }
+                          }, "")
+                        : null
+                    }
                     editingRef={editingRef}
                     taskUpdateQue={taskUpdateQue}
                     setTaskUpdateQue={setTaskUpdateQue}
