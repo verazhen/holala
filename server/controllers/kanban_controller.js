@@ -222,7 +222,7 @@ const updateMembers = async (req, res) => {
 
   if (response.error) {
     return res
-      .status(response.code)
+      .status(response.status)
       .send({ status_code: response.code, error: response.error });
   }
 

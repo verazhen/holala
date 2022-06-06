@@ -265,6 +265,11 @@ const updateMembers = async (data, kanbanId) => {
     await conn.query("START TRANSACTION");
     const { members } = data;
 
+    if (members.length === 0) {
+      await conn.query("COMMIT");
+      return { status: 403, code: 4032, error: "Operation Denied" };
+    }
+
     const values = members.map(({ uid, role_id }) => {
       return [uid, kanbanId, role_id];
     });

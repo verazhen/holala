@@ -209,10 +209,20 @@ function DashboardNavbar({ absolute, light, isMini }) {
   }
 
   function onSaveMembers() {
-    setOpenDialog(!openDialog);
-
     fetchPutData(`${API_HOST}/kanban/${kanbanId}/members`, {
       members,
+    }).then((res) => {
+      if (res.error) {
+        window.alert("You cannot delete all the member in the kanban");
+        fetchData(`${API_HOST}/kanban/${kanbanId}/tasks`, true).then(
+          ({ user }) => {
+            setMembers(user);
+          }
+        );
+        return;
+      } else {
+        setOpenDialog(!openDialog);
+      }
     });
   }
 
