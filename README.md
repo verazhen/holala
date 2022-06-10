@@ -116,7 +116,7 @@ docker-compose up -d
 ---
 ## Architecture
 ![image](./docs/structure_holala.png)
-
+![image](./docs/structure_mesh.png)
 ---
 ## Database Schema
 
